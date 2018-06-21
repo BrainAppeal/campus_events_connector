@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2018-06-21T05:03:57Z" product-name="brain_event_connector">
+		<header/>
+		<body>
+			<trans-unit id="tx_braineventconnector_domain_model_filtercategory">
+				<source>Filter Category</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_filtercategory.name">
+				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_filtercategory.parent">
+				<source>Parent</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

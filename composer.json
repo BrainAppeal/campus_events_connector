@@ -1,0 +1,28 @@
+{
+    "name": "brainappeal/brain_event_connector",
+    "type": "typo3-cms-extension",
+    "description" : "Brain Appeal TYPO3 CMS Base Distribution",
+    "license": [
+        "GPL-2.0+"
+    ],
+    "homepage": "http://brain-appeal.com/",
+    "authors": [
+        {
+            "name": "Brain Appeal Team",
+            "email": "info@brain-appeal.com"
+        },
+        {
+            "name": "Joshua Billert",
+            "email": "joshua.billert@brain-appeal.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "typo3/cms-core": "~7.6.0|~8.7.0|^9.3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "BrainAppeal\\BrainEventConnector\\": "Classes"
+        }
+    }
+}
