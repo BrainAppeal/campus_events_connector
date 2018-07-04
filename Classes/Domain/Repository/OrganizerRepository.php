@@ -14,9 +14,9 @@ namespace BrainAppeal\BrainEventConnector\Domain\Repository;
  ***/
 
 /**
- * The repository for FilterCategories
+ * The repository for Organizers
  */
-class FilterCategoryRepository extends AbstractImportedRepository
+class OrganizerRepository extends AbstractImportedRepository
 {
 
 }

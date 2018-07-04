@@ -3,8 +3,6 @@ namespace BrainAppeal\BrainEventConnector\Tests\Unit\Domain\Model;
 
 /**
  * Test case.
- *
- * @author Joshua Billert <joshua.billert@brain-appeal.com>
  */
 class FilterCategoryTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {

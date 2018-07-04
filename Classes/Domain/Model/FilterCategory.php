@@ -15,8 +15,10 @@ namespace BrainAppeal\BrainEventConnector\Domain\Model;
 /**
  * FilterCategory
  */
-class FilterCategory extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+class FilterCategory extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements ImportedModelInterface
 {
+    use ImportedModelTrait;
+
     /**
      * name
      *
@@ -87,10 +89,10 @@ class FilterCategory extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Sets the parent
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $parent
+     * @param \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory|null $parent
      * @return void
      */
-    public function setParent(\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $parent)
+    public function setParent(\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $parent = null)
     {
         $this->parent = $parent;
     }
