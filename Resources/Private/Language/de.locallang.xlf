@@ -184,8 +184,8 @@
 				<target>Übergeordnete Filterkategorie</target>
 			</trans-unit>
 			<trans-unit id="tx_braineventconnector_task_eventimporttask.name">
-				<source>Event Import Task</source>
-				<target>Event Import Aufgabe</target>
+				<source>Import events from CampusEvents</source>
+				<target>Events von CampusEvents importieren</target>
 			</trans-unit>
 			<trans-unit id="tx_braineventconnector_task_eventimporttask.description">
 				<source>Task for importing Events from defined source</source>
@@ -202,6 +202,14 @@
 			<trans-unit id="tx_braineventconnector_task_eventimporttask.pid">
 				<source>PageID for imported records</source>
 				<target>SeitenID für importierte Datensätze</target>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_task_eventimporttask.storage_id">
+				<source>Storage ID</source>
+				<target>Storage ID für importierte Bilder und Anhänge</target>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_task_eventimporttask.storage_folder">
+				<source>Storage Folder</source>
+				<target>Pfad innerhalb des gewählten Storage für importierte Bilder und Anhänge</target>
 			</trans-unit>
 		</body>
 	</file>

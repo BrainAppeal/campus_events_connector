@@ -19,6 +19,7 @@ use BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterface;
 use BrainAppeal\BrainEventConnector\Importer\DBAL\DBAL as DBALService;
 use BrainAppeal\BrainEventConnector\Importer\ObjectGenerator\ImportObjectGenerator;
 use BrainAppeal\BrainEventConnector\Importer\ObjectGenerator\SpecifiedImportObjectGenerator;
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
 class Importer
 {
@@ -63,24 +64,40 @@ class Importer
         return $dbal;
     }
 
+    /**
+     * @param int $storageId
+     * @param string $storageFolder
+     * @return FileImporter
+     */
+    private function getFileImporter($storageId, $storageFolder)
+    {
+        /** @var FileImporter $fileImporter */
+        $fileImporter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(FileImporter::class);
+        $fileImporter->initialize($storageId, $storageFolder);
+
+        return $fileImporter;
+    }
 
     /**
      * @param string $baseUri
      * @param string $apiKey
      * @param int|null $pid
+     * @param int $storageId
+     * @param string $storageFolder
      * @return bool
      */
-    public function import($baseUri, $apiKey, $pid)
+    public function import($baseUri, $apiKey, $pid, $storageId, $storageFolder)
     {
         $importStartTimestamp = time();
 
         $apiConnector = $this->getApiConnector($baseUri, $apiKey);
         $importObjectGenerator = $this->getImportObjectGenerator($baseUri, $pid);
         $dbal = $this->getDBAL();
+        $fileImporter = $this->getFileImporter($storageId, $storageFolder);
 
         $imports = [
             'filter_categories' => FilterCategory::class,
-            'events' => Event::class,
+            'events'            => Event::class,
         ];
 
         foreach ($imports as $alias => $modelClass) {
@@ -92,6 +109,10 @@ class Importer
         foreach ($importObjectGenerator->getModifiedObjectClasses() as $modelClass) {
             $dbal->removeNotUpdatedObjects($modelClass, $baseUri, $pid, $importStartTimestamp);
         }
+
+        $fileImporter->runQueue();
+
+        $dbal->removeNotUpdatedObjects(FileReference::class, $baseUri, $pid, $importStartTimestamp);
 
         return true;
     }

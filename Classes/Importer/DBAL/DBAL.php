@@ -17,6 +17,8 @@ namespace BrainAppeal\BrainEventConnector\Importer\DBAL;
 
 use BrainAppeal\BrainEventConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\BrainEventConnector\Domain\Repository\AbstractImportedRepository;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
 class DBAL implements DBALInterface, \TYPO3\CMS\Core\SingletonInterface
 {
@@ -25,6 +27,11 @@ class DBAL implements DBALInterface, \TYPO3\CMS\Core\SingletonInterface
      * @var AbstractImportedRepository[]
      */
     private $repositories = [];
+
+    /**
+     * @var string[]
+     */
+    private $classTableMapping = [];
 
     /**
      * @param string $modelClass
@@ -77,17 +84,100 @@ class DBAL implements DBALInterface, \TYPO3\CMS\Core\SingletonInterface
         }
     }
 
+    private function deleteRawFromTable($tableName, $importSource, $pid, $importTimestamp)
+    {
+        $pid = intval($pid);
+        $importSource = preg_replace("/['\"]/", "", $importSource);
+        $importTimestamp = intval($importTimestamp);
+
+        /** @noinspection SqlResolve */
+        $deleteSql = "DELETE FROM $tableName WHERE pid = ? AND import_source = ? AND imported_at < ?";
+
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ConnectionPool::class);
+        $connection = $connectionPool->getConnectionForTable($tableName);
+        $statement = $connection->prepare($deleteSql);
+        $statement->execute([$pid, $importSource, $importTimestamp]);
+    }
+
     public function removeNotUpdatedObjects($modelClass, $importSource, $pid, $importTimestamp)
     {
-        $repository = $this->getRepository($modelClass);
+        if ($modelClass == FileReference::class) {
+            $this->deleteRawFromTable('sys_file_reference', $importSource, $pid, $importTimestamp);
+        } else {
+            $repository = $this->getRepository($modelClass);
 
-        if (null !== $repository) {
-            $results = $repository->findByNotImportedSince($importTimestamp, $importSource, $pid);
-            foreach ($results as $result) {
-                $repository->remove($result);
+            if (null !== $repository) {
+                $results = $repository->findByNotImportedSince($importTimestamp, $importSource, $pid);
+                foreach ($results as $result) {
+                    $repository->remove($result);
+                }
+
+                $repository->persistAll();
             }
-
-            $repository->persistAll();
         }
     }
+
+    private function getTableForModelClass($modelClass)
+    {
+        if (!isset($this->classTableMapping[$modelClass])) {
+            $dataMapper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
+            $this->classTableMapping[$modelClass] = $dataMapper->getDataMap($modelClass)->getTableName();
+        }
+
+        return $this->classTableMapping[$modelClass];
+    }
+
+    /**
+     * @param FileReference $fileReference
+     * @param array $attribs
+     */
+    public function updateSysFileReference($fileReference, $attribs = [])
+    {
+        $data['sys_file_reference'][$fileReference->getUid()] = $attribs;
+
+        // Get an instance of the DataHandler and process the data
+        /** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
+        $dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\DataHandling\DataHandler::class);
+        $dataHandler->start($data, array());
+        $dataHandler->process_datamap();
+    }
+
+    /**
+     * @param \TYPO3\CMS\Core\Resource\File $sysFile
+     * @param ImportedModelInterface $target
+     * @param string $field
+     * @param array $attribs
+     */
+    public function addSysFileReference($sysFile, $target, $field, $attribs = [])
+    {
+        $uidLocal = $sysFile->getUid();
+        $uidForeign = $target->getUid();
+        $table = $this->getTableForModelClass(get_class($target));
+        $storagePid = $target->getPid();
+
+
+        $newId = 'NEW'.$uidForeign.'-'.$uidLocal;
+
+        $attribs = array_replace($attribs,[
+            'uid_local'   => $uidLocal,
+            'table_local' => 'sys_file',
+            'uid_foreign' => $uidForeign,
+            'tablenames'  => $table,
+            'fieldname'   => $field,
+            'pid'         => $storagePid,
+        ]);
+        $data = [
+            'sys_file_reference' => [$newId => $attribs],
+            $table               => [$uidForeign => [$field => $newId]],
+        ];
+
+        // Get an instance of the DataHandler and process the data
+        /** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
+        $dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\DataHandling\DataHandler::class);
+        $dataHandler->start($data, array());
+        $dataHandler->process_datamap();
+    }
+
+
 }

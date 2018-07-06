@@ -21,15 +21,22 @@ use BrainAppeal\BrainEventConnector\Domain\Model\Organizer;
 use BrainAppeal\BrainEventConnector\Domain\Model\Speaker;
 use BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup;
 use BrainAppeal\BrainEventConnector\Domain\Model\TimeRange;
+use BrainAppeal\BrainEventConnector\Importer\FileImporter;
 
 class SpecifiedImportObjectGenerator extends ImportObjectGenerator
 {
 
+    /**
+     * @inheritdoc
+     */
     protected function assignCategoryProperties($class, $object, $data)
     {
         $object->setName($data['name']);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function assignEventProperties($class, $object, $data)
     {
         $object->setName($data['name']);
@@ -87,17 +94,31 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
         $location = $this->generate(Location::class, $data['location']['id'], $data['location']);
         $object->setLocation($location);
 
+        /** @var FileImporter $fileImporter */
+        $fileImporter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(FileImporter::class);
+        foreach ($data['images'] as $attachmentData) {
+            $fileImporter->enqueueFileMapping($object, 'images', $attachmentData);
+        }
 
-        //$object->set($data['images']);
-        //$object->set($data['attachments']);
+        /** @var FileImporter $fileImporter */
+        $fileImporter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(FileImporter::class);
+        foreach ($data['attachments'] as $attachmentData) {
+            $fileImporter->enqueueFileMapping($object, 'attachments', $attachmentData);
+        }
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function assignFilterCategoryProperties($class, $object, $data)
     {
         $object->setName($data['name']);
         $object->setParent($this->generate($class, $data['parent_id'], null));
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function assignLocationProperties($class, $object, $data)
     {
         $object->setName($data['name']);
@@ -106,11 +127,17 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
         $object->setZipCode($data['zip_code']);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function assignOrganizerProperties($class, $object, $data)
     {
         $object->setName($data['name']);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function assignSpeakerProperties($class, $object, $data)
     {
         $object->setTitle($data['title']);
@@ -118,11 +145,17 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
         $object->setLastName($data['last_name']);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function assignTargetGroupProperties($class, $object, $data)
     {
         $object->setName($data['name']);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function assignTimeRangeProperties($class, $object, $data)
     {
         $object->setStartDate(new \DateTime($data['start_date']));

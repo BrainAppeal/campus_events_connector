@@ -30,6 +30,16 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
     public $pid;
 
     /**
+     * @var int
+     */
+    public $storageId;
+
+    /**
+     * @var string
+     */
+    public $storageFolder;
+
+    /**
      * @return \BrainAppeal\BrainEventConnector\Importer\Importer
      */
     private function getImporter()
@@ -45,7 +55,7 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
      */
     public function execute() {
         $importer = $this->getImporter();
-        $success = $importer->import($this->baseUri, $this->apiKey, $this->pid);
+        $success = $importer->import($this->baseUri, $this->apiKey, $this->pid, $this->storageId, $this->storageFolder);
 
         return $success;
     }

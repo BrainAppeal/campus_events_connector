@@ -463,3 +463,12 @@ CREATE TABLE tx_braineventconnector_event_targetgroup_mm (
 	KEY uid_local (uid_local),
 	KEY uid_foreign (uid_foreign)
 );
+
+#
+# Table structure for table 'sys_file_reference'
+#
+CREATE TABLE sys_file_reference (
+	import_source varchar(255) DEFAULT NULL,
+	import_id int(11) unsigned DEFAULT NULL ,
+	imported_at int(11) unsigned DEFAULT NULL
+);

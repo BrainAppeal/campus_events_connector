@@ -139,7 +139,7 @@
 				<source>Parent Filter Category</source>
 			</trans-unit>
 			<trans-unit id="tx_braineventconnector_task_eventimporttask.name">
-				<source>Event Import Task</source>
+				<source>Import events from CampusEvents</source>
 			</trans-unit>
 			<trans-unit id="tx_braineventconnector_task_eventimporttask.description">
 				<source>Task for importing Events from defined source</source>
@@ -152,6 +152,12 @@
 			</trans-unit>
 			<trans-unit id="tx_braineventconnector_task_eventimporttask.pid">
 				<source>PageID for imported records</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_task_eventimporttask.storage_id">
+				<source>Storage ID</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_task_eventimporttask.storage_folder">
+				<source>Storage Folder</source>
 			</trans-unit>
 		</body>
 	</file>
