@@ -1,8 +1,10 @@
 <?php
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_filtercategory',
-        'label' => 'name',
+        'title' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_speaker',
+        'label' => 'title',
+        'label_alt' => 'first_name,last_name',
+        'label_alt_force' => 1,
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'cruser_id' => 'cruser_id',
@@ -16,14 +18,14 @@ return [
 //            'starttime' => 'starttime',
 //            'endtime' => 'endtime',
         ],
-        'searchFields' => 'name,parent',
-        'iconfile' => 'EXT:brain_event_connector/Resources/Public/Icons/tx_braineventconnector_domain_model_filtercategory.gif'
+        'searchFields' => 'title,first_name,last_name',
+        'iconfile' => 'EXT:brain_event_connector/Resources/Public/Icons/tx_braineventconnector_domain_model_speaker.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, parent',
+        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, title, first_name, last_name',
     ],
     'types' => [
-        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, parent, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
+        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, title, first_name, last_name, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -53,8 +55,8 @@ return [
                 'items' => [
                     ['', 0],
                 ],
-                'foreign_table' => 'tx_braineventconnector_domain_model_filtercategory',
-                'foreign_table_where' => 'AND tx_braineventconnector_domain_model_filtercategory.pid=###CURRENT_PID### AND tx_braineventconnector_domain_model_filtercategory.sys_language_uid IN (-1,0)',
+                'foreign_table' => 'tx_braineventconnector_domain_model_speaker',
+                'foreign_table_where' => 'AND tx_braineventconnector_domain_model_speaker.pid=###CURRENT_PID### AND tx_braineventconnector_domain_model_speaker.sys_language_uid IN (-1,0)',
             ],
         ],
         'l10n_diffsource' => [
@@ -108,9 +110,27 @@ return [
             ],
         ],
 
-        'name' => [
+        'title' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_filtercategory.name',
+            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_speaker.title',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'first_name' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_speaker.first_name',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'last_name' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_speaker.last_name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -142,25 +162,6 @@ return [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim'
-            ],
-        ],
-        'parent' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_filtercategory.parent',
-            'config' => [
-                'type' => 'select',
-                'renderType' => 'selectTree',
-                'foreign_table' => 'tx_braineventconnector_domain_model_filtercategory',
-                'minitems' => 0,
-                'maxitems' => 1,
-
-                'size' => 10,
-                'treeConfig' => array(
-                    'parentField' => 'parent',
-                    'appearance' => array(
-                        'expandAll' => true,
-                    ),
-                ),
             ],
         ],
     

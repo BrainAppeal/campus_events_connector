@@ -10,6 +10,7 @@
  * "version" and "dependencies" must not be touched!
  ***************************************************************/
 
+/** @var string $_EXTKEY */
 $EM_CONF[$_EXTKEY] = [
     'title' => 'CampusEvents Connector',
     'description' => '',
@@ -20,7 +21,7 @@ $EM_CONF[$_EXTKEY] = [
     'internal' => '',
     'uploadfolder' => '0',
     'createDirs' => '',
-    'clearCacheOnLoad' => 0,
+    'clearCacheOnLoad' => 1,
     'version' => '1.0.0',
     'constraints' => [
         'depends' => [
