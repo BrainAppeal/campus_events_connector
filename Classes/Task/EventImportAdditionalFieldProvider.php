@@ -149,7 +149,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         $fieldId = 'brainEventConnector_eventImport_storageFolder';
         if (empty($taskInfo[$fieldId])) {
             $taskUid = (null === $task) ? time()%10000 : $task->getTaskUid();
-            $taskInfo[$fieldId] = empty($task->storageFolder) ? 'event_upload/task-'.$taskUid.'/' : $task->storageFolder;
+            $taskInfo[$fieldId] = empty($task->storageFolder) ? 'campus_events_import/task-'.$taskUid.'/' : $task->storageFolder;
         }
         $fieldName = 'tx_scheduler[' . $fieldId . ']';
         $fieldHtml = '<input class="form-control" type="text" ' . 'name="' . $fieldName . '" ' . 'id="' . $fieldId . '" ' . 'value="' . $taskInfo[$fieldId] . '" ' . '>';
