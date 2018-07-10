@@ -44,6 +44,12 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
         $this->setDefaultQuerySettings($defaultQuerySettings);
     }
 
+    public function findAllByPid($pid)
+    {
+        $this->setPidRestriction($pid);
+        return $this->findAll();
+    }
+
     /**
      * @param string $importSource
      * @param int $importId

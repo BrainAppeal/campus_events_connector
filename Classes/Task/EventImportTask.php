@@ -57,7 +57,21 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
         $importer = $this->getImporter();
         $success = $importer->import($this->baseUri, $this->apiKey, $this->pid, $this->storageId, $this->storageFolder);
 
+        $this->callHooks();
+
         return $success;
+    }
+
+    private function callHooks()
+    {
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_braineventconnector']['postImport'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_braineventconnector']['postImport'] as $classRef) {
+                $hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
+                if (method_exists($hookObj, 'postImport')) {
+                    $hookObj->postImport($this->pid);
+                }
+            }
+        }
     }
 
 }
