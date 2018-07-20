@@ -183,6 +183,26 @@
 				<source>Parent Filter Category</source>
 				<target>Übergeordnete Filterkategorie</target>
 			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration">
+				<source>Convert Configuration</source>
+				<target>Kontervierungs Konfiguration</target>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.target_pid">
+				<source>Target PID</source>
+				<target>Ziel PID</target>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.template_path">
+				<source>Template Path</source>
+				<target>Template Pfad</target>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.filter_categories">
+				<source>Filter Categories</source>
+				<target>Filterkategorien</target>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.target_groups">
+				<source>Target Groups</source>
+				<target>Zielgruppen</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

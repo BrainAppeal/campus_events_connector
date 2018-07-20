@@ -17,7 +17,7 @@ namespace BrainAppeal\BrainEventConnector\Converter;
 interface EventConverterInterface
 {
     /**
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\AbstractConvertConfiguration $configuration
+     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Convert2ObjectConfiguration $configuration
      */
     public function run($configuration);
 }

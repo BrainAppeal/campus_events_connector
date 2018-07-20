@@ -183,6 +183,26 @@
 				<source>Parent Filter Category</source>
 				<target>Übergeordnete Filterkategorie</target>
 			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration">
+				<source>Convert Configuration</source>
+				<target>Kontervierungs Konfiguration</target>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.target_pid">
+				<source>Target PID</source>
+				<target>Ziel PID</target>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.template_path">
+				<source>Template Path</source>
+				<target>Template Pfad</target>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.filter_categories">
+				<source>Filter Categories</source>
+				<target>Filterkategorien</target>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.target_groups">
+				<source>Target Groups</source>
+				<target>Zielgruppen</target>
+			</trans-unit>
 			<trans-unit id="tx_braineventconnector_task_eventimporttask.name">
 				<source>Import events from CampusEvents</source>
 				<target>Events von CampusEvents importieren</target>
@@ -211,6 +231,26 @@
 				<source>Storage Folder</source>
 				<target>Pfad innerhalb des gewählten Storage für importierte Bilder und Anhänge</target>
 			</trans-unit>
+            <trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_base_uri">
+                <source>Invalid Base URI</source>
+                <target>Ungültige Basis URL</target>
+            </trans-unit>
+            <trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_api_key">
+                <source>Invalid API Key</source>
+                <target>Ungültiger API Key</target>
+            </trans-unit>
+            <trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_pid">
+                <source>Invalid Page ID</source>
+                <target>Ungültige SeitenID</target>
+            </trans-unit>
+            <trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_storage_id">
+                <source>Invalid Storage ID</source>
+                <target>Ungültige Storage ID</target>
+            </trans-unit>
+            <trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_storage_folder">
+                <source>Invalid Storage Folder</source>
+                <target>Ungültiger Pfad</target>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

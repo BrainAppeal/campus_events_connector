@@ -49,10 +49,12 @@ class ApiConnector
         return $uri;
     }
 
+    /** @noinspection PhpDocRedundantThrowsInspection */
     /**
      * @param string $data
      * @param array $additionalParams
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getApiResponse($data, $additionalParams = [])
     {
@@ -118,6 +120,20 @@ class ApiConnector
         $this->apiVersion = $apiVersion;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function checkApiVersion()
+    {
+        $response = $this->getApiResponse('api-check');
+        if (isset($response['status']['version']) && $response['status']['version'] == $this->getApiVersion()) {
+            return true;
+        }
+
+        return false;
     }
 
 }

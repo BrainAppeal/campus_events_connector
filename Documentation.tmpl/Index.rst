@@ -31,10 +31,10 @@ BrainAppeal CampusEvents Connector
 		2018
 
 	:Author:
-		Joshua Billert
+		Brain Appeal GmbH
 
 	:Email:
-		joshua.billert@brain-appeal.com
+		info@brain-appeal.com
 
 	:License:
 		This document is published under the Open Content License

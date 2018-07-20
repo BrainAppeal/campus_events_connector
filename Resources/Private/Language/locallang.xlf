@@ -138,6 +138,21 @@
 			<trans-unit id="tx_braineventconnector_domain_model_filtercategory.parent">
 				<source>Parent Filter Category</source>
 			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration">
+				<source>Convert Configuration</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.target_pid">
+				<source>Target PID</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.template_path">
+				<source>Template Path</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.filter_categories">
+				<source>Filter Categories</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.target_groups">
+				<source>Target Groups</source>
+			</trans-unit>
 			<trans-unit id="tx_braineventconnector_task_eventimporttask.name">
 				<source>Import events from CampusEvents</source>
 			</trans-unit>
@@ -158,6 +173,21 @@
 			</trans-unit>
 			<trans-unit id="tx_braineventconnector_task_eventimporttask.storage_folder">
 				<source>Storage Folder</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_base_uri">
+				<source>Invalid Base URI</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_api_key">
+				<source>Invalid API Key</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_pid">
+				<source>Invalid Page ID</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_storage_id">
+				<source>Invalid Storage ID</source>
+			</trans-unit>
+			<trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_storage_folder">
+				<source>Invalid Storage Folder</source>
 			</trans-unit>
 		</body>
 	</file>

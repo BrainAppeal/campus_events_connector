@@ -16,7 +16,7 @@ namespace BrainAppeal\BrainEventConnector\Domain\Repository;
 /**
  * The repository for ConverterConfigurations
  */
-abstract class AbstractConvertConfigurationRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+abstract class Convert2ObjectConfigurationRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
     /**
      * @param null|int|int[] $pid
@@ -38,10 +38,13 @@ abstract class AbstractConvertConfigurationRepository extends \TYPO3\CMS\Extbase
         $this->setDefaultQuerySettings($defaultQuerySettings);
     }
 
-    public function findAllByPid($pid)
+    public function findActiveByPid($pid)
     {
         $this->setPidRestriction($pid);
 
-        return $this->findAll();
+        $query = $this->createQuery();
+        $query->equals('hidden', '0');
+
+        return $query->execute();
     }
 }
