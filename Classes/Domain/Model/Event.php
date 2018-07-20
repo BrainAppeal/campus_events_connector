@@ -898,4 +898,46 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     {
         $this->filterCategories = $filterCategories;
     }
+
+    /**
+     * Returns a copy from earliest date time
+     *
+     * @return \DateTime
+     */
+    public function getStartDate()
+    {
+        $startDate = null;
+        foreach ($this->getTimeRanges() as $timeRange) {
+            if (null === $startDate || $timeRange->getStartDate() < $startDate) {
+                $startDate = $timeRange->getStartDate();
+            }
+        }
+
+        if (null !== $startDate) {
+            $startDate = clone $startDate;
+        }
+
+        return $startDate;
+    }
+
+    /**
+     * Returns a copy from latest date time
+     *
+     * @return \DateTime
+     */
+    public function getEndDate()
+    {
+        $endDate = null;
+        foreach ($this->getTimeRanges() as $timeRange) {
+            if (null === $endDate || $timeRange->getStartDate() > $endDate) {
+                $endDate = $timeRange->getStartDate();
+            }
+        }
+
+        if (null !== $endDate) {
+            $endDate = clone $endDate;
+        }
+
+        return $endDate;
+    }
 }

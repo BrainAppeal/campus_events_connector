@@ -172,8 +172,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
     public function validateAdditionalFields(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
     {
         $validData = true;
-        $validData &= $this->validateBaseUriAdditionalField($submittedData, $parentObject);
-        $validData &= $this->validateApiKeyAdditionalField($submittedData, $parentObject);
+        $validData &= $this->validateBaseUriAndApiKeyAdditionalField($submittedData, $parentObject);
         $validData &= $this->validatePidAdditionalField($submittedData, $parentObject);
         $validData &= $this->validateStorageIdAdditionalField($submittedData, $parentObject);
         $validData &= $this->validateStorageFolderAdditionalField($submittedData, $parentObject);
@@ -185,33 +184,66 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
      * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validateApiKeyAdditionalField(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function validateBaseUriAndApiKeyAdditionalField(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
     {
-        $validData = false;
-        if (!empty($submittedData['brainEventConnector_eventImport_apiKey'])) {
-            $validData = true;
-        } else {
-            // Issue error message
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:scheduler/Resources/Private/Language/locallang.xlf:msg.invalidApiKey'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+        $validData = true;
+
+        $baseUri = $submittedData['brainEventConnector_eventImport_baseUri'];
+        if (empty($baseUri)) {
+            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $validData = false;
         }
+
+        $apiKey = $submittedData['brainEventConnector_eventImport_apiKey'];
+        if (empty($apiKey) || preg_match('/^[\w]{8}-[\w]{16}-[\w]{8}$/', $apiKey) !== 1) {
+            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.error.invalid_api_key'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $validData = false;
+        }
+
+        if ($validData) {
+            /** @var \BrainAppeal\BrainEventConnector\Importer\ApiConnector $apiConnector */
+            $apiConnector = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+                \BrainAppeal\BrainEventConnector\Importer\ApiConnector::class
+            );
+            $apiConnector->setBaseUri($baseUri);
+
+            try {
+                $validData = $apiConnector->checkApiVersion();
+            } catch (\GuzzleHttp\Exception\GuzzleException $guzzleException) {
+                $parentObject->addMessage(
+                    $guzzleException->getMessage(),
+                    \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
+                );
+                $validData = false;
+            }
+            if (!$validData) {
+                $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            }
+        }
+
         return $validData;
     }
 
     /**
-     * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
-     * @return bool True if validation was ok (or selected class is not relevant), false otherwise
+     * @param int $pid
+     * @return bool
      */
-    public function validateBaseUriAdditionalField(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    private function checkIfPidIsValid($pid)
     {
-        $validData = false;
-        if (!empty($submittedData['brainEventConnector_eventImport_baseUri'])) {
-            $validData = true;
-        } else {
-            // Issue error message
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:scheduler/Resources/Private/Language/locallang.xlf:msg.invalidBaseUri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+        /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
+        $queryBuilder = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class)->getQueryBuilderForTable('pages');
+        $queryBuilder->resetRestrictions();
+        $statement = $queryBuilder
+            ->select('uid')
+            ->from('pages')
+            ->where($queryBuilder->expr()->eq('uid', intval($pid)))
+            ->execute();
+        while ($checkPid = $statement->fetchColumn(0)) {
+            if ($checkPid == $pid) {
+                return true;
+            }
         }
-        return $validData;
+        return false;
     }
 
     /**
@@ -224,10 +256,11 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         $validData = false;
         $data = $submittedData['brainEventConnector_eventImport_pid'];
         if (empty($data) || is_numeric($data)) {
-            $validData = true;
-        } else {
+            $validData = $this->checkIfPidIsValid($data);
+        }
+        if (!$validData) {
             // Issue error message
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:scheduler/Resources/Private/Language/locallang.xlf:msg.invalidPid'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.error.invalid_pid'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
         }
         return $validData;
     }
@@ -245,7 +278,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
             $validData = true;
         } else {
             // Issue error message
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:scheduler/Resources/Private/Language/locallang.xlf:msg.invalidStorageId'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.error.invalid_storage_id'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
         }
         return $validData;
     }
@@ -263,7 +296,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
             $validData = true;
         } else {
             // Issue error message
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:scheduler/Resources/Private/Language/locallang.xlf:msg.invalidStorageFolder'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.error.invalid_storage_folder'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
         }
         return $validData;
     }

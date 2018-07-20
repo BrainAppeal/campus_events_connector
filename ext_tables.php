@@ -29,5 +29,8 @@ call_user_func(
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_braineventconnector_domain_model_filtercategory', 'EXT:brain_event_connector/Resources/Private/Language/locallang_csh_tx_braineventconnector_domain_model_filtercategory.xlf');
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_braineventconnector_domain_model_filtercategory');
 
+        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_braineventconnector_domain_model_convert2objectconfiguration', 'EXT:brain_event_connector/Resources/Private/Language/locallang_csh_tx_braineventconnector_domain_model_convert2objectconfiguration.xlf');
+        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_braineventconnector_domain_model_convert2objectconfiguration');
+
     }
 );

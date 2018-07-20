@@ -18,7 +18,7 @@ use BrainAppeal\BrainEventConnector\Domain\Model\Event;
 use BrainAppeal\BrainEventConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\BrainEventConnector\Domain\Repository\AbstractImportedRepository;
 use BrainAppeal\BrainEventConnector\Domain\Repository\EventRepository;
-use BrainAppeal\BrainEventConnector\Domain\Model\AbstractConvertConfiguration;
+use BrainAppeal\BrainEventConnector\Domain\Model\Convert2ObjectConfiguration;
 
 abstract class AbstractEventToObjectConverter implements EventConverterInterface
 {
@@ -38,7 +38,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     private $importSource;
 
     /**
-     * @var AbstractConvertConfiguration
+     * @var Convert2ObjectConfiguration
      */
     private $configuration;
 
@@ -75,13 +75,13 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
 
     /**
      * @param EventRepository $eventRepository
-     * @param AbstractConvertConfiguration $configuration
+     * @param Convert2ObjectConfiguration $configuration
      * @return Event[]
      */
     protected abstract function getMatchingEventsByConfiguration($eventRepository, $configuration);
 
     /**
-     * @param AbstractConvertConfiguration $configuration
+     * @param Convert2ObjectConfiguration $configuration
      */
     private function setUp($configuration)
     {
@@ -91,7 +91,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     }
 
     /**
-     * @param AbstractConvertConfiguration $configuration
+     * @param Convert2ObjectConfiguration $configuration
      */
     public function run($configuration)
     {
@@ -117,7 +117,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     /**
      * @param ImportedModelInterface $object
      * @param Event $event
-     * @param AbstractConvertConfiguration $configuration
+     * @param Convert2ObjectConfiguration $configuration
      * @api Use this method to individualize your object
      */
     protected abstract function individualizeObjectByEvent(&$object, $event, $configuration);
