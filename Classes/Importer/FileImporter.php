@@ -14,7 +14,6 @@
 namespace BrainAppeal\BrainEventConnector\Importer;
 
 use BrainAppeal\BrainEventConnector\Domain\Model\ImportedModelInterface;
-use BrainAppeal\BrainEventConnector\Importer\DBAL\DBAL;
 use BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterface;
 use GeorgRinger\News\Domain\Model\FileReference;
 use GuzzleHttp\Client;
@@ -83,8 +82,7 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
      */
     private function getDBAL()
     {
-        /** @var DBALInterface $dbal */
-        $dbal = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(DBAL::class);
+        $dbal = \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALFactory::getInstance();
 
         return $dbal;
     }

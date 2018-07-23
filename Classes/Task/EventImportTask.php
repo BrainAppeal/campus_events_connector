@@ -66,7 +66,7 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
     {
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_braineventconnector']['postImport'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_braineventconnector']['postImport'] as $classRef) {
-                $hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($classRef);
+                $hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($classRef);
                 if (method_exists($hookObj, 'postImport')) {
                     $hookObj->postImport($this->pid);
                 }

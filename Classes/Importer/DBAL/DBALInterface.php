@@ -27,4 +27,6 @@ interface DBALInterface
 
     public function updateSysFileReference($sysFileReference, $attribs = []);
 
+    public function checkIfPidIsValid($pid);
+
 }

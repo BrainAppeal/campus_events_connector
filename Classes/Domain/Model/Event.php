@@ -142,7 +142,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      * timeRanges
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\TimeRange>
-     * @cascade remove
+     * @TYPO3\CMS\Extbase\Annotation\ORM\Cascade("remove")
      */
     protected $timeRanges = null;
 
