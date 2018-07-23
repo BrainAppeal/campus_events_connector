@@ -20,7 +20,7 @@ use BrainAppeal\BrainEventConnector\Domain\Repository\AbstractImportedRepository
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
-class DBAL implements DBALInterface, \TYPO3\CMS\Core\SingletonInterface
+class DBAL implements \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterface, \TYPO3\CMS\Core\SingletonInterface
 {
 
     /**
@@ -177,6 +177,29 @@ class DBAL implements DBALInterface, \TYPO3\CMS\Core\SingletonInterface
         $dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\DataHandling\DataHandler::class);
         $dataHandler->start($data, array());
         $dataHandler->process_datamap();
+    }
+
+
+    /**
+     * @param int $pid
+     * @return bool
+     */
+    public function checkIfPidIsValid($pid)
+    {
+        /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
+        $queryBuilder = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class)->getQueryBuilderForTable('pages');
+        $queryBuilder->resetRestrictions();
+        $statement = $queryBuilder
+            ->select('uid')
+            ->from('pages')
+            ->where($queryBuilder->expr()->eq('uid', intval($pid)))
+            ->execute();
+        while ($checkPid = $statement->fetchColumn(0)) {
+            if ($checkPid == $pid) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

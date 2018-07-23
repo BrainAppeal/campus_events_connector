@@ -23,7 +23,6 @@ use BrainAppeal\BrainEventConnector\Domain\Model\Organizer;
 use BrainAppeal\BrainEventConnector\Domain\Model\Speaker;
 use BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup;
 use BrainAppeal\BrainEventConnector\Domain\Model\TimeRange;
-use BrainAppeal\BrainEventConnector\Importer\DBAL\DBAL as DBALService;
 use BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 
@@ -55,7 +54,7 @@ abstract class ImportObjectGenerator implements SingletonInterface
     private function getDBAL()
     {
         if (null === $this->dbal) {
-            $this->dbal = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(DBALService::class);
+            $this->dbal = \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALFactory::getInstance();
         }
 
         return $this->dbal;

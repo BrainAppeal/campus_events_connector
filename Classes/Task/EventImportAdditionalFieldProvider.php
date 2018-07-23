@@ -225,28 +225,6 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
     }
 
     /**
-     * @param int $pid
-     * @return bool
-     */
-    private function checkIfPidIsValid($pid)
-    {
-        /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
-        $queryBuilder = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class)->getQueryBuilderForTable('pages');
-        $queryBuilder->resetRestrictions();
-        $statement = $queryBuilder
-            ->select('uid')
-            ->from('pages')
-            ->where($queryBuilder->expr()->eq('uid', intval($pid)))
-            ->execute();
-        while ($checkPid = $statement->fetchColumn(0)) {
-            if ($checkPid == $pid) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * @param array $submittedData Reference to the array containing the data submitted by the user
      * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
@@ -256,7 +234,8 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         $validData = false;
         $data = $submittedData['brainEventConnector_eventImport_pid'];
         if (empty($data) || is_numeric($data)) {
-            $validData = $this->checkIfPidIsValid($data);
+            $dbal = \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALFactory::getInstance();
+            $validData = $dbal->checkIfPidIsValid($data);
         }
         if (!$validData) {
             // Issue error message

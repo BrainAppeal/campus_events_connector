@@ -16,7 +16,6 @@ namespace BrainAppeal\BrainEventConnector\Importer;
 use BrainAppeal\BrainEventConnector\Domain\Model\Event;
 use BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory;
 use BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterface;
-use BrainAppeal\BrainEventConnector\Importer\DBAL\DBAL as DBALService;
 use BrainAppeal\BrainEventConnector\Importer\ObjectGenerator\ImportObjectGenerator;
 use BrainAppeal\BrainEventConnector\Importer\ObjectGenerator\SpecifiedImportObjectGenerator;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
@@ -58,8 +57,7 @@ class Importer
      */
     private function getDBAL()
     {
-        /** @var DBALInterface $dbal */
-        $dbal = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(DBALService::class);
+        $dbal = \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALFactory::getInstance();
 
         return $dbal;
     }
