@@ -141,6 +141,9 @@
 			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration">
 				<source>Convert Configuration</source>
 			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.select_type">
+				<source>Select convert target</source>
+			</trans-unit>
 			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.target_pid">
 				<source>Target PID</source>
 			</trans-unit>

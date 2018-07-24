@@ -28,7 +28,7 @@ return [
         'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, type, target_pid, template_path, target_groups, filter_categories',
     ],
     'types' => [
-
+        0 => ['showitem' => 'hidden, type, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, starttime, endtime'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -119,6 +119,7 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
+                    0 => ['LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_convert2objectconfiguration.select_type', 0, 'ext-convert2objectconfiguration-type-default']
                 ],
                 'showIconTable' => false,
                 'size' => 1,

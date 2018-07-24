@@ -13,7 +13,7 @@
 
 namespace BrainAppeal\BrainEventConnector\Importer;
 
-use GuzzleHttp\Client;
+use BrainAppeal\BrainEventConnector\Http\Client;
 
 class ApiConnector
 {
@@ -54,7 +54,7 @@ class ApiConnector
      * @param string $data
      * @param array $additionalParams
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \BrainAppeal\BrainEventConnector\Http\HttpException
      */
     public function getApiResponse($data, $additionalParams = [])
     {
@@ -124,7 +124,7 @@ class ApiConnector
 
     /**
      * @return bool
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \BrainAppeal\BrainEventConnector\Http\HttpException
      */
     public function checkApiVersion()
     {
