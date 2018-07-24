@@ -14,11 +14,10 @@
 namespace BrainAppeal\BrainEventConnector\Importer;
 
 use BrainAppeal\BrainEventConnector\Domain\Model\ImportedModelInterface;
+use BrainAppeal\BrainEventConnector\Http\Promise;
 use BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterface;
 use GeorgRinger\News\Domain\Model\FileReference;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Promise\PromiseInterface;
+use BrainAppeal\BrainEventConnector\Http\Client;
 
 class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
 {
@@ -154,7 +153,7 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
      * @param string $property
      * @param array $data
      * @param string $tempFilenameAndPath
-     * @param PromiseInterface $promise
+     * @param Promise $promise
      */
     private function addToQueue($object, $property, $data, $tempFilenameAndPath, $promise)
     {
@@ -188,8 +187,8 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
             $tempFilenameAndPath = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('tx_braineventconnector_');
 
             try {
-                $promise = $this->client->requestAsync('get', $data['url'], ['sink' => $tempFilenameAndPath]);
-            } /** @noinspection PhpRedundantCatchClauseInspection */ catch (GuzzleException $e) {
+                $promise = $this->client->getAsync($data['url'], ['sink' => $tempFilenameAndPath]);
+            } catch (\BrainAppeal\BrainEventConnector\Http\HttpException $e) {
                 unset($e);
                 return;
             }
@@ -217,17 +216,17 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
     private function getDownloadFromQueueEntry($queueEntry)
     {
         /**
-         * @var PromiseInterface $downloadPromise
+         * @var Promise $downloadPromise
          */
         $downloadPromise = $queueEntry['download']['promise'];
         $downloadFile = $queueEntry['download']['file'];
 
         try {
             $downloadPromise->wait();
-        } /** @noinspection PhpRedundantCatchClauseInspection */ catch (GuzzleException $e) {
+        } catch (\BrainAppeal\BrainEventConnector\Http\HttpException $e) {
             unset($e);
         }
-        if (PromiseInterface::FULFILLED == $downloadPromise->getState()) {
+        if ('fulfilled' == $downloadPromise->getState()) {
             return $downloadFile;
         }
 

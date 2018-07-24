@@ -187,6 +187,10 @@
 				<source>Convert Configuration</source>
 				<target>Kontervierungs Konfiguration</target>
 			</trans-unit>
+			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.select_type">
+				<source>Select convert target</source>
+				<target>Bitte wählen Sie den Konvertierungstyp</target>
+			</trans-unit>
 			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.target_pid">
 				<source>Target PID</source>
 				<target>Ziel PID</target>

@@ -209,9 +209,9 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
 
             try {
                 $validData = $apiConnector->checkApiVersion();
-            } catch (\GuzzleHttp\Exception\GuzzleException $guzzleException) {
+            } catch (\BrainAppeal\BrainEventConnector\Http\HttpException $httpException) {
                 $parentObject->addMessage(
-                    $guzzleException->getMessage(),
+                    $httpException->getMessage(),
                     \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
                 );
                 $validData = false;
