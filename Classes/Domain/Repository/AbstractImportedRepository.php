@@ -44,10 +44,36 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
         $this->setDefaultQuerySettings($defaultQuerySettings);
     }
 
+    /**
+     * Find all events on given pid
+     *
+     * @param null|int|int[] $pid
+     *
+     * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     */
     public function findAllByPid($pid)
     {
+        return $this->findListByPid($pid, [], 0);
+    }
+
+    /**
+     * Find all events on given pid
+     * @param null|int|int[] $pid
+     * @param array $constraints Optional query constraints
+     * @param int $limit
+     * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     */
+    public function findListByPid($pid, $constraints = [], $limit = 0)
+    {
         $this->setPidRestriction($pid);
-        return $this->findAll();
+        $query = $this->createQuery();
+        if (!empty($constraints)) {
+            $query->matching($query->logicalAnd($constraints));
+        }
+        if ($limit > 0) {
+            $query->setLimit($limit);
+        }
+        return $query->execute();
     }
 
     /**
