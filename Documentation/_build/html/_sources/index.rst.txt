@@ -13,6 +13,7 @@ brain_event_connector
 
 
    Information
+   Installation
    FAQ
    More
 
