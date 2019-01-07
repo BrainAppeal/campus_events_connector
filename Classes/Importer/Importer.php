@@ -109,8 +109,9 @@ class Importer
         }
 
         $fileImporter->runQueue();
+        $excludeFileReferenceUids = $fileImporter->getExcludeFileReferenceUids();
 
-        $dbal->removeNotUpdatedObjects(FileReference::class, $baseUri, $pid, $importStartTimestamp);
+        $dbal->removeNotUpdatedObjects(FileReference::class, $baseUri, $pid, $importStartTimestamp, $excludeFileReferenceUids);
 
         return true;
     }

@@ -42,7 +42,7 @@ class Compatibility7DBAL extends \BrainAppeal\BrainEventConnector\Importer\DBAL\
 
 
 
-    public function removeNotUpdatedObjects($modelClass, $importSource, $pid, $importTimestamp)
+    public function removeNotUpdatedObjects($modelClass, $importSource, $pid, $importTimestamp, $excludeUids = [])
     {
         if ($modelClass == \TYPO3\CMS\Extbase\Domain\Model\FileReference::class) {
             $tableName = 'sys_file_reference';
@@ -58,10 +58,15 @@ class Compatibility7DBAL extends \BrainAppeal\BrainEventConnector\Importer\DBAL\
                 $importTimestamp
             );
 
+            $excludeUidsList = implode(',', array_filter($excludeUids,  'is_numeric'));
+            if (strlen($excludeUidsList) > 0) {
+                $where .= " AND uid NOT IN ($excludeUidsList)";
+            }
+
             $connection = $this->getDatabaseConnection();
             $connection->exec_DELETEquery($tableName, $where);
         } else {
-            parent::removeNotUpdatedObjects($modelClass, $importSource, $pid, $importTimestamp);
+            parent::removeNotUpdatedObjects($modelClass, $importSource, $pid, $importTimestamp, $excludeUids);
         }
     }
 

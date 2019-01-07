@@ -84,7 +84,7 @@ class DBAL implements \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterfa
         }
     }
 
-    private function deleteRawFromTable($tableName, $importSource, $pid, $importTimestamp)
+    private function deleteRawFromTable($tableName, $importSource, $pid, $importTimestamp, $excludeUids)
     {
         $pid = intval($pid);
         $importSource = preg_replace("/['\"]/", "", $importSource);
@@ -93,6 +93,11 @@ class DBAL implements \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterfa
         /** @noinspection SqlResolve */
         $deleteSql = "DELETE FROM $tableName WHERE pid = ? AND import_source = ? AND imported_at < ?";
 
+        $excludeUidsList = implode(',', array_filter($excludeUids,  'is_numeric'));
+        if (strlen($excludeUidsList) > 0) {
+            $deleteSql .= " AND uid NOT IN ($excludeUidsList)";
+        }
+
         /** @var ConnectionPool $connectionPool */
         $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ConnectionPool::class);
         $connection = $connectionPool->getConnectionForTable($tableName);
@@ -100,10 +105,10 @@ class DBAL implements \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterfa
         $statement->execute([$pid, $importSource, $importTimestamp]);
     }
 
-    public function removeNotUpdatedObjects($modelClass, $importSource, $pid, $importTimestamp)
+    public function removeNotUpdatedObjects($modelClass, $importSource, $pid, $importTimestamp, $excludeUids = [])
     {
         if ($modelClass == FileReference::class) {
-            $this->deleteRawFromTable('sys_file_reference', $importSource, $pid, $importTimestamp);
+            $this->deleteRawFromTable('sys_file_reference', $importSource, $pid, $importTimestamp, $excludeUids);
         } else {
             $repository = $this->getRepository($modelClass);
 
