@@ -21,7 +21,7 @@ interface DBALInterface
 
     public function updateObjects($objects);
 
-    public function removeNotUpdatedObjects($modelClass, $importSource, $pid, $importTimestamp);
+    public function removeNotUpdatedObjects($modelClass, $importSource, $pid, $importTimestamp, $excludeUids = []);
 
     public function addSysFileReference($sysFile, $target, $property, $attribs = []);
 

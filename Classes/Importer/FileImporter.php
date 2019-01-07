@@ -16,8 +16,9 @@ namespace BrainAppeal\BrainEventConnector\Importer;
 use BrainAppeal\BrainEventConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\BrainEventConnector\Http\Promise;
 use BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterface;
-use GeorgRinger\News\Domain\Model\FileReference;
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use BrainAppeal\BrainEventConnector\Http\Client;
+use GuzzleHttp\Promise\PromiseInterface;
 
 class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
 {
@@ -27,9 +28,9 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
     private $newReferenceQueue;
 
     /**
-     * @var FileReference[]
+     * @var int[]
      */
-    private $updateReferenceQueue;
+    private $updateReferenceIds;
 
     /**
      * @var Client
@@ -59,7 +60,7 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
     public function __construct()
     {
         $this->newReferenceQueue = [];
-        $this->updateReferenceQueue = [];
+        $this->updateReferenceIds = [];
         $this->client = new Client();
 
         $this->storageId = 0;
@@ -153,7 +154,7 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
      * @param string $property
      * @param array $data
      * @param string $tempFilenameAndPath
-     * @param Promise $promise
+     * @param Promise|PromiseInterface $promise
      */
     private function addToQueue($object, $property, $data, $tempFilenameAndPath, $promise)
     {
@@ -182,7 +183,8 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
         $existingReference = $this->getFileReferenceIfExists($object, $property, $data);
 
         if (null !== $existingReference) {
-            $this->updateReferenceQueue[] = $existingReference;
+            $fileReferenceUid = $existingReference->getOriginalResource()->getUid();
+            $this->updateReferenceIds[$fileReferenceUid] = $fileReferenceUid;
         } else {
             $tempFilenameAndPath = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('tx_braineventconnector_');
 
@@ -194,18 +196,6 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
             }
 
             $this->addToQueue($object, $property, $data, $tempFilenameAndPath, $promise);
-        }
-    }
-
-    protected function updateQueuedReferences()
-    {
-        $dbal = $this->getDBAL();
-        $importedAt = time();
-
-        foreach ($this->updateReferenceQueue as $updateReference) {
-            $dbal->updateSysFileReference($updateReference, [
-                'imported_at'=> $importedAt,
-            ]);
         }
     }
 
@@ -265,8 +255,6 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
 
     public function runQueue()
     {
-        $this->updateQueuedReferences();
-
         foreach ($this->newReferenceQueue as $queueEntry) {
 
             $downloadFile = $this->getDownloadFromQueueEntry($queueEntry);
@@ -282,6 +270,11 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
                 $this->createAndAttachFile($downloadFile, $filename, $importId, $object, $queueEntry['property']);
             }
         }
+    }
+
+    public function getExcludeFileReferenceUids()
+    {
+        return array_values($this->updateReferenceIds);
     }
 
 }
