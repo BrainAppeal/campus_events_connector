@@ -929,8 +929,8 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     {
         $endDate = null;
         foreach ($this->getTimeRanges() as $timeRange) {
-            if (null === $endDate || $timeRange->getStartDate() > $endDate) {
-                $endDate = $timeRange->getStartDate();
+            if (null === $endDate || $timeRange->getEndDate() > $endDate) {
+                $endDate = $timeRange->getEndDate();
             }
         }
 
