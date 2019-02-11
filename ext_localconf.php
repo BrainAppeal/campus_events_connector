@@ -13,8 +13,8 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][BrainAppeal\Camp
 if (TYPO3_MODE === 'BE') {
     $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
     $iconRegistry->registerIcon(
-        'ext-convert2objectconfiguration-type-default',
+        'ext-convertconfiguration-type-default',
         \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
-        ['source' => 'EXT:'.$_EXTKEY.'/Resources/Public/Icons/tx_campuseventsconnector_domain_model_convert2objectconfiguration.svg']
+        ['source' => 'EXT:'.$_EXTKEY.'/Resources/Public/Icons/tx_campuseventsconnector_domain_model_convertconfiguration.svg']
     );
 }

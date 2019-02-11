@@ -17,7 +17,7 @@ namespace BrainAppeal\CampusEventsConnector\Converter;
 interface EventConverterInterface
 {
     /**
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Convert2ObjectConfiguration $configuration
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration $configuration
      */
     public function run($configuration);
 }

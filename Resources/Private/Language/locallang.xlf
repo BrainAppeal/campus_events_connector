@@ -138,19 +138,19 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory.parent">
 				<source>Parent Filter Category</source>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_convert2objectconfiguration">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration">
 				<source>Convert Configuration</source>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_convert2objectconfiguration.target_pid">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_pid">
 				<source>Target PID</source>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_convert2objectconfiguration.template_path">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.template_path">
 				<source>Template Path</source>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_convert2objectconfiguration.filter_categories">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.filter_categories">
 				<source>Filter Categories</source>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_convert2objectconfiguration.target_groups">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_groups">
 				<source>Target Groups</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.name">

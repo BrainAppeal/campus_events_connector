@@ -16,7 +16,7 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
 /**
  * The repository for ConverterConfigurations
  */
-abstract class Convert2ObjectConfigurationRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+abstract class ConvertConfigurationRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
     /**
      * @param null|int|int[] $pid

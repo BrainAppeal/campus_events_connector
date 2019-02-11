@@ -395,9 +395,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_timerange (
 );
 
 #
-# Table structure for table 'tx_campuseventsconnector_domain_model_convert2objectconfiguration'
+# Table structure for table 'tx_campuseventsconnector_domain_model_convertconfiguration'
 #
-CREATE TABLE tx_campuseventsconnector_domain_model_convert2objectconfiguration (
+CREATE TABLE tx_campuseventsconnector_domain_model_convertconfiguration (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
@@ -440,9 +440,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_convert2objectconfiguration (
 );
 
 #
-# Table structure for table 'tx_campuseventsconnector_convert2objconf_filtercategory_mm'
+# Table structure for table 'tx_campuseventsconnector_convertconf_filtercategory_mm'
 #
-CREATE TABLE tx_campuseventsconnector_convert2objconf_filtercategory_mm (
+CREATE TABLE tx_campuseventsconnector_convertconf_filtercategory_mm (
 	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
 	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
 	sorting int(11) unsigned DEFAULT '0' NOT NULL,
@@ -454,9 +454,9 @@ CREATE TABLE tx_campuseventsconnector_convert2objconf_filtercategory_mm (
 );
 
 #
-# Table structure for table 'tx_campuseventsconnector_convert2objconf_targetgroup_mm'
+# Table structure for table 'tx_campuseventsconnector_convertconf_targetgroup_mm'
 #
-CREATE TABLE tx_campuseventsconnector_convert2objconf_targetgroup_mm (
+CREATE TABLE tx_campuseventsconnector_convertconf_targetgroup_mm (
 	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
 	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
 	sorting int(11) unsigned DEFAULT '0' NOT NULL,

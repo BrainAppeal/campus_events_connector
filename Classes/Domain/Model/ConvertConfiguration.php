@@ -13,9 +13,9 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Model;
  ***/
 
 /**
- * Convert2ObjectConfiguration
+ * ConvertConfiguration
  */
-abstract class Convert2ObjectConfiguration extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
     /**
      * targetPid
