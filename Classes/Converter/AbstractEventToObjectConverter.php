@@ -11,14 +11,14 @@
  * @since     2018-07-10
  */
 
-namespace BrainAppeal\BrainEventConnector\Converter;
+namespace BrainAppeal\CampusEventsConnector\Converter;
 
 
-use BrainAppeal\BrainEventConnector\Domain\Model\Event;
-use BrainAppeal\BrainEventConnector\Domain\Model\ImportedModelInterface;
-use BrainAppeal\BrainEventConnector\Domain\Repository\AbstractImportedRepository;
-use BrainAppeal\BrainEventConnector\Domain\Repository\EventRepository;
-use BrainAppeal\BrainEventConnector\Domain\Model\Convert2ObjectConfiguration;
+use BrainAppeal\CampusEventsConnector\Domain\Model\Event;
+use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
+use BrainAppeal\CampusEventsConnector\Domain\Repository\EventRepository;
+use BrainAppeal\CampusEventsConnector\Domain\Model\Convert2ObjectConfiguration;
 
 abstract class AbstractEventToObjectConverter implements EventConverterInterface
 {
@@ -123,7 +123,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     protected abstract function individualizeObjectByEvent(&$object, $event, $configuration);
 
     /**
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Event $event
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Event $event
      * @return void
      */
     private function convertEvent($event)

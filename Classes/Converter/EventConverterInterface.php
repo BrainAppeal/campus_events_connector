@@ -11,13 +11,13 @@
  * @since     2018-07-10
  */
 
-namespace BrainAppeal\BrainEventConnector\Converter;
+namespace BrainAppeal\CampusEventsConnector\Converter;
 
 
 interface EventConverterInterface
 {
     /**
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Convert2ObjectConfiguration $configuration
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Convert2ObjectConfiguration $configuration
      */
     public function run($configuration);
 }

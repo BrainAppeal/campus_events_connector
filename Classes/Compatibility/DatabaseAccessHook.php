@@ -11,7 +11,7 @@
  * @since     2018-08-30
  */
 
-namespace BrainAppeal\BrainEventConnector\Compatibility;
+namespace BrainAppeal\CampusEventsConnector\Compatibility;
 
 
 class DatabaseAccessHook
@@ -30,7 +30,7 @@ class DatabaseAccessHook
     public function checkRecordUpdateAccess($table, $id, $fileMetadataRecord, $otherHookGrantedAccess, $dataHandler)
     {
         $accessAllowed = $otherHookGrantedAccess;
-        if ($table === 'sys_file_reference' || strpos($table, 'tx_brainevent') === 0) {
+        if ($table === 'sys_file_reference' || strpos($table, 'tx_campusevents') === 0) {
             $accessAllowed = 1;
         }
 

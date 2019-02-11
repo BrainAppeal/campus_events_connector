@@ -11,7 +11,7 @@
  * @since     2018-07-16
  */
 
-namespace BrainAppeal\BrainEventConnector\Utility;
+namespace BrainAppeal\CampusEventsConnector\Utility;
 
 
 
@@ -30,7 +30,7 @@ class TemplateEngine
 
 
     /**
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Convert2ObjectConfiguration $configuration
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Convert2ObjectConfiguration $configuration
      * @param string $templateName
      * @return string[]
      */
@@ -56,7 +56,7 @@ class TemplateEngine
     }
 
     /**
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Convert2ObjectConfiguration $configuration
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Convert2ObjectConfiguration $configuration
      * @param string $templateName
      * @return string[]
      */
@@ -71,7 +71,7 @@ class TemplateEngine
     }
 
     /**
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Convert2ObjectConfiguration $configuration
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Convert2ObjectConfiguration $configuration
      * @param string $templateName
      * @return \TYPO3\CMS\Fluid\View\StandaloneView
      */
@@ -92,7 +92,7 @@ class TemplateEngine
     }
 
     /**
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Convert2ObjectConfiguration $configuration
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Convert2ObjectConfiguration $configuration
      * @param string $templateName
      * @param array $values
      * @param bool $stripLineBreaks

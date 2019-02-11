@@ -11,7 +11,7 @@
  * @since     2018-06-21
  */
 
-namespace BrainAppeal\BrainEventConnector\Domain\Model;
+namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
 
 trait ImportedModelTrait

@@ -11,7 +11,7 @@
  * @since     2018-07-03
  */
 
-namespace BrainAppeal\BrainEventConnector\Domain\Model;
+namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
 
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;

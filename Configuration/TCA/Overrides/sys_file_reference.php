@@ -5,7 +5,7 @@ $tempColumns = array(
 
     'import_source' => [
         'exclude' => true,
-        'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_sysfile.name',
+        'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_sysfile.name',
         'config' => [
             'type' => 'input',
             'size' => 30,
@@ -14,7 +14,7 @@ $tempColumns = array(
     ],
     'import_id' => [
         'exclude' => true,
-        'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_sysfile.name',
+        'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_sysfile.name',
         'config' => [
             'type' => 'input',
             'size' => 30,
@@ -23,7 +23,7 @@ $tempColumns = array(
     ],
     'imported_at' => [
         'exclude' => true,
-        'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_sysfile.name',
+        'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_sysfile.name',
         'config' => [
             'type' => 'input',
             'size' => 30,

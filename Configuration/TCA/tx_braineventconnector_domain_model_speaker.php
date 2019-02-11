@@ -1,7 +1,7 @@
 <?php
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_speaker',
+        'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_speaker',
         'label' => 'title',
         'label_alt' => 'first_name,last_name',
         'label_alt_force' => 1,
@@ -19,7 +19,7 @@ return [
 //            'endtime' => 'endtime',
         ],
         'searchFields' => 'title,first_name,last_name',
-        'iconfile' => 'EXT:brain_event_connector/Resources/Public/Icons/tx_braineventconnector_domain_model_speaker.gif'
+        'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_speaker.gif'
     ],
     'interface' => [
         'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, title, first_name, last_name',
@@ -55,8 +55,8 @@ return [
                 'items' => [
                     ['', 0],
                 ],
-                'foreign_table' => 'tx_braineventconnector_domain_model_speaker',
-                'foreign_table_where' => 'AND tx_braineventconnector_domain_model_speaker.pid=###CURRENT_PID### AND tx_braineventconnector_domain_model_speaker.sys_language_uid IN (-1,0)',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_speaker',
+                'foreign_table_where' => 'AND tx_campuseventsconnector_domain_model_speaker.pid=###CURRENT_PID### AND tx_campuseventsconnector_domain_model_speaker.sys_language_uid IN (-1,0)',
             ],
         ],
         'l10n_diffsource' => [
@@ -112,7 +112,7 @@ return [
 
         'title' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_speaker.title',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_speaker.title',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -121,7 +121,7 @@ return [
         ],
         'first_name' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_speaker.first_name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_speaker.first_name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -130,7 +130,7 @@ return [
         ],
         'last_name' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_speaker.last_name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_speaker.last_name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -139,7 +139,7 @@ return [
         ],
         'import_source' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_filtercategory.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -148,7 +148,7 @@ return [
         ],
         'import_id' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_filtercategory.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -157,7 +157,7 @@ return [
         ],
         'imported_at' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_filtercategory.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,

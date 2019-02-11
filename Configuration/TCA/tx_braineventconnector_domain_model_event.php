@@ -1,7 +1,7 @@
 <?php
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event',
+        'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event',
         'label' => 'name',
         'label_alt' => 'subtitle',
         'tstamp' => 'tstamp',
@@ -18,13 +18,13 @@ return [
 //            'endtime' => 'endtime',
         ],
         'searchFields' => 'status,canceled,url,name,subtitle,description,short_description,show_in_news,news_text,learning_objective,images,attachments,registration_possible,min_participants,max_participants,participants,speakers,time_ranges,location,categories,organizer,target_groups,filter_categories',
-        'iconfile' => 'EXT:brain_event_connector/Resources/Public/Icons/tx_braineventconnector_domain_model_event.gif'
+        'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_event.gif'
     ],
     'interface' => [
         'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, images, attachments, registration_possible, min_participants, max_participants, participants, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories',
     ],
     'types' => [
-        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, registration_possible, min_participants, max_participants, participants, --div--;LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_csh_tx_braineventconnector_domain_model_event.xlf:tabs.relations, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories, --div--;LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_csh_tx_braineventconnector_domain_model_event.xlf:tabs.media, images, attachments, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
+        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, registration_possible, min_participants, max_participants, participants, --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_csh_tx_campuseventsconnector_domain_model_event.xlf:tabs.relations, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories, --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_csh_tx_campuseventsconnector_domain_model_event.xlf:tabs.media, images, attachments, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -54,8 +54,8 @@ return [
                 'items' => [
                     ['', 0],
                 ],
-                'foreign_table' => 'tx_braineventconnector_domain_model_event',
-                'foreign_table_where' => 'AND tx_braineventconnector_domain_model_event.pid=###CURRENT_PID### AND tx_braineventconnector_domain_model_event.sys_language_uid IN (-1,0)',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_event',
+                'foreign_table_where' => 'AND tx_campuseventsconnector_domain_model_event.pid=###CURRENT_PID### AND tx_campuseventsconnector_domain_model_event.sys_language_uid IN (-1,0)',
             ],
         ],
         'l10n_diffsource' => [
@@ -111,7 +111,7 @@ return [
 
         'status' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.status',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.status',
             'config' => [
                 'type' => 'input',
                 'size' => 4,
@@ -120,7 +120,7 @@ return [
         ],
         'canceled' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.canceled',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.canceled',
             'config' => [
                 'type' => 'check',
                 'items' => [
@@ -133,7 +133,7 @@ return [
         ],
         'url' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.url',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.url',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -142,7 +142,7 @@ return [
         ],
         'name' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -151,7 +151,7 @@ return [
         ],
         'subtitle' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.subtitle',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.subtitle',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -160,7 +160,7 @@ return [
         ],
         'description' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.description',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.description',
             'config' => [
                 'type' => 'text',
                 'cols' => 40,
@@ -172,7 +172,7 @@ return [
         ],
         'short_description' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.short_description',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.short_description',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -181,7 +181,7 @@ return [
         ],
         'show_in_news' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.show_in_news',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.show_in_news',
             'config' => [
                 'type' => 'check',
                 'items' => [
@@ -194,7 +194,7 @@ return [
         ],
         'news_text' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.news_text',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.news_text',
             'config' => [
                 'type' => 'text',
                 'cols' => 40,
@@ -204,7 +204,7 @@ return [
         ],
         'learning_objective' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.learning_objective',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.learning_objective',
             'config' => [
                 'type' => 'text',
                 'cols' => 40,
@@ -216,7 +216,7 @@ return [
         ],
         'images' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.images',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.images',
             'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig(
                 'images',
                 [
@@ -262,7 +262,7 @@ return [
         ],
         'attachments' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.attachments',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.attachments',
             'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig(
                 'attachments',
                 [
@@ -307,7 +307,7 @@ return [
         ],
         'registration_possible' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.registration_possible',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.registration_possible',
             'config' => [
                 'type' => 'check',
                 'items' => [
@@ -320,7 +320,7 @@ return [
         ],
         'min_participants' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.min_participants',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.min_participants',
             'config' => [
                 'type' => 'input',
                 'size' => 4,
@@ -329,7 +329,7 @@ return [
         ],
         'max_participants' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.max_participants',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.max_participants',
             'config' => [
                 'type' => 'input',
                 'size' => 4,
@@ -338,7 +338,7 @@ return [
         ],
         'participants' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.participants',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.participants',
             'config' => [
                 'type' => 'input',
                 'size' => 4,
@@ -347,12 +347,12 @@ return [
         ],
         'speakers' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.speakers',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.speakers',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
-                'foreign_table' => 'tx_braineventconnector_domain_model_speaker',
-                'MM' => 'tx_braineventconnector_event_speaker_mm',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_speaker',
+                'MM' => 'tx_campuseventsconnector_event_speaker_mm',
                 'size' => 10,
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
@@ -378,7 +378,7 @@ return [
                         'title' => 'Create new', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.add
                         'icon' => 'actions-add',
                         'params' => [
-                            'table' => 'tx_braineventconnector_domain_model_speaker',
+                            'table' => 'tx_campuseventsconnector_domain_model_speaker',
                             'pid' => '###CURRENT_PID###',
                             'setValue' => 'prepend'
                         ],
@@ -389,10 +389,10 @@ return [
         ],
         'time_ranges' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.time_ranges',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.time_ranges',
             'config' => [
                 'type' => 'inline',
-                'foreign_table' => 'tx_braineventconnector_domain_model_timerange',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_timerange',
                 'foreign_field' => 'event',
                 'maxitems' => 9999,
                 'appearance' => [
@@ -407,10 +407,10 @@ return [
         ],
         'location' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.location',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.location',
             'config' => [
                 'type' => 'inline',
-                'foreign_table' => 'tx_braineventconnector_domain_model_location',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_location',
                 'minitems' => 0,
                 'maxitems' => 1,
                 'appearance' => [
@@ -424,12 +424,12 @@ return [
         ],
         'categories' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.categories',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.categories',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
-                'foreign_table' => 'tx_braineventconnector_domain_model_category',
-                'MM' => 'tx_braineventconnector_event_category_mm',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_category',
+                'MM' => 'tx_campuseventsconnector_event_category_mm',
                 'size' => 10,
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
@@ -455,7 +455,7 @@ return [
                         'title' => 'Create new', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.add
                         'icon' => 'actions-add',
                         'params' => [
-                            'table' => 'tx_braineventconnector_domain_model_category',
+                            'table' => 'tx_campuseventsconnector_domain_model_category',
                             'pid' => '###CURRENT_PID###',
                             'setValue' => 'prepend'
                         ],
@@ -466,12 +466,12 @@ return [
         ],
         'organizer' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.organizer',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.organizer',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
-                'foreign_table' => 'tx_braineventconnector_domain_model_organizer',
-                'MM' => 'tx_braineventconnector_event_organizer_mm',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_organizer',
+                'MM' => 'tx_campuseventsconnector_event_organizer_mm',
                 'size' => 10,
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
@@ -497,7 +497,7 @@ return [
                         'title' => 'Create new', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.add
                         'icon' => 'actions-add',
                         'params' => [
-                            'table' => 'tx_braineventconnector_domain_model_organizer',
+                            'table' => 'tx_campuseventsconnector_domain_model_organizer',
                             'pid' => '###CURRENT_PID###',
                             'setValue' => 'prepend'
                         ],
@@ -508,12 +508,12 @@ return [
         ],
         'target_groups' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.target_groups',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.target_groups',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
-                'foreign_table' => 'tx_braineventconnector_domain_model_targetgroup',
-                'MM' => 'tx_braineventconnector_event_targetgroup_mm',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_targetgroup',
+                'MM' => 'tx_campuseventsconnector_event_targetgroup_mm',
                 'size' => 10,
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
@@ -539,7 +539,7 @@ return [
                         'title' => 'Create new', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.add
                         'icon' => 'actions-add',
                         'params' => [
-                            'table' => 'tx_braineventconnector_domain_model_targetgroup',
+                            'table' => 'tx_campuseventsconnector_domain_model_targetgroup',
                             'pid' => '###CURRENT_PID###',
                             'setValue' => 'prepend'
                         ],
@@ -550,12 +550,12 @@ return [
         ],
         'filter_categories' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_event.filter_categories',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.filter_categories',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
-                'foreign_table' => 'tx_braineventconnector_domain_model_filtercategory',
-                'MM' => 'tx_braineventconnector_event_filtercategory_mm',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_filtercategory',
+                'MM' => 'tx_campuseventsconnector_event_filtercategory_mm',
                 'size' => 10,
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
@@ -581,7 +581,7 @@ return [
                         'title' => 'Create new', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.add
                         'icon' => 'actions-add',
                         'params' => [
-                            'table' => 'tx_braineventconnector_domain_model_filtercategory',
+                            'table' => 'tx_campuseventsconnector_domain_model_filtercategory',
                             'pid' => '###CURRENT_PID###',
                             'setValue' => 'prepend'
                         ],
@@ -591,7 +591,7 @@ return [
         ],
         'import_source' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_filtercategory.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -600,7 +600,7 @@ return [
         ],
         'import_id' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_filtercategory.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -609,7 +609,7 @@ return [
         ],
         'imported_at' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_filtercategory.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,

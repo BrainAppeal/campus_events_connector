@@ -1,5 +1,5 @@
 <?php
-namespace BrainAppeal\BrainEventConnector\Task;
+namespace BrainAppeal\CampusEventsConnector\Task;
 
 /***
  *
@@ -40,12 +40,12 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
     public $storageFolder;
 
     /**
-     * @return \BrainAppeal\BrainEventConnector\Importer\Importer
+     * @return \BrainAppeal\CampusEventsConnector\Importer\Importer
      */
     private function getImporter()
     {
-        /** @var \BrainAppeal\BrainEventConnector\Importer\Importer $importer */
-        $importer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\BrainAppeal\BrainEventConnector\Importer\Importer::class);
+        /** @var \BrainAppeal\CampusEventsConnector\Importer\Importer $importer */
+        $importer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\BrainAppeal\CampusEventsConnector\Importer\Importer::class);
 
         return $importer;
     }
@@ -64,8 +64,8 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
 
     private function callHooks()
     {
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_braineventconnector']['postImport'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_braineventconnector']['postImport'] as $classRef) {
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'] as $classRef) {
                 $hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($classRef);
                 if (method_exists($hookObj, 'postImport')) {
                     $hookObj->postImport($this->pid);

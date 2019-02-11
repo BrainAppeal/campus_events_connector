@@ -1,5 +1,5 @@
 <?php
-namespace BrainAppeal\BrainEventConnector\Tests\Unit\Domain\Model;
+namespace BrainAppeal\CampusEventsConnector\Tests\Unit\Domain\Model;
 
 /**
  * Test case.
@@ -7,14 +7,14 @@ namespace BrainAppeal\BrainEventConnector\Tests\Unit\Domain\Model;
 class FilterCategoryTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {
     /**
-     * @var \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory
+     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory
      */
     protected $subject = null;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->subject = new \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory();
+        $this->subject = new \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory();
     }
 
     protected function tearDown()
@@ -63,7 +63,7 @@ class FilterCategoryTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function setParentForFilterCategorySetsParent()
     {
-        $parentFixture = new \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory();
+        $parentFixture = new \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory();
         $this->subject->setParent($parentFixture);
 
         self::assertAttributeEquals(

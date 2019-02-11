@@ -11,13 +11,13 @@
  * @since     2018-07-04
  */
 
-namespace BrainAppeal\BrainEventConnector\Importer;
+namespace BrainAppeal\CampusEventsConnector\Importer;
 
-use BrainAppeal\BrainEventConnector\Domain\Model\ImportedModelInterface;
-use BrainAppeal\BrainEventConnector\Http\Promise;
-use BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterface;
+use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use BrainAppeal\CampusEventsConnector\Http\Promise;
+use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
-use BrainAppeal\BrainEventConnector\Http\Client;
+use BrainAppeal\CampusEventsConnector\Http\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 
 class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
@@ -64,7 +64,7 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
         $this->client = new Client();
 
         $this->storageId = 0;
-        $this->storageFolder = 'tx_braineventconnector/';
+        $this->storageFolder = 'tx_campuseventsconnector/';
     }
 
     /**
@@ -82,7 +82,7 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
      */
     private function getDBAL()
     {
-        $dbal = \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALFactory::getInstance();
+        $dbal = \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory::getInstance();
 
         return $dbal;
     }
@@ -186,11 +186,11 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
             $fileReferenceUid = $existingReference->getOriginalResource()->getUid();
             $this->updateReferenceIds[$fileReferenceUid] = $fileReferenceUid;
         } else {
-            $tempFilenameAndPath = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('tx_braineventconnector_');
+            $tempFilenameAndPath = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('tx_campuseventsconnector_');
 
             try {
                 $promise = $this->client->getAsync($data['url'], ['sink' => $tempFilenameAndPath]);
-            } catch (\BrainAppeal\BrainEventConnector\Http\HttpException $e) {
+            } catch (\BrainAppeal\CampusEventsConnector\Http\HttpException $e) {
                 unset($e);
                 return;
             }
@@ -213,7 +213,7 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
 
         try {
             $downloadPromise->wait();
-        } catch (\BrainAppeal\BrainEventConnector\Http\HttpException $e) {
+        } catch (\BrainAppeal\CampusEventsConnector\Http\HttpException $e) {
             unset($e);
         }
         if ('fulfilled' == $downloadPromise->getState()) {

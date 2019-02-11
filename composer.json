@@ -1,7 +1,7 @@
 {
-    "name": "brainappeal/brain_event_connector",
+    "name": "brainappeal/campus_events_connector",
     "type": "typo3-cms-extension",
-    "description" : "Brain Appeal TYPO3 CMS Base Distribution",
+    "description" : "Brain Appeal Campus Events connector for TYPO3",
     "license": [
         "GPL-2.0+"
     ],
@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "BrainAppeal\\BrainEventConnector\\": "Classes"
+            "BrainAppeal\\CampusEventsConnector\\": "Classes"
         }
     }
 }

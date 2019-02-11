@@ -11,9 +11,9 @@
  * @since     2018-06-21
  */
 
-namespace BrainAppeal\BrainEventConnector\Importer;
+namespace BrainAppeal\CampusEventsConnector\Importer;
 
-use BrainAppeal\BrainEventConnector\Http\Client;
+use BrainAppeal\CampusEventsConnector\Http\Client;
 
 class ApiConnector
 {
@@ -54,7 +54,7 @@ class ApiConnector
      * @param string $data
      * @param array $additionalParams
      * @return array
-     * @throws \BrainAppeal\BrainEventConnector\Http\HttpException
+     * @throws \BrainAppeal\CampusEventsConnector\Http\HttpException
      */
     public function getApiResponse($data, $additionalParams = [])
     {
@@ -124,7 +124,7 @@ class ApiConnector
 
     /**
      * @return bool
-     * @throws \BrainAppeal\BrainEventConnector\Http\HttpException
+     * @throws \BrainAppeal\CampusEventsConnector\Http\HttpException
      */
     public function checkApiVersion()
     {

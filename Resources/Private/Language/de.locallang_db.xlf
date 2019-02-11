@@ -1,209 +1,209 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="messages" date="2018-07-03T07:24:15Z" product-name="brain_event_connector">
+	<file source-language="en" datatype="plaintext" original="messages" date="2018-07-03T07:24:15Z" product-name="campus_events_connector">
 		<header/>
 		<body>
-			<trans-unit id="tx_braineventconnector_domain_model_event">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event">
 				<source>Events</source>
 				<target>Veranstaltungen</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.status">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.status">
 				<source>Status</source>
 				<target>Status</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.canceled">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.canceled">
 				<source>Canceled</source>
 				<target>Abgesagt</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.url">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.url">
 				<source>Url</source>
 				<target>Url</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.name">
 				<source>Name</source>
 				<target>Name</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.subtitle">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.subtitle">
 				<source>Subtitle</source>
 				<target>Untertitel</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.description">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.description">
 				<source>Description</source>
 				<target>Beschreibung</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.short_description">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.short_description">
 				<source>Short Description</source>
 				<target>Kurzbeschreibung</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.show_in_news">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.show_in_news">
 				<source>Show In News</source>
 				<target>In News anzeigen</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.news_text">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.news_text">
 				<source>News Text</source>
 				<target>News Text</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.learning_objective">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.learning_objective">
 				<source>Learning Objective</source>
 				<target>Lerninhalte</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.images">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.images">
 				<source>Images</source>
 				<target>Bilder</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.attachments">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.attachments">
 				<source>Attachments</source>
 				<target>Dateien</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.registration_possible">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.registration_possible">
 				<source>Registration Possible</source>
 				<target>Registrierung möglich</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.min_participants">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.min_participants">
 				<source>Min Participants</source>
 				<target>Min. Teilnehmner</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.max_participants">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.max_participants">
 				<source>Max Participants</source>
 				<target>Max. Teilnehmer</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.participants">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.participants">
 				<source>Participants</source>
 				<target>Teilnehmer</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.speakers">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.speakers">
 				<source>Speakers</source>
 				<target>Referenten</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.time_ranges">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.time_ranges">
 				<source>Time Ranges</source>
 				<target>Veranstaltungszeiten</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.location">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.location">
 				<source>Location</source>
 				<target>Veranstaltungsort</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.categories">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.categories">
 				<source>Categories</source>
 				<target>Kategorien</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.organizer">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.organizer">
 				<source>Organizer</source>
 				<target>Organisator</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.target_groups">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.target_groups">
 				<source>Target Groups</source>
 				<target>Zielgruppen</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.filter_categories">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.filter_categories">
 				<source>Filter Categories</source>
 				<target>Filterkategorien</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_location">
+			<trans-unit id="tx_campuseventsconnector_domain_model_location">
 				<source>Location</source>
 				<target>Veranstaltungsort</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_location.name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.name">
 				<source>Name</source>
 				<target>Name</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_location.street_name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.street_name">
 				<source>Street Name</source>
 				<target>Straße</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_location.town">
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.town">
 				<source>Town</source>
 				<target>Stadt</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_location.zip_code">
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.zip_code">
 				<source>Zip Code</source>
 				<target>PLZ</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_speaker">
+			<trans-unit id="tx_campuseventsconnector_domain_model_speaker">
 				<source>Speaker</source>
 				<target>Referent</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_speaker.title">
+			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.title">
 				<source>Title</source>
 				<target>Titel</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_speaker.first_name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.first_name">
 				<source>First Name</source>
 				<target>Vorname</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_speaker.last_name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.last_name">
 				<source>Last Name</source>
 				<target>Nachname</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_organizer">
+			<trans-unit id="tx_campuseventsconnector_domain_model_organizer">
 				<source>Organizer</source>
 				<target>Organisator</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_organizer.name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_organizer.name">
 				<source>Name</source>
 				<target>Name</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_timerange">
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange">
 				<source>Time Range</source>
 				<target>Veranstaltungszeit</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_timerange.start_date">
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_date">
 				<source>Start Date</source>
 				<target>Startzeit</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_timerange.end_date">
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date">
 				<source>End Date</source>
 				<target>Endzeit</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_category">
+			<trans-unit id="tx_campuseventsconnector_domain_model_category">
 				<source>Category</source>
 				<target>Kategorie</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_category.name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_category.name">
 				<source>Name</source>
 				<target>Name</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_targetgroup">
+			<trans-unit id="tx_campuseventsconnector_domain_model_targetgroup">
 				<source>Target Group</source>
 				<target>Zielgruppe</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_targetgroup.name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_targetgroup.name">
 				<source>Name</source>
 				<target>Name</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_filtercategory">
+			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory">
 				<source>Filter Category</source>
 				<target>Filterkategorie</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_filtercategory.name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory.name">
 				<source>Name</source>
 				<target>Name</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_filtercategory.parent">
+			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory.parent">
 				<source>Parent Filter Category</source>
 				<target>Übergeordnete Filterkategorie</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convert2objectconfiguration">
 				<source>Convert Configuration</source>
 				<target>Kontervierungs Konfiguration</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.select_type">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convert2objectconfiguration.select_type">
 				<source>Select convert target</source>
 				<target>Bitte wählen Sie den Konvertierungstyp</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.target_pid">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convert2objectconfiguration.target_pid">
 				<source>Target PID</source>
 				<target>Ziel PID</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.template_path">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convert2objectconfiguration.template_path">
 				<source>Template Path</source>
 				<target>Template Pfad</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.filter_categories">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convert2objectconfiguration.filter_categories">
 				<source>Filter Categories</source>
 				<target>Filterkategorien</target>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.target_groups">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convert2objectconfiguration.target_groups">
 				<source>Target Groups</source>
 				<target>Zielgruppen</target>
 			</trans-unit>

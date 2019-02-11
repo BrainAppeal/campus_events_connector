@@ -3,7 +3,7 @@
 Information
 ==================
 
-With brain_event_connector, you have the ability to import all events via cron-jobs from the CampusEventsAPI in your TYPO3 System as independent records, as well as documents and images.
+With campus_events_connector, you have the ability to import all events via cron-jobs from the CampusEventsAPI in your TYPO3 System as independent records, as well as documents and images.
 
 Possibilities of configuration:
 
@@ -17,9 +17,9 @@ Converters
 -----------------
 
 
-* TYPO3 Extension brain_event_convert2news => `EXT:news <https://extensions.typo3.org/extension/news/>`_
-* TYPO3 Extension brain_event_convert2ttnews => `EXT:tt_news <https://extensions.typo3.org/extension/tt_news/>`_
-* TYPO3 Extension brain_event_convert2ttnewscal => `EXT:ttnews_calendar <https://extensions.typo3.org/extension/ttnews_calendar/>`_
+* TYPO3 Extension campus_events_convert2news => `EXT:news <https://extensions.typo3.org/extension/news/>`_
+* TYPO3 Extension campus_events_convert2ttnews => `EXT:tt_news <https://extensions.typo3.org/extension/tt_news/>`_
+* TYPO3 Extension campus_events_convert2ttnewscal => `EXT:ttnews_calendar <https://extensions.typo3.org/extension/ttnews_calendar/>`_
 
 Converts the imported records into target extensions records.
 The Conversation is defined in a configuration record in the respective target folder of the import.

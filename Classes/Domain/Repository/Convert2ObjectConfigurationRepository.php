@@ -1,10 +1,10 @@
 <?php
 
-namespace BrainAppeal\BrainEventConnector\Domain\Repository;
+namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
 
 /***
  *
- * This file is part of the "BrainEventConvert2News" Extension for TYPO3 CMS.
+ * This file is part of the "CampusEventsConvert2News" Extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.

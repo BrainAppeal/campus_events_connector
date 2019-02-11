@@ -1,5 +1,5 @@
 <?php
-namespace BrainAppeal\BrainEventConnector\Domain\Model;
+namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
 /***
  *

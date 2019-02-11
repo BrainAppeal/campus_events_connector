@@ -1,6 +1,6 @@
 <?php
 
-namespace BrainAppeal\BrainEventConnector\Task;
+namespace BrainAppeal\CampusEventsConnector\Task;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -57,7 +57,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         $fieldHtml = '<input class="form-control" type="text" ' . 'name="' . $fieldName . '" ' . 'id="' . $fieldId . '" ' . 'value="' . $taskInfo[$fieldId] . '" ' . 'size="4">';
         $fieldConfiguration = [
             'code' => $fieldHtml,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.api_key',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.api_key',
             'cshKey' => '_MOD_system_txschedulerM1',
             'cshLabel' => $fieldId
         ];
@@ -79,7 +79,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         $fieldHtml = '<input class="form-control" type="text" ' . 'name="' . $fieldName . '" ' . 'id="' . $fieldId . '" ' . 'value="' . $taskInfo[$fieldId] . '" ' . 'size="4">';
         $fieldConfiguration = [
             'code' => $fieldHtml,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.base_uri',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.base_uri',
             'cshKey' => '_MOD_system_txschedulerM1',
             'cshLabel' => $fieldId
         ];
@@ -101,7 +101,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         $fieldHtml = '<input class="form-control" type="text" ' . 'name="' . $fieldName . '" ' . 'id="' . $fieldId . '" ' . 'value="' . $taskInfo[$fieldId] . '" ' . '>';
         $fieldConfiguration = [
             'code' => $fieldHtml,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.pid',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.pid',
             'cshKey' => '_MOD_system_txschedulerM1',
             'cshLabel' => $fieldId
         ];
@@ -132,7 +132,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
 
         $fieldConfiguration = [
             'code' => $fieldHtml,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.storage_id',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.storage_id',
             'cshKey' => '_MOD_system_txschedulerM1',
             'cshLabel' => $fieldId
         ];
@@ -155,7 +155,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         $fieldHtml = '<input class="form-control" type="text" ' . 'name="' . $fieldName . '" ' . 'id="' . $fieldId . '" ' . 'value="' . $taskInfo[$fieldId] . '" ' . '>';
         $fieldConfiguration = [
             'code' => $fieldHtml,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.storage_folder',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.storage_folder',
             'cshKey' => '_MOD_system_txschedulerM1',
             'cshLabel' => $fieldId
         ];
@@ -190,26 +190,26 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
 
         $baseUri = $submittedData['brainEventConnector_eventImport_baseUri'];
         if (empty($baseUri)) {
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
             $validData = false;
         }
 
         $apiKey = $submittedData['brainEventConnector_eventImport_apiKey'];
         if (empty($apiKey) || preg_match('/^[\w]{8}-[\w]{16}-[\w]{8}$/', $apiKey) !== 1) {
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.error.invalid_api_key'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_api_key'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
             $validData = false;
         }
 
         if ($validData) {
-            /** @var \BrainAppeal\BrainEventConnector\Importer\ApiConnector $apiConnector */
+            /** @var \BrainAppeal\CampusEventsConnector\Importer\ApiConnector $apiConnector */
             $apiConnector = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-                \BrainAppeal\BrainEventConnector\Importer\ApiConnector::class
+                \BrainAppeal\CampusEventsConnector\Importer\ApiConnector::class
             );
             $apiConnector->setBaseUri($baseUri);
 
             try {
                 $validData = $apiConnector->checkApiVersion();
-            } catch (\BrainAppeal\BrainEventConnector\Http\HttpException $httpException) {
+            } catch (\BrainAppeal\CampusEventsConnector\Http\HttpException $httpException) {
                 $parentObject->addMessage(
                     $httpException->getMessage(),
                     \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
@@ -217,7 +217,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
                 $validData = false;
             }
             if (!$validData) {
-                $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+                $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
             }
         }
 
@@ -234,12 +234,12 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         $validData = false;
         $data = $submittedData['brainEventConnector_eventImport_pid'];
         if (empty($data) || is_numeric($data)) {
-            $dbal = \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALFactory::getInstance();
+            $dbal = \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory::getInstance();
             $validData = $dbal->checkIfPidIsValid($data);
         }
         if (!$validData) {
             // Issue error message
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.error.invalid_pid'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_pid'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
         }
         return $validData;
     }
@@ -257,7 +257,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
             $validData = true;
         } else {
             // Issue error message
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.error.invalid_storage_id'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_id'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
         }
         return $validData;
     }
@@ -275,7 +275,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
             $validData = true;
         } else {
             // Issue error message
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:brain_event_connector/Resources/Private/Language/locallang.xlf:tx_braineventconnector_task_eventimporttask.error.invalid_storage_folder'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_folder'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
         }
         return $validData;
     }

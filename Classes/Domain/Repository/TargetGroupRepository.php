@@ -1,6 +1,6 @@
 <?php
 
-namespace BrainAppeal\BrainEventConnector\Domain\Repository;
+namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
 
 /***
  *

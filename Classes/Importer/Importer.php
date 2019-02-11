@@ -11,13 +11,13 @@
  * @since     2018-06-21
  */
 
-namespace BrainAppeal\BrainEventConnector\Importer;
+namespace BrainAppeal\CampusEventsConnector\Importer;
 
-use BrainAppeal\BrainEventConnector\Domain\Model\Event;
-use BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory;
-use BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterface;
-use BrainAppeal\BrainEventConnector\Importer\ObjectGenerator\ImportObjectGenerator;
-use BrainAppeal\BrainEventConnector\Importer\ObjectGenerator\SpecifiedImportObjectGenerator;
+use BrainAppeal\CampusEventsConnector\Domain\Model\Event;
+use BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory;
+use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface;
+use BrainAppeal\CampusEventsConnector\Importer\ObjectGenerator\ImportObjectGenerator;
+use BrainAppeal\CampusEventsConnector\Importer\ObjectGenerator\SpecifiedImportObjectGenerator;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
 class Importer
@@ -57,7 +57,7 @@ class Importer
      */
     private function getDBAL()
     {
-        $dbal = \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALFactory::getInstance();
+        $dbal = \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory::getInstance();
 
         return $dbal;
     }
