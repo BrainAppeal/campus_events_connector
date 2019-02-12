@@ -1,11 +1,11 @@
 {
-    "name": "brainappeal/brain_event_connector",
+    "name": "brainappeal/campus_events_connector",
     "type": "typo3-cms-extension",
-    "description" : "Brain Appeal TYPO3 CMS Base Distribution",
+    "description" : "Brain Appeal Campus Events connector for TYPO3",
     "license": [
-        "GPL-2.0+"
+        "GPL-2"
     ],
-    "homepage": "http://brain-appeal.com/",
+    "homepage": "https://www.campus-events.com/",
     "authors": [
         {
             "name": "Brain Appeal Team",
@@ -13,7 +13,6 @@
         },
         {
             "name": "Joshua Billert",
-            "email": "joshua.billert@brain-appeal.com",
             "role": "Developer"
         }
     ],
@@ -23,7 +22,16 @@
     },
     "autoload": {
         "psr-4": {
-            "BrainAppeal\\BrainEventConnector\\": "Classes"
+            "BrainAppeal\\CampusEventsConnector\\": "Classes"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BrainAppeal\\CampusEventsConnector\\Tests\\": "Tests"
+        }
+    },
+    "replace": {
+        "campus_events_connector": "self.version",
+        "typo3-ter/campus_events_connector": "self.version"
     }
 }

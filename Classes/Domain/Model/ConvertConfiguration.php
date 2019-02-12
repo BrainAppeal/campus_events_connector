@@ -1,9 +1,9 @@
 <?php
-namespace BrainAppeal\BrainEventConnector\Domain\Model;
+namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
 /***
  *
- * This file is part of the "BrainEventConnector" Extension for TYPO3 CMS.
+ * This file is part of the "CampusEventsConnector" Extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
@@ -13,9 +13,9 @@ namespace BrainAppeal\BrainEventConnector\Domain\Model;
  ***/
 
 /**
- * Convert2ObjectConfiguration
+ * ConvertConfiguration
  */
-abstract class Convert2ObjectConfiguration extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
     /**
      * targetPid
@@ -34,14 +34,14 @@ abstract class Convert2ObjectConfiguration extends \TYPO3\CMS\Extbase\DomainObje
     /**
      * targetGroups
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup>
+     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup>
      */
     protected $targetGroups = null;
 
     /**
      * filterCategories
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory>
+     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory>
      */
     protected $filterCategories = null;
 
@@ -96,10 +96,10 @@ abstract class Convert2ObjectConfiguration extends \TYPO3\CMS\Extbase\DomainObje
     /**
      * Adds a TargetGroup
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup $targetGroup
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroup
      * @return void
      */
-    public function addTargetGroup(\BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup $targetGroup)
+    public function addTargetGroup(\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroup)
     {
         $this->targetGroups->attach($targetGroup);
     }
@@ -107,10 +107,10 @@ abstract class Convert2ObjectConfiguration extends \TYPO3\CMS\Extbase\DomainObje
     /**
      * Removes a TargetGroup
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup $targetGroupToRemove The TargetGroup to be removed
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroupToRemove The TargetGroup to be removed
      * @return void
      */
-    public function removeTargetGroup(\BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup $targetGroupToRemove)
+    public function removeTargetGroup(\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroupToRemove)
     {
         $this->targetGroups->detach($targetGroupToRemove);
     }
@@ -118,7 +118,7 @@ abstract class Convert2ObjectConfiguration extends \TYPO3\CMS\Extbase\DomainObje
     /**
      * Returns the targetGroups
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup> targetGroups
+     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup> targetGroups
      */
     public function getTargetGroups()
     {
@@ -128,7 +128,7 @@ abstract class Convert2ObjectConfiguration extends \TYPO3\CMS\Extbase\DomainObje
     /**
      * Sets the targetGroups
      *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup> $targetGroups
+     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup> $targetGroups
      * @return void
      */
     public function setTargetGroups(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $targetGroups)
@@ -139,10 +139,10 @@ abstract class Convert2ObjectConfiguration extends \TYPO3\CMS\Extbase\DomainObje
     /**
      * Adds a FilterCategory
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $filterCategory
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategory
      * @return void
      */
-    public function addFilterCategory(\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $filterCategory)
+    public function addFilterCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategory)
     {
         $this->filterCategories->attach($filterCategory);
     }
@@ -150,10 +150,10 @@ abstract class Convert2ObjectConfiguration extends \TYPO3\CMS\Extbase\DomainObje
     /**
      * Removes a FilterCategory
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $filterCategoryToRemove The FilterCategory to be removed
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategoryToRemove The FilterCategory to be removed
      * @return void
      */
-    public function removeFilterCategory(\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $filterCategoryToRemove)
+    public function removeFilterCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategoryToRemove)
     {
         $this->filterCategories->detach($filterCategoryToRemove);
     }
@@ -161,7 +161,7 @@ abstract class Convert2ObjectConfiguration extends \TYPO3\CMS\Extbase\DomainObje
     /**
      * Returns the filterCategories
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory> filterCategories
+     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory> filterCategories
      */
     public function getFilterCategories()
     {
@@ -171,7 +171,7 @@ abstract class Convert2ObjectConfiguration extends \TYPO3\CMS\Extbase\DomainObje
     /**
      * Sets the filterCategories
      *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory> $filterCategories
+     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory> $filterCategories
      * @return void
      */
     public function setFilterCategories(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $filterCategories)

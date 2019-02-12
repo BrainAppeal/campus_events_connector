@@ -2,7 +2,7 @@
 # Persistence object mapping configuration
 # ==============================================
 config.tx_extbase.persistence.classes {
-	BrainAppeal\BrainEventConnector\Domain\Model\Convert2ObjectConfiguration {
+	BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration {
 		subclasses {
 		}
 	}

@@ -11,10 +11,10 @@
  * @since     2018-07-03
  */
 
-namespace BrainAppeal\BrainEventConnector\Importer\DBAL;
+namespace BrainAppeal\CampusEventsConnector\Importer\DBAL;
 
 
-class Compatibility7DBAL extends \BrainAppeal\BrainEventConnector\Importer\DBAL\DBAL
+class Compatibility7DBAL extends \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBAL
 {
     /**
      * @return \TYPO3\CMS\Core\Database\DatabaseConnection
@@ -80,7 +80,7 @@ class Compatibility7DBAL extends \BrainAppeal\BrainEventConnector\Importer\DBAL\
             $this->sysFileReferenceWorkaroundInitialized = true;
         }
 
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['tx_braineventconnector_compatibility7'] = \BrainAppeal\BrainEventConnector\Compatibility\DatabaseAccessHook::class;
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['tx_campuseventsconnector_compatibility7'] = \BrainAppeal\CampusEventsConnector\Compatibility\DatabaseAccessHook::class;
         $GLOBALS['TCA']['sys_file_reference']['ctrl']['security']['ignoreRootLevelRestriction'] = true;
     }
 
@@ -89,14 +89,14 @@ class Compatibility7DBAL extends \BrainAppeal\BrainEventConnector\Importer\DBAL\
         if ($this->sysFileReferenceWorkaroundInitialized) {
             $GLOBALS['TCA']['sys_file_reference']['ctrl']['security']['ignoreRootLevelRestriction'] = $this->backupIgnoreRootLevelRestriction;
         }
-        if (array_key_exists('tx_braineventconnector_compatibility7', $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'])) {
-            unset($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['tx_braineventconnector_compatibility7']);
+        if (array_key_exists('tx_campuseventsconnector_compatibility7', $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'])) {
+            unset($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['tx_campuseventsconnector_compatibility7']);
         }
     }
 
     /**
      * @param \TYPO3\CMS\Core\Resource\File $sysFile
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\ImportedModelInterface $target
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface $target
      * @param string $field
      * @param array $attribs
      */

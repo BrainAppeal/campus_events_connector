@@ -1,5 +1,5 @@
 <?php
-namespace BrainAppeal\BrainEventConnector\Tests\Unit\Domain\Model;
+namespace BrainAppeal\CampusEventsConnector\Tests\Unit\Domain\Model;
 
 /**
  * Test case.
@@ -7,14 +7,14 @@ namespace BrainAppeal\BrainEventConnector\Tests\Unit\Domain\Model;
 class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {
     /**
-     * @var \BrainAppeal\BrainEventConnector\Domain\Model\Event
+     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\Event
      */
     protected $subject = null;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->subject = new \BrainAppeal\BrainEventConnector\Domain\Model\Event();
+        $this->subject = new \BrainAppeal\CampusEventsConnector\Domain\Model\Event();
     }
 
     protected function tearDown()
@@ -441,7 +441,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function setSpeakersForObjectStorageContainingSpeakerSetsSpeakers()
     {
-        $speaker = new \BrainAppeal\BrainEventConnector\Domain\Model\Speaker();
+        $speaker = new \BrainAppeal\CampusEventsConnector\Domain\Model\Speaker();
         $objectStorageHoldingExactlyOneSpeakers = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $objectStorageHoldingExactlyOneSpeakers->attach($speaker);
         $this->subject->setSpeakers($objectStorageHoldingExactlyOneSpeakers);
@@ -458,7 +458,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function addSpeakerToObjectStorageHoldingSpeakers()
     {
-        $speaker = new \BrainAppeal\BrainEventConnector\Domain\Model\Speaker();
+        $speaker = new \BrainAppeal\CampusEventsConnector\Domain\Model\Speaker();
         $speakersObjectStorageMock = $this->getMockBuilder(\TYPO3\CMS\Extbase\Persistence\ObjectStorage::class)
             ->setMethods(['attach'])
             ->disableOriginalConstructor()
@@ -475,7 +475,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function removeSpeakerFromObjectStorageHoldingSpeakers()
     {
-        $speaker = new \BrainAppeal\BrainEventConnector\Domain\Model\Speaker();
+        $speaker = new \BrainAppeal\CampusEventsConnector\Domain\Model\Speaker();
         $speakersObjectStorageMock = $this->getMockBuilder(\TYPO3\CMS\Extbase\Persistence\ObjectStorage::class)
             ->setMethods(['detach'])
             ->disableOriginalConstructor()
@@ -504,7 +504,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function setTimeRangesForObjectStorageContainingTimeRangeSetsTimeRanges()
     {
-        $timeRange = new \BrainAppeal\BrainEventConnector\Domain\Model\TimeRange();
+        $timeRange = new \BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange();
         $objectStorageHoldingExactlyOneTimeRanges = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $objectStorageHoldingExactlyOneTimeRanges->attach($timeRange);
         $this->subject->setTimeRanges($objectStorageHoldingExactlyOneTimeRanges);
@@ -521,7 +521,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function addTimeRangeToObjectStorageHoldingTimeRanges()
     {
-        $timeRange = new \BrainAppeal\BrainEventConnector\Domain\Model\TimeRange();
+        $timeRange = new \BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange();
         $timeRangesObjectStorageMock = $this->getMockBuilder(\TYPO3\CMS\Extbase\Persistence\ObjectStorage::class)
             ->setMethods(['attach'])
             ->disableOriginalConstructor()
@@ -538,7 +538,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function removeTimeRangeFromObjectStorageHoldingTimeRanges()
     {
-        $timeRange = new \BrainAppeal\BrainEventConnector\Domain\Model\TimeRange();
+        $timeRange = new \BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange();
         $timeRangesObjectStorageMock = $this->getMockBuilder(\TYPO3\CMS\Extbase\Persistence\ObjectStorage::class)
             ->setMethods(['detach'])
             ->disableOriginalConstructor()
@@ -566,7 +566,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function setLocationForLocationSetsLocation()
     {
-        $locationFixture = new \BrainAppeal\BrainEventConnector\Domain\Model\Location();
+        $locationFixture = new \BrainAppeal\CampusEventsConnector\Domain\Model\Location();
         $this->subject->setLocation($locationFixture);
 
         self::assertAttributeEquals(
@@ -593,7 +593,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function setCategoriesForObjectStorageContainingCategorySetsCategories()
     {
-        $category = new \BrainAppeal\BrainEventConnector\Domain\Model\Category();
+        $category = new \BrainAppeal\CampusEventsConnector\Domain\Model\Category();
         $objectStorageHoldingExactlyOneCategories = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $objectStorageHoldingExactlyOneCategories->attach($category);
         $this->subject->setCategories($objectStorageHoldingExactlyOneCategories);
@@ -610,7 +610,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function addCategoryToObjectStorageHoldingCategories()
     {
-        $category = new \BrainAppeal\BrainEventConnector\Domain\Model\Category();
+        $category = new \BrainAppeal\CampusEventsConnector\Domain\Model\Category();
         $categoriesObjectStorageMock = $this->getMockBuilder(\TYPO3\CMS\Extbase\Persistence\ObjectStorage::class)
             ->setMethods(['attach'])
             ->disableOriginalConstructor()
@@ -627,7 +627,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function removeCategoryFromObjectStorageHoldingCategories()
     {
-        $category = new \BrainAppeal\BrainEventConnector\Domain\Model\Category();
+        $category = new \BrainAppeal\CampusEventsConnector\Domain\Model\Category();
         $categoriesObjectStorageMock = $this->getMockBuilder(\TYPO3\CMS\Extbase\Persistence\ObjectStorage::class)
             ->setMethods(['detach'])
             ->disableOriginalConstructor()
@@ -656,7 +656,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function setOrganizerForObjectStorageContainingOrganizerSetsOrganizer()
     {
-        $organizer = new \BrainAppeal\BrainEventConnector\Domain\Model\Organizer();
+        $organizer = new \BrainAppeal\CampusEventsConnector\Domain\Model\Organizer();
         $objectStorageHoldingExactlyOneOrganizer = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $objectStorageHoldingExactlyOneOrganizer->attach($organizer);
         $this->subject->setOrganizer($objectStorageHoldingExactlyOneOrganizer);
@@ -673,7 +673,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function addOrganizerToObjectStorageHoldingOrganizer()
     {
-        $organizer = new \BrainAppeal\BrainEventConnector\Domain\Model\Organizer();
+        $organizer = new \BrainAppeal\CampusEventsConnector\Domain\Model\Organizer();
         $organizerObjectStorageMock = $this->getMockBuilder(\TYPO3\CMS\Extbase\Persistence\ObjectStorage::class)
             ->setMethods(['attach'])
             ->disableOriginalConstructor()
@@ -690,7 +690,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function removeOrganizerFromObjectStorageHoldingOrganizer()
     {
-        $organizer = new \BrainAppeal\BrainEventConnector\Domain\Model\Organizer();
+        $organizer = new \BrainAppeal\CampusEventsConnector\Domain\Model\Organizer();
         $organizerObjectStorageMock = $this->getMockBuilder(\TYPO3\CMS\Extbase\Persistence\ObjectStorage::class)
             ->setMethods(['detach'])
             ->disableOriginalConstructor()
@@ -718,7 +718,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function setTargetGroupsForTargetGroupSetsTargetGroups()
     {
-//        $targetGroupsFixture = new \BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup();
+//        $targetGroupsFixture = new \BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup();
 //        $this->subject->setTargetGroups($targetGroupsFixture);
 //
 //        self::assertAttributeEquals(
@@ -744,7 +744,7 @@ class EventsTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
      */
     public function setFilterCategoriesForFilterCategorySetsFilterCategories()
     {
-//        $filterCategoriesFixture = new \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory();
+//        $filterCategoriesFixture = new \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory();
 //        $this->subject->setFilterCategories($filterCategoriesFixture);
 //
 //        self::assertAttributeEquals(

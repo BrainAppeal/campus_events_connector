@@ -1,5 +1,5 @@
 <?php
-namespace BrainAppeal\BrainEventConnector\Domain\Model;
+namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
 /***
  *
@@ -29,7 +29,7 @@ class FilterCategory extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity impl
     /**
      * parent
      *
-     * @var \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory
+     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory
      */
     protected $parent = null;
 
@@ -79,7 +79,7 @@ class FilterCategory extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity impl
     /**
      * Returns the parent
      *
-     * @return \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $parent
+     * @return \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $parent
      */
     public function getParent()
     {
@@ -89,10 +89,10 @@ class FilterCategory extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity impl
     /**
      * Sets the parent
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory|null $parent
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory|null $parent
      * @return void
      */
-    public function setParent(\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $parent = null)
+    public function setParent(\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $parent = null)
     {
         $this->parent = $parent;
     }

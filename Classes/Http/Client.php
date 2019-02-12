@@ -11,7 +11,7 @@
  * @since     2018-07-24
  */
 
-namespace BrainAppeal\BrainEventConnector\Http;
+namespace BrainAppeal\CampusEventsConnector\Http;
 
 use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\ResponseInterface;

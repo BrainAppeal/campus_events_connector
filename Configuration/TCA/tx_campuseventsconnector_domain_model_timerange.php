@@ -1,8 +1,10 @@
 <?php
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_organizer',
-        'label' => 'name',
+        'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange',
+        'label' => 'start_date',
+        'label_alt' => 'end_date',
+        'label_alt_force' => 1,
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'cruser_id' => 'cruser_id',
@@ -12,18 +14,18 @@ return [
         'transOrigDiffSourceField' => 'l10n_diffsource',
 //        'delete' => 'deleted',
         'enablecolumns' => [
-//            'disabled' => 'hidden',
-//            'starttime' => 'starttime',
-//            'endtime' => 'endtime',
+            'disabled' => 'hidden',
+            'starttime' => 'starttime',
+            'endtime' => 'endtime',
         ],
-        'searchFields' => 'name',
-        'iconfile' => 'EXT:brain_event_connector/Resources/Public/Icons/tx_braineventconnector_domain_model_organizer.gif'
+        'searchFields' => 'start_date,end_date',
+        'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_timerange.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, name',
+        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, start_date, end_date',
     ],
     'types' => [
-        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
+        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, start_date, end_date, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -53,8 +55,8 @@ return [
                 'items' => [
                     ['', 0],
                 ],
-                'foreign_table' => 'tx_braineventconnector_domain_model_organizer',
-                'foreign_table_where' => 'AND tx_braineventconnector_domain_model_organizer.pid=###CURRENT_PID### AND tx_braineventconnector_domain_model_organizer.sys_language_uid IN (-1,0)',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_timerange',
+                'foreign_table_where' => 'AND tx_campuseventsconnector_domain_model_timerange.pid=###CURRENT_PID### AND tx_campuseventsconnector_domain_model_timerange.sys_language_uid IN (-1,0)',
             ],
         ],
         'l10n_diffsource' => [
@@ -108,18 +110,37 @@ return [
             ],
         ],
 
-        'name' => [
+        'start_date' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_organizer.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.start_date',
             'config' => [
+                'dbType' => 'datetime',
                 'type' => 'input',
-                'size' => 30,
-                'eval' => 'trim'
+                'size' => 12,
+                'eval' => 'datetime',
+                'default' => '0000-00-00 00:00:00'
+            ],
+        ],
+        'end_date' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.end_date',
+            'config' => [
+                'dbType' => 'datetime',
+                'type' => 'input',
+                'size' => 12,
+                'eval' => 'datetime',
+                'default' => '0000-00-00 00:00:00'
+            ],
+        ],
+    
+        'event' => [
+            'config' => [
+                'type' => 'passthrough',
             ],
         ],
         'import_source' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_filtercategory.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -128,7 +149,7 @@ return [
         ],
         'import_id' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_filtercategory.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -137,13 +158,12 @@ return [
         ],
         'imported_at' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_filtercategory.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim'
             ],
         ],
-    
     ],
 ];

@@ -11,16 +11,16 @@
  * @since     2018-07-03
  */
 
-namespace BrainAppeal\BrainEventConnector\Importer\DBAL;
+namespace BrainAppeal\CampusEventsConnector\Importer\DBAL;
 
 
 
-use BrainAppeal\BrainEventConnector\Domain\Model\ImportedModelInterface;
-use BrainAppeal\BrainEventConnector\Domain\Repository\AbstractImportedRepository;
+use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
-class DBAL implements \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterface, \TYPO3\CMS\Core\SingletonInterface
+class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface, \TYPO3\CMS\Core\SingletonInterface
 {
 
     /**

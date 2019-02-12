@@ -1,9 +1,9 @@
 <?php
-namespace BrainAppeal\BrainEventConnector\Domain\Model;
+namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
 /***
  *
- * This file is part of the "BrainEventConnector" Extension for TYPO3 CMS.
+ * This file is part of the "CampusEventsConnector" Extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
@@ -134,14 +134,14 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * speakers
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\Speaker>
+     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker>
      */
     protected $speakers = null;
 
     /**
      * timeRanges
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\TimeRange>
+     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange>
      * @TYPO3\CMS\Extbase\Annotation\ORM\Cascade("remove")
      */
     protected $timeRanges = null;
@@ -149,35 +149,35 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * location
      *
-     * @var \BrainAppeal\BrainEventConnector\Domain\Model\Location
+     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\Location
      */
     protected $location = null;
 
     /**
      * categories
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\Category>
+     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Category>
      */
     protected $categories = null;
 
     /**
      * organizer
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\Organizer>
+     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer>
      */
     protected $organizer = null;
 
     /**
      * targetGroups
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup>
+     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup>
      */
     protected $targetGroups = null;
 
     /**
      * filterCategories
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory>
+     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory>
      */
     protected $filterCategories = null;
 
@@ -213,10 +213,10 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Adds a Speaker
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Speaker $speaker
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Speaker $speaker
      * @return void
      */
-    public function addSpeaker(\BrainAppeal\BrainEventConnector\Domain\Model\Speaker $speaker)
+    public function addSpeaker(\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker $speaker)
     {
         $this->speakers->attach($speaker);
     }
@@ -224,10 +224,10 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Removes a Speaker
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Speaker $speakerToRemove The Speaker to be removed
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Speaker $speakerToRemove The Speaker to be removed
      * @return void
      */
-    public function removeSpeaker(\BrainAppeal\BrainEventConnector\Domain\Model\Speaker $speakerToRemove)
+    public function removeSpeaker(\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker $speakerToRemove)
     {
         $this->speakers->detach($speakerToRemove);
     }
@@ -235,7 +235,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Returns the speakers
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\Speaker> speakers
+     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker> speakers
      */
     public function getSpeakers()
     {
@@ -245,7 +245,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Sets the speakers
      *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\Speaker> $speakers
+     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker> $speakers
      * @return void
      */
     public function setSpeakers(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $speakers)
@@ -666,7 +666,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Returns the location
      *
-     * @return \BrainAppeal\BrainEventConnector\Domain\Model\Location $location
+     * @return \BrainAppeal\CampusEventsConnector\Domain\Model\Location $location
      */
     public function getLocation()
     {
@@ -676,7 +676,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Sets the location
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Location $location
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Location $location
      * @return void
      */
     public function setLocation($location)
@@ -687,10 +687,10 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Adds a Category
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Category $category
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Category $category
      * @return void
      */
-    public function addCategory(\BrainAppeal\BrainEventConnector\Domain\Model\Category $category)
+    public function addCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\Category $category)
     {
         $this->categories->attach($category);
     }
@@ -698,10 +698,10 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Removes a Category
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Category $categoryToRemove The Category to be removed
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Category $categoryToRemove The Category to be removed
      * @return void
      */
-    public function removeCategory(\BrainAppeal\BrainEventConnector\Domain\Model\Category $categoryToRemove)
+    public function removeCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\Category $categoryToRemove)
     {
         $this->categories->detach($categoryToRemove);
     }
@@ -709,7 +709,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Returns the categories
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\Category> $categories
+     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Category> $categories
      */
     public function getCategories()
     {
@@ -719,7 +719,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Sets the categories
      *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\Category> $categories
+     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Category> $categories
      * @return void
      */
     public function setCategories(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $categories)
@@ -730,10 +730,10 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Adds a Organizer
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Organizer $organizer
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Organizer $organizer
      * @return void
      */
-    public function addOrganizer(\BrainAppeal\BrainEventConnector\Domain\Model\Organizer $organizer)
+    public function addOrganizer(\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer $organizer)
     {
         $this->organizer->attach($organizer);
     }
@@ -741,10 +741,10 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Removes a Organizer
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\Organizer $organizerToRemove The Organizer to be removed
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Organizer $organizerToRemove The Organizer to be removed
      * @return void
      */
-    public function removeOrganizer(\BrainAppeal\BrainEventConnector\Domain\Model\Organizer $organizerToRemove)
+    public function removeOrganizer(\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer $organizerToRemove)
     {
         $this->organizer->detach($organizerToRemove);
     }
@@ -752,7 +752,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Returns the organizer
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\Organizer> $organizer
+     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer> $organizer
      */
     public function getOrganizer()
     {
@@ -762,7 +762,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Sets the organizer
      *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\Organizer> $organizer
+     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer> $organizer
      * @return void
      */
     public function setOrganizer(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $organizer)
@@ -773,10 +773,10 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Adds a Timerange
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\TimeRange $timeRange
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $timeRange
      * @return void
      */
-    public function addTimeRange(\BrainAppeal\BrainEventConnector\Domain\Model\TimeRange $timeRange)
+    public function addTimeRange(\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $timeRange)
     {
         $this->timeRanges->attach($timeRange);
     }
@@ -784,10 +784,10 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Removes a Timerange
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\TimeRange $timeRangeToRemove The TimeRange to be removed
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $timeRangeToRemove The TimeRange to be removed
      * @return void
      */
-    public function removeTimeRange(\BrainAppeal\BrainEventConnector\Domain\Model\TimeRange $timeRangeToRemove)
+    public function removeTimeRange(\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $timeRangeToRemove)
     {
         $this->timeRanges->detach($timeRangeToRemove);
     }
@@ -795,7 +795,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Returns the timeRanges
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\TimeRange> timeRanges
+     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange> timeRanges
      */
     public function getTimeRanges()
     {
@@ -805,7 +805,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Sets the timeRanges
      *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\TimeRange> $timeRanges
+     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange> $timeRanges
      * @return void
      */
     public function setTimeRanges(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $timeRanges)
@@ -816,10 +816,10 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Adds a TargetGroup
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup $targetGroup
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroup
      * @return void
      */
-    public function addTargetGroup(\BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup $targetGroup)
+    public function addTargetGroup(\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroup)
     {
         $this->targetGroups->attach($targetGroup);
     }
@@ -827,10 +827,10 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Removes a TargetGroup
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup $targetGroupToRemove The TargetGroup to be removed
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroupToRemove The TargetGroup to be removed
      * @return void
      */
-    public function removeTargetGroup(\BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup $targetGroupToRemove)
+    public function removeTargetGroup(\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroupToRemove)
     {
         $this->targetGroups->detach($targetGroupToRemove);
     }
@@ -838,7 +838,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Returns the targetGroups
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup> targetGroups
+     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup> targetGroups
      */
     public function getTargetGroups()
     {
@@ -848,7 +848,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Sets the targetGroups
      *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup> $targetGroups
+     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup> $targetGroups
      * @return void
      */
     public function setTargetGroups(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $targetGroups)
@@ -859,10 +859,10 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Adds a FilterCategory
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $filterCategory
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategory
      * @return void
      */
-    public function addFilterCategory(\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $filterCategory)
+    public function addFilterCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategory)
     {
         $this->filterCategories->attach($filterCategory);
     }
@@ -870,10 +870,10 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Removes a FilterCategory
      *
-     * @param \BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $filterCategoryToRemove The FilterCategory to be removed
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategoryToRemove The FilterCategory to be removed
      * @return void
      */
-    public function removeFilterCategory(\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory $filterCategoryToRemove)
+    public function removeFilterCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategoryToRemove)
     {
         $this->filterCategories->detach($filterCategoryToRemove);
     }
@@ -881,7 +881,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Returns the filterCategories
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory> filterCategories
+     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory> filterCategories
      */
     public function getFilterCategories()
     {
@@ -891,7 +891,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     /**
      * Sets the filterCategories
      *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory> $filterCategories
+     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory> $filterCategories
      * @return void
      */
     public function setFilterCategories(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $filterCategories)
@@ -929,8 +929,8 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     {
         $endDate = null;
         foreach ($this->getTimeRanges() as $timeRange) {
-            if (null === $endDate || $timeRange->getStartDate() > $endDate) {
-                $endDate = $timeRange->getStartDate();
+            if (null === $endDate || $timeRange->getEndDate() > $endDate) {
+                $endDate = $timeRange->getEndDate();
             }
         }
 

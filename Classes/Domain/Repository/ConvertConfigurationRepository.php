@@ -1,10 +1,10 @@
 <?php
 
-namespace BrainAppeal\BrainEventConnector\Domain\Repository;
+namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
 
 /***
  *
- * This file is part of the "BrainEventConvert2News" Extension for TYPO3 CMS.
+ * This file is part of the "CampusEventsConvert2News" Extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
@@ -16,7 +16,7 @@ namespace BrainAppeal\BrainEventConnector\Domain\Repository;
 /**
  * The repository for ConverterConfigurations
  */
-abstract class Convert2ObjectConfigurationRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+abstract class ConvertConfigurationRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
     /**
      * @param null|int|int[] $pid

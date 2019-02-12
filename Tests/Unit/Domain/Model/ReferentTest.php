@@ -1,5 +1,5 @@
 <?php
-namespace BrainAppeal\BrainEventConnector\Tests\Unit\Domain\Model;
+namespace BrainAppeal\CampusEventsConnector\Tests\Unit\Domain\Model;
 
 /**
  * Test case.
@@ -7,14 +7,14 @@ namespace BrainAppeal\BrainEventConnector\Tests\Unit\Domain\Model;
 class ReferentTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {
     /**
-     * @var \BrainAppeal\BrainEventConnector\Domain\Model\Referent
+     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\Referent
      */
     protected $subject = null;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->subject = new \BrainAppeal\BrainEventConnector\Domain\Model\Referent();
+        $this->subject = new \BrainAppeal\CampusEventsConnector\Domain\Model\Referent();
     }
 
     protected function tearDown()

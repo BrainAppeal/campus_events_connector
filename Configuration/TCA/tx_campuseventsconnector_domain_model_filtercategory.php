@@ -1,10 +1,8 @@
 <?php
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_timerange',
-        'label' => 'start_date',
-        'label_alt' => 'end_date',
-        'label_alt_force' => 1,
+        'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory',
+        'label' => 'name',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'cruser_id' => 'cruser_id',
@@ -14,18 +12,18 @@ return [
         'transOrigDiffSourceField' => 'l10n_diffsource',
 //        'delete' => 'deleted',
         'enablecolumns' => [
-            'disabled' => 'hidden',
-            'starttime' => 'starttime',
-            'endtime' => 'endtime',
+//            'disabled' => 'hidden',
+//            'starttime' => 'starttime',
+//            'endtime' => 'endtime',
         ],
-        'searchFields' => 'start_date,end_date',
-        'iconfile' => 'EXT:brain_event_connector/Resources/Public/Icons/tx_braineventconnector_domain_model_timerange.gif'
+        'searchFields' => 'name,parent',
+        'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_filtercategory.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, start_date, end_date',
+        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, parent',
     ],
     'types' => [
-        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, start_date, end_date, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
+        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, parent, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -55,8 +53,8 @@ return [
                 'items' => [
                     ['', 0],
                 ],
-                'foreign_table' => 'tx_braineventconnector_domain_model_timerange',
-                'foreign_table_where' => 'AND tx_braineventconnector_domain_model_timerange.pid=###CURRENT_PID### AND tx_braineventconnector_domain_model_timerange.sys_language_uid IN (-1,0)',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_filtercategory',
+                'foreign_table_where' => 'AND tx_campuseventsconnector_domain_model_filtercategory.pid=###CURRENT_PID### AND tx_campuseventsconnector_domain_model_filtercategory.sys_language_uid IN (-1,0)',
             ],
         ],
         'l10n_diffsource' => [
@@ -110,37 +108,18 @@ return [
             ],
         ],
 
-        'start_date' => [
+        'name' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_timerange.start_date',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
-                'dbType' => 'datetime',
                 'type' => 'input',
-                'size' => 12,
-                'eval' => 'datetime',
-                'default' => '0000-00-00 00:00:00'
-            ],
-        ],
-        'end_date' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_timerange.end_date',
-            'config' => [
-                'dbType' => 'datetime',
-                'type' => 'input',
-                'size' => 12,
-                'eval' => 'datetime',
-                'default' => '0000-00-00 00:00:00'
-            ],
-        ],
-    
-        'event' => [
-            'config' => [
-                'type' => 'passthrough',
+                'size' => 30,
+                'eval' => 'trim'
             ],
         ],
         'import_source' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_timerange.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -149,7 +128,7 @@ return [
         ],
         'import_id' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_timerange.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -158,12 +137,32 @@ return [
         ],
         'imported_at' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_timerange.name',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim'
             ],
         ],
+        'parent' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.parent',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectTree',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_filtercategory',
+                'minitems' => 0,
+                'maxitems' => 1,
+
+                'size' => 10,
+                'treeConfig' => array(
+                    'parentField' => 'parent',
+                    'appearance' => array(
+                        'expandAll' => true,
+                    ),
+                ),
+            ],
+        ],
+    
     ],
 ];

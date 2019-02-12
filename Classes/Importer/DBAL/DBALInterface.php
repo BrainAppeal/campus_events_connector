@@ -11,7 +11,7 @@
  * @since     2018-07-03
  */
 
-namespace BrainAppeal\BrainEventConnector\Importer\DBAL;
+namespace BrainAppeal\CampusEventsConnector\Importer\DBAL;
 
 
 interface DBALInterface

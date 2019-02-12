@@ -1,7 +1,7 @@
 <?php
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_convert2objectconfiguration',
+        'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_convertconfiguration',
         'label' => 'uid',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -14,7 +14,7 @@ return [
         'type' => 'type',
         'typeicon_column' => 'type',
         'typeicon_classes' => [
-            'default' => 'ext-convert2objectconfiguration-type-default'
+            'default' => 'ext-convertconfiguration-type-default'
         ],
         'enablecolumns' => [
             'disabled' => 'hidden',
@@ -22,7 +22,7 @@ return [
             'endtime' => 'endtime',
         ],
         'searchFields' => 'target_pid',
-        'iconfile' => 'EXT:brain_event_connector/Resources/Public/Icons/tx_braineventconnector_domain_model_convert2objectconfiguration.gif'
+        'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_convertconfiguration.gif'
     ],
     'interface' => [
         'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, type, target_pid, template_path, target_groups, filter_categories',
@@ -58,8 +58,8 @@ return [
                 'items' => [
                     ['', 0],
                 ],
-                'foreign_table' => 'tx_braineventconnector_domain_model_convert2objectconfiguration',
-                'foreign_table_where' => 'AND tx_braineventconnector_domain_model_convert2objectconfiguration.pid=###CURRENT_PID### AND tx_braineventconnector_domain_model_convert2objectconfiguration.sys_language_uid IN (-1,0)',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_convertconfiguration',
+                'foreign_table_where' => 'AND tx_campuseventsconnector_domain_model_convertconfiguration.pid=###CURRENT_PID### AND tx_campuseventsconnector_domain_model_convertconfiguration.sys_language_uid IN (-1,0)',
             ],
         ],
         'l10n_diffsource' => [
@@ -119,7 +119,7 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    0 => ['LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_convert2objectconfiguration.select_type', 0, 'ext-convert2objectconfiguration-type-default']
+                    0 => ['LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_convertconfiguration.select_type', 0, 'ext-convertconfiguration-type-default']
                 ],
                 'showIconTable' => false,
                 'size' => 1,
@@ -129,7 +129,7 @@ return [
 
         'target_pid' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_convert2objectconfiguration.target_pid',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_convertconfiguration.target_pid',
             'config' => [
                 'type' => 'group',
                 'internal_type' => 'db',
@@ -143,7 +143,7 @@ return [
         ],
         'template_path' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_convert2objectconfiguration.template_path',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_convertconfiguration.template_path',
             'config' => [
                 'type' => 'group',
                 'internal_type' => 'folder',
@@ -157,13 +157,13 @@ return [
         ],
         'target_groups' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_convert2objectconfiguration.target_groups',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_convertconfiguration.target_groups',
             'config' => [
-                'MM' => 'tx_braineventconnector_convert2objconf_targetgroup_mm',
+                'MM' => 'tx_campuseventsconnector_convertconf_targetgroup_mm',
 
                 'type' => 'select',
                 'renderType' => 'selectTree',
-                'foreign_table' => 'tx_braineventconnector_domain_model_filtercategory',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_filtercategory',
                 'minitems' => 0,
                 'maxitems' => 9999,
 
@@ -180,12 +180,12 @@ return [
         ],
         'filter_categories' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:brain_event_connector/Resources/Private/Language/locallang_db.xlf:tx_braineventconnector_domain_model_convert2objectconfiguration.filter_categories',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_convertconfiguration.filter_categories',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
-                'foreign_table' => 'tx_braineventconnector_domain_model_filtercategory',
-                'MM' => 'tx_braineventconnector_convert2objconf_filtercategory_mm',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_filtercategory',
+                'MM' => 'tx_campuseventsconnector_convertconf_filtercategory_mm',
                 'size' => 10,
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
@@ -211,7 +211,7 @@ return [
                         'title' => 'Create new', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.add
                         'icon' => 'actions-add',
                         'params' => [
-                            'table' => 'tx_braineventconnector_domain_model_filtercategory',
+                            'table' => 'tx_campuseventsconnector_domain_model_filtercategory',
                             'pid' => '###CURRENT_PID###',
                             'setValue' => 'prepend'
                         ],
@@ -219,6 +219,6 @@ return [
                 ],
             ],
         ],
-    
+
     ],
 ];

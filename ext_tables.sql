@@ -1,7 +1,7 @@
 #
-# Table structure for table 'tx_braineventconnector_domain_model_event'
+# Table structure for table 'tx_campuseventsconnector_domain_model_event'
 #
-CREATE TABLE tx_braineventconnector_domain_model_event (
+CREATE TABLE tx_campuseventsconnector_domain_model_event (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
@@ -65,9 +65,9 @@ CREATE TABLE tx_braineventconnector_domain_model_event (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_domain_model_location'
+# Table structure for table 'tx_campuseventsconnector_domain_model_location'
 #
-CREATE TABLE tx_braineventconnector_domain_model_location (
+CREATE TABLE tx_campuseventsconnector_domain_model_location (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
@@ -112,9 +112,9 @@ CREATE TABLE tx_braineventconnector_domain_model_location (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_domain_model_speaker'
+# Table structure for table 'tx_campuseventsconnector_domain_model_speaker'
 #
-CREATE TABLE tx_braineventconnector_domain_model_speaker (
+CREATE TABLE tx_campuseventsconnector_domain_model_speaker (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
@@ -158,9 +158,9 @@ CREATE TABLE tx_braineventconnector_domain_model_speaker (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_domain_model_organizer'
+# Table structure for table 'tx_campuseventsconnector_domain_model_organizer'
 #
-CREATE TABLE tx_braineventconnector_domain_model_organizer (
+CREATE TABLE tx_campuseventsconnector_domain_model_organizer (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
@@ -202,9 +202,9 @@ CREATE TABLE tx_braineventconnector_domain_model_organizer (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_domain_model_timerange'
+# Table structure for table 'tx_campuseventsconnector_domain_model_timerange'
 #
-CREATE TABLE tx_braineventconnector_domain_model_timerange (
+CREATE TABLE tx_campuseventsconnector_domain_model_timerange (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
@@ -249,9 +249,9 @@ CREATE TABLE tx_braineventconnector_domain_model_timerange (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_domain_model_category'
+# Table structure for table 'tx_campuseventsconnector_domain_model_category'
 #
-CREATE TABLE tx_braineventconnector_domain_model_category (
+CREATE TABLE tx_campuseventsconnector_domain_model_category (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
@@ -293,9 +293,9 @@ CREATE TABLE tx_braineventconnector_domain_model_category (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_domain_model_targetgroup'
+# Table structure for table 'tx_campuseventsconnector_domain_model_targetgroup'
 #
-CREATE TABLE tx_braineventconnector_domain_model_targetgroup (
+CREATE TABLE tx_campuseventsconnector_domain_model_targetgroup (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
@@ -337,9 +337,9 @@ CREATE TABLE tx_braineventconnector_domain_model_targetgroup (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_domain_model_filtercategory'
+# Table structure for table 'tx_campuseventsconnector_domain_model_filtercategory'
 #
-CREATE TABLE tx_braineventconnector_domain_model_filtercategory (
+CREATE TABLE tx_campuseventsconnector_domain_model_filtercategory (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
@@ -382,9 +382,9 @@ CREATE TABLE tx_braineventconnector_domain_model_filtercategory (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_domain_model_timerange'
+# Table structure for table 'tx_campuseventsconnector_domain_model_timerange'
 #
-CREATE TABLE tx_braineventconnector_domain_model_timerange (
+CREATE TABLE tx_campuseventsconnector_domain_model_timerange (
 
 	event int(11) unsigned DEFAULT '0' NOT NULL,
 
@@ -395,9 +395,9 @@ CREATE TABLE tx_braineventconnector_domain_model_timerange (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_domain_model_convert2objectconfiguration'
+# Table structure for table 'tx_campuseventsconnector_domain_model_convertconfiguration'
 #
-CREATE TABLE tx_braineventconnector_domain_model_convert2objectconfiguration (
+CREATE TABLE tx_campuseventsconnector_domain_model_convertconfiguration (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
@@ -440,9 +440,9 @@ CREATE TABLE tx_braineventconnector_domain_model_convert2objectconfiguration (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_convert2objconf_filtercategory_mm'
+# Table structure for table 'tx_campuseventsconnector_convertconf_filtercategory_mm'
 #
-CREATE TABLE tx_braineventconnector_convert2objconf_filtercategory_mm (
+CREATE TABLE tx_campuseventsconnector_convertconf_filtercategory_mm (
 	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
 	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
 	sorting int(11) unsigned DEFAULT '0' NOT NULL,
@@ -454,9 +454,9 @@ CREATE TABLE tx_braineventconnector_convert2objconf_filtercategory_mm (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_convert2objconf_targetgroup_mm'
+# Table structure for table 'tx_campuseventsconnector_convertconf_targetgroup_mm'
 #
-CREATE TABLE tx_braineventconnector_convert2objconf_targetgroup_mm (
+CREATE TABLE tx_campuseventsconnector_convertconf_targetgroup_mm (
 	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
 	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
 	sorting int(11) unsigned DEFAULT '0' NOT NULL,
@@ -468,9 +468,9 @@ CREATE TABLE tx_braineventconnector_convert2objconf_targetgroup_mm (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_event_speaker_mm'
+# Table structure for table 'tx_campuseventsconnector_event_speaker_mm'
 #
-CREATE TABLE tx_braineventconnector_event_speaker_mm (
+CREATE TABLE tx_campuseventsconnector_event_speaker_mm (
 	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
 	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
 	sorting int(11) unsigned DEFAULT '0' NOT NULL,
@@ -482,9 +482,9 @@ CREATE TABLE tx_braineventconnector_event_speaker_mm (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_event_category_mm'
+# Table structure for table 'tx_campuseventsconnector_event_category_mm'
 #
-CREATE TABLE tx_braineventconnector_event_category_mm (
+CREATE TABLE tx_campuseventsconnector_event_category_mm (
 	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
 	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
 	sorting int(11) unsigned DEFAULT '0' NOT NULL,
@@ -496,9 +496,9 @@ CREATE TABLE tx_braineventconnector_event_category_mm (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_event_organizer_mm'
+# Table structure for table 'tx_campuseventsconnector_event_organizer_mm'
 #
-CREATE TABLE tx_braineventconnector_event_organizer_mm (
+CREATE TABLE tx_campuseventsconnector_event_organizer_mm (
 	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
 	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
 	sorting int(11) unsigned DEFAULT '0' NOT NULL,
@@ -510,9 +510,9 @@ CREATE TABLE tx_braineventconnector_event_organizer_mm (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_event_filtercategory_mm'
+# Table structure for table 'tx_campuseventsconnector_event_filtercategory_mm'
 #
-CREATE TABLE tx_braineventconnector_event_filtercategory_mm (
+CREATE TABLE tx_campuseventsconnector_event_filtercategory_mm (
 	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
 	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
 	sorting int(11) unsigned DEFAULT '0' NOT NULL,
@@ -524,9 +524,9 @@ CREATE TABLE tx_braineventconnector_event_filtercategory_mm (
 );
 
 #
-# Table structure for table 'tx_braineventconnector_event_targetgroup_mm'
+# Table structure for table 'tx_campuseventsconnector_event_targetgroup_mm'
 #
-CREATE TABLE tx_braineventconnector_event_targetgroup_mm (
+CREATE TABLE tx_campuseventsconnector_event_targetgroup_mm (
 	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
 	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
 	sorting int(11) unsigned DEFAULT '0' NOT NULL,

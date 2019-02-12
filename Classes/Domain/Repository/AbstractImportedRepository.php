@@ -1,6 +1,6 @@
 <?php
 
-namespace BrainAppeal\BrainEventConnector\Domain\Repository;
+namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
 
 /***
  *
@@ -13,7 +13,7 @@ namespace BrainAppeal\BrainEventConnector\Domain\Repository;
  *
  ***/
 
-use BrainAppeal\BrainEventConnector\Domain\Model\ImportedModelInterface;
+use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 
 /**
  * Class AbstractImportedRepository

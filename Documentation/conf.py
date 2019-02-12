@@ -19,7 +19,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = u'brain_event_connector'
+project = u'campus_events_connector'
 copyright = u'2018, Brain Appeal GmbH'
 author = u'Brain Appeal GmbH'
 
@@ -101,7 +101,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'brain_event_connectordoc'
+htmlhelp_basename = 'campus_events_connectordoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -128,7 +128,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'brain_event_connector.tex', u'brain_event_connector Documentation',
+    (master_doc, 'campus_events_connector.tex', u'campus_events_connector Documentation',
      u'ba', 'manual'),
 ]
 
@@ -138,7 +138,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'brain_event_connector', u'brain_event_connector Documentation',
+    (master_doc, 'campus_events_connector', u'campus_events_connector Documentation',
      [author], 1)
 ]
 
@@ -149,8 +149,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'brain_event_connector', u'brain_event_connector Documentation',
-     author, 'brain_event_connector', 'One line description of project.',
+    (master_doc, 'campus_events_connector', u'campus_events_connector Documentation',
+     author, 'campus_events_connector', 'One line description of project.',
      'Miscellaneous'),
 ]
 

@@ -11,19 +11,19 @@
  * @since     2018-07-03
  */
 
-namespace BrainAppeal\BrainEventConnector\Importer\ObjectGenerator;
+namespace BrainAppeal\CampusEventsConnector\Importer\ObjectGenerator;
 
 
-use BrainAppeal\BrainEventConnector\Domain\Model\Category;
-use BrainAppeal\BrainEventConnector\Domain\Model\Event;
-use BrainAppeal\BrainEventConnector\Domain\Model\FilterCategory;
-use BrainAppeal\BrainEventConnector\Domain\Model\ImportedModelInterface;
-use BrainAppeal\BrainEventConnector\Domain\Model\Location;
-use BrainAppeal\BrainEventConnector\Domain\Model\Organizer;
-use BrainAppeal\BrainEventConnector\Domain\Model\Speaker;
-use BrainAppeal\BrainEventConnector\Domain\Model\TargetGroup;
-use BrainAppeal\BrainEventConnector\Domain\Model\TimeRange;
-use BrainAppeal\BrainEventConnector\Importer\DBAL\DBALInterface;
+use BrainAppeal\CampusEventsConnector\Domain\Model\Category;
+use BrainAppeal\CampusEventsConnector\Domain\Model\Event;
+use BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory;
+use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use BrainAppeal\CampusEventsConnector\Domain\Model\Location;
+use BrainAppeal\CampusEventsConnector\Domain\Model\Organizer;
+use BrainAppeal\CampusEventsConnector\Domain\Model\Speaker;
+use BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup;
+use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
+use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 
 abstract class ImportObjectGenerator implements SingletonInterface
@@ -54,7 +54,7 @@ abstract class ImportObjectGenerator implements SingletonInterface
     private function getDBAL()
     {
         if (null === $this->dbal) {
-            $this->dbal = \BrainAppeal\BrainEventConnector\Importer\DBAL\DBALFactory::getInstance();
+            $this->dbal = \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory::getInstance();
         }
 
         return $this->dbal;

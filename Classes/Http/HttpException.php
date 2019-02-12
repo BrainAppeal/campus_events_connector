@@ -11,7 +11,7 @@
  * @since     2018-07-24
  */
 
-namespace BrainAppeal\BrainEventConnector\Http;
+namespace BrainAppeal\CampusEventsConnector\Http;
 
 
 class HttpException extends \Exception

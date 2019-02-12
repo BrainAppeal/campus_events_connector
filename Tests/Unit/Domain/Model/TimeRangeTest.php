@@ -1,5 +1,5 @@
 <?php
-namespace BrainAppeal\BrainEventConnector\Tests\Unit\Domain\Model;
+namespace BrainAppeal\CampusEventsConnector\Tests\Unit\Domain\Model;
 
 /**
  * Test case.
@@ -7,14 +7,14 @@ namespace BrainAppeal\BrainEventConnector\Tests\Unit\Domain\Model;
 class TimeRangeTest extends \TYPO3\CMS\Core\Tests\UnitTestCase
 {
     /**
-     * @var \BrainAppeal\BrainEventConnector\Domain\Model\TimeRange
+     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange
      */
     protected $subject = null;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->subject = new \BrainAppeal\BrainEventConnector\Domain\Model\TimeRange();
+        $this->subject = new \BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange();
     }
 
     protected function tearDown()

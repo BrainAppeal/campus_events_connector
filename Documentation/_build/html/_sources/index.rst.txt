@@ -6,7 +6,7 @@
 .. include:: Includes.txt
 
 
-brain_event_connector
+campus_events_connector
 =================
 .. toctree::
    :caption: Table of Contents

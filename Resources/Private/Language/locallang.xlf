@@ -1,192 +1,192 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="messages" date="2018-07-03T07:24:15Z" product-name="brain_event_connector">
+	<file source-language="en" datatype="plaintext" original="messages" date="2018-07-03T07:24:15Z" product-name="campus_events_connector">
 		<header/>
 		<body>
-			<trans-unit id="tx_braineventconnector_domain_model_event">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event">
 				<source>Events</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.status">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.status">
 				<source>Status</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.canceled">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.canceled">
 				<source>Canceled</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.url">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.url">
 				<source>Url</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.name">
 				<source>Name</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.subtitle">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.subtitle">
 				<source>Subtitle</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.description">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.description">
 				<source>Description</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.short_description">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.short_description">
 				<source>Short Description</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.show_in_news">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.show_in_news">
 				<source>Show In News</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.news_text">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.news_text">
 				<source>News Text</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.learning_objective">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.learning_objective">
 				<source>Learning Objective</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.images">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.images">
 				<source>Images</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.attachments">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.attachments">
 				<source>Attachments</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.registration_possible">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.registration_possible">
 				<source>Registration Possible</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.min_participants">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.min_participants">
 				<source>Min Participants</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.max_participants">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.max_participants">
 				<source>Max Participants</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.participants">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.participants">
 				<source>Participants</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.speakers">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.speakers">
 				<source>Speakers</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.time_ranges">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.time_ranges">
 				<source>Time Ranges</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.location">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.location">
 				<source>Location</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.categories">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.categories">
 				<source>Categories</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.organizer">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.organizer">
 				<source>Organizer</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.target_groups">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.target_groups">
 				<source>Target Groups</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_event.filter_categories">
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.filter_categories">
 				<source>Filter Categories</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_location">
+			<trans-unit id="tx_campuseventsconnector_domain_model_location">
 				<source>Location</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_location.name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.name">
 				<source>Name</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_location.street_name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.street_name">
 				<source>Street Name</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_location.town">
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.town">
 				<source>Town</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_location.zip_code">
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.zip_code">
 				<source>Zip Code</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_speaker">
+			<trans-unit id="tx_campuseventsconnector_domain_model_speaker">
 				<source>Speaker</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_speaker.title">
+			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.title">
 				<source>Title</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_speaker.first_name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.first_name">
 				<source>First Name</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_speaker.last_name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.last_name">
 				<source>Last Name</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_organizer">
+			<trans-unit id="tx_campuseventsconnector_domain_model_organizer">
 				<source>Organizer</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_organizer.name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_organizer.name">
 				<source>Name</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_timerange">
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange">
 				<source>Time Range</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_timerange.start_date">
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_date">
 				<source>Start Date</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_timerange.end_date">
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date">
 				<source>End Date</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_category">
+			<trans-unit id="tx_campuseventsconnector_domain_model_category">
 				<source>Category</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_category.name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_category.name">
 				<source>Name</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_targetgroup">
+			<trans-unit id="tx_campuseventsconnector_domain_model_targetgroup">
 				<source>Target Group</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_targetgroup.name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_targetgroup.name">
 				<source>Name</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_filtercategory">
+			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory">
 				<source>Filter Category</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_filtercategory.name">
+			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory.name">
 				<source>Name</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_filtercategory.parent">
+			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory.parent">
 				<source>Parent Filter Category</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration">
 				<source>Convert Configuration</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.target_pid">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_pid">
 				<source>Target PID</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.template_path">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.template_path">
 				<source>Template Path</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.filter_categories">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.filter_categories">
 				<source>Filter Categories</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_domain_model_convert2objectconfiguration.target_groups">
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_groups">
 				<source>Target Groups</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_task_eventimporttask.name">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.name">
 				<source>Import events from CampusEvents</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_task_eventimporttask.description">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.description">
 				<source>Task for importing Events from defined source</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_task_eventimporttask.base_uri">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.base_uri">
 				<source>Base URL of source system</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_task_eventimporttask.api_key">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.api_key">
 				<source>API Key for source system</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_task_eventimporttask.pid">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.pid">
 				<source>PageID for imported records</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_task_eventimporttask.storage_id">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.storage_id">
 				<source>Storage ID</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_task_eventimporttask.storage_folder">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.storage_folder">
 				<source>Storage Folder</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_base_uri">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri">
 				<source>Invalid Base URI</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_api_key">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_api_key">
 				<source>Invalid API Key</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_pid">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_pid">
 				<source>Invalid Page ID</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_storage_id">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_id">
 				<source>Invalid Storage ID</source>
 			</trans-unit>
-			<trans-unit id="tx_braineventconnector_task_eventimporttask.error.invalid_storage_folder">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_folder">
 				<source>Invalid Storage Folder</source>
 			</trans-unit>
 		</body>
