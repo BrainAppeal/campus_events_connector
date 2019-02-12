@@ -119,7 +119,7 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    0 => ['LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_convertconfiguration.select_type', 0, 'ext-convert2objectconfiguration-type-default']
+                    0 => ['LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_convertconfiguration.select_type', 0, 'ext-convertconfiguration-type-default']
                 ],
                 'showIconTable' => false,
                 'size' => 1,
@@ -219,6 +219,6 @@ return [
                 ],
             ],
         ],
-    
+
     ],
 ];
