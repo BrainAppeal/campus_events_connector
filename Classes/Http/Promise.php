@@ -1,15 +1,16 @@
 <?php
 /**
- * Mindbase 3
+ * campus_events_connector comes with ABSOLUTELY NO WARRANTY
+ * See the GNU GeneralPublic License for more details.
+ * https://www.gnu.org/licenses/gpl-2.0
  *
- * PHP version 5.6
+ * Copyright (C) 2019 Brain Appeal GmbH
  *
- * @author    joshua.billert <joshua.billert@brain-appeal.com>
- * @copyright 2018 Brain Appeal GmbH (www.brain-appeal.com)
- * @license
- * @link      http://www.brain-appeal.com/
- * @since     2018-07-24
+ * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
+ * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
+ * @link      https://www.campus-events.com/
  */
+
 
 namespace BrainAppeal\CampusEventsConnector\Http;
 
