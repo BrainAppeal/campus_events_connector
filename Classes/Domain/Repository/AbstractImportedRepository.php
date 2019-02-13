@@ -1,17 +1,17 @@
 <?php
+/**
+ * campus_events_connector comes with ABSOLUTELY NO WARRANTY
+ * See the GNU GeneralPublic License for more details.
+ * https://www.gnu.org/licenses/gpl-2.0
+ *
+ * Copyright (C) 2019 Brain Appeal GmbH
+ *
+ * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
+ * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
+ * @link      https://www.campus-events.com/
+ */
 
 namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
-
-/***
- *
- * This file is part of the "BrainAppeal CampusEvents Connector" Extension for TYPO3 CMS.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- *  (c) 2018 Joshua Billert <joshua.billert@brain-appeal.com>, Brain Appeal GmbH
- *
- ***/
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 
@@ -19,10 +19,10 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
  * Class AbstractImportedRepository
  *
  * @author    joshua.billert <joshua.billert@brain-appeal.com>
- * @copyright 2018 Brain Appeal GmbH (www.brain-appeal.com)
- * @license
- * @link      http://www.brain-appeal.com/
- * @since     2018-07-03
+ * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
+ * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
+ * @link      https://www.brain-appeal.com/
+ * @since     2019-02-13
  */
 abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {

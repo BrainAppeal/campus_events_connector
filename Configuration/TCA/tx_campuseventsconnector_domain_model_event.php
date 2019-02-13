@@ -1,4 +1,16 @@
 <?php
+/**
+ * campus_events_connector comes with ABSOLUTELY NO WARRANTY
+ * See the GNU GeneralPublic License for more details.
+ * https://www.gnu.org/licenses/gpl-2.0
+ *
+ * Copyright (C) 2019 Brain Appeal GmbH
+ *
+ * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
+ * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
+ * @link      https://www.campus-events.com/
+ */
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event',
@@ -385,7 +397,7 @@ return [
                     ],
                 ],
             ],
-            
+
         ],
         'time_ranges' => [
             'exclude' => true,
@@ -462,7 +474,7 @@ return [
                     ],
                 ],
             ],
-            
+
         ],
         'organizer' => [
             'exclude' => true,
@@ -504,7 +516,7 @@ return [
                     ],
                 ],
             ],
-            
+
         ],
         'target_groups' => [
             'exclude' => true,
@@ -616,6 +628,6 @@ return [
                 'eval' => 'trim'
             ],
         ],
-    
+
     ],
 ];
