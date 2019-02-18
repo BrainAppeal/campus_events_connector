@@ -124,8 +124,8 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
     private function getTableForModelClass($modelClass)
     {
         if (!isset($this->classTableMapping[$modelClass])) {
-            $dataMapper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
-            $this->classTableMapping[$modelClass] = $dataMapper->getDataMap($modelClass)->getTableName();
+            $dataMapper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory::class);
+            $this->classTableMapping[$modelClass] = $dataMapper->buildDataMap($modelClass)->getTableName();
         }
 
         return $this->classTableMapping[$modelClass];
