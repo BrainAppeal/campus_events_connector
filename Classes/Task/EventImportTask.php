@@ -52,6 +52,18 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
     }
 
     /**
+     * @return \TYPO3\CMS\Core\DataHandling\DataHandler
+     */
+    private function getCacheService()
+    {
+        /** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
+        $dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\DataHandling\DataHandler::class);
+        $dataHandler->start([], []);
+
+        return $dataHandler;
+    }
+
+    /**
      * @inheritdoc
      */
     public function execute() {
@@ -60,7 +72,28 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
 
         $this->callHooks();
 
+        if ($importer->hasChangedData()) {
+            $this->clearPageCache($this->pid);
+        }
+
         return $success;
+    }
+
+    private function clearPageCache($pid)
+    {
+        $pageIdsToClear[$pid] = $pid;
+
+        $pageTS = \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig($pid);
+        if (isset($pageTS['TCEMAIN.']['clearCacheCmd'])) {
+            $clearCacheCommands = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', strtolower($pageTS['TCEMAIN.']['clearCacheCmd']), true);
+            $clearCacheCommands = array_unique($clearCacheCommands);
+            foreach ($clearCacheCommands as $clearCacheCommand) {
+                if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($clearCacheCommand)) {
+                    $pageIdsToClear[$clearCacheCommand] = $clearCacheCommand;
+                }
+            }
+        }
+        $this->getCacheService()->clear_cacheCmd(implode(',', $pageIdsToClear));
     }
 
     private function callHooks()

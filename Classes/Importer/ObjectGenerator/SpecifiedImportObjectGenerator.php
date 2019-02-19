@@ -38,6 +38,10 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
      */
     protected function assignEventProperties($class, $object, $data)
     {
+        if (empty($object->getHash()) || $object->getHash() != $data['hash']) {
+            $this->setDataChanged();
+        }
+
         $object->setName($data['name']);
         $object->setCanceled($data['canceled']);
         $object->setUrl($data['url']);
@@ -52,6 +56,7 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
         $object->setMinParticipants($data['min_participants']);
         $object->setMaxParticipants($data['max_participants']);
         $object->setParticipants($data['participants']);
+        $object->setHash($data['hash']);
 
         /** @var TimeRange[] $timeRanges */
         $timeRanges = $this->generateMultiple(TimeRange::class, $data['timeranges']);

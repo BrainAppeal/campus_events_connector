@@ -11,6 +11,10 @@
 				<source>Status</source>
 				<target>Status</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.hash">
+				<source>Hash</source>
+				<target>Hashwert</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.canceled">
 				<source>Canceled</source>
 				<target>Abgesagt</target>

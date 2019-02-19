@@ -9,6 +9,9 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.status">
 				<source>Status</source>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.hash">
+				<source>Hash</source>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.canceled">
 				<source>Canceled</source>
 			</trans-unit>
