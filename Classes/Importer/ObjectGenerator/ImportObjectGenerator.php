@@ -48,6 +48,11 @@ abstract class ImportObjectGenerator implements SingletonInterface
     private $objects;
 
     /**
+     * @var bool
+     */
+    private $dataChanged = false;
+
+    /**
      * @return DBALInterface
      */
     private function getDBAL()
@@ -179,6 +184,19 @@ abstract class ImportObjectGenerator implements SingletonInterface
                 $this->assignTimeRangeProperties($class, $object, $data);
                 break;
         }
+    }
+
+    protected function setDataChanged()
+    {
+        $this->dataChanged = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDataChanged()
+    {
+        return $this->dataChanged;
     }
 
     /**

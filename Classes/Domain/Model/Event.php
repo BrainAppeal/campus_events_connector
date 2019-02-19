@@ -184,6 +184,13 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     protected $filterCategories = null;
 
     /**
+     * hash
+     *
+     * @var string
+     */
+    protected $hash = '';
+
+    /**
      * __construct
      */
     public function __construct()
@@ -899,6 +906,23 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
     public function setFilterCategories(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $filterCategories)
     {
         $this->filterCategories = $filterCategories;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHash()
+    {
+        return $this->hash;
+    }
+
+    /**
+     * @param string $hash
+     * @return Event
+     */
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
     }
 
     /**

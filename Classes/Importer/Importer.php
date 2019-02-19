@@ -22,6 +22,10 @@ use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
 class Importer
 {
+    /**
+     * @var ImportObjectGenerator
+     */
+    private $importObjectGenerator;
 
     /**
      * @param string $baseUri
@@ -45,11 +49,13 @@ class Importer
      */
     private function getImportObjectGenerator($baseUri, $pid)
     {
-        /** @var ImportObjectGenerator $importObjectGenerator */
-        $importObjectGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(SpecifiedImportObjectGenerator::class);
-        $importObjectGenerator->init($baseUri, $pid);
+        if (null === $this->importObjectGenerator) {
+            /** @var ImportObjectGenerator $importObjectGenerator */
+            $this->importObjectGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(SpecifiedImportObjectGenerator::class);
+            $this->importObjectGenerator->init($baseUri, $pid);
+        }
 
-        return $importObjectGenerator;
+        return $this->importObjectGenerator;
     }
 
     /**
@@ -82,7 +88,7 @@ class Importer
      * @param int|null $pid
      * @param int $storageId
      * @param string $storageFolder
-     * @return bool
+     * @return bool if any data was changed
      */
     public function import($baseUri, $apiKey, $pid, $storageId, $storageFolder)
     {
@@ -114,5 +120,17 @@ class Importer
         $dbal->removeNotUpdatedObjects(FileReference::class, $baseUri, $pid, $importStartTimestamp, $excludeFileReferenceUids);
 
         return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasChangedData()
+    {
+        if (null !== $this->importObjectGenerator) {
+            return $this->importObjectGenerator->getDataChanged();
+        }
+
+        return false;
     }
 }

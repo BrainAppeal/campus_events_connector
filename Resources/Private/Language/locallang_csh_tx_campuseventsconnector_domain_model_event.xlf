@@ -6,6 +6,9 @@
 			<trans-unit id="status.description">
 				<source>status</source>
 			</trans-unit>
+			<trans-unit id="hash.description">
+				<source>hash</source>
+			</trans-unit>
 			<trans-unit id="canceled.description">
 				<source>canceled</source>
 			</trans-unit>

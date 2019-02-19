@@ -33,10 +33,10 @@ return [
         'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_event.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, images, attachments, registration_possible, min_participants, max_participants, participants, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories',
+        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, images, attachments, registration_possible, min_participants, max_participants, participants, hash, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories',
     ],
     'types' => [
-        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, registration_possible, min_participants, max_participants, participants, --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_csh_tx_campuseventsconnector_domain_model_event.xlf:tabs.relations, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories, --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_csh_tx_campuseventsconnector_domain_model_event.xlf:tabs.media, images, attachments, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
+        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, registration_possible, min_participants, max_participants, participants, hash, --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_csh_tx_campuseventsconnector_domain_model_event.xlf:tabs.relations, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories, --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_csh_tx_campuseventsconnector_domain_model_event.xlf:tabs.media, images, attachments, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -624,6 +624,15 @@ return [
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
                 'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'hash' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.hash',
+            'config' => [
+                'type' => 'none',
                 'size' => 30,
                 'eval' => 'trim'
             ],

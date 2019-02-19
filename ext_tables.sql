@@ -29,6 +29,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_event (
 	organizer int(11) unsigned DEFAULT '0' NOT NULL,
 	target_groups int(11) unsigned DEFAULT '0' NOT NULL,
 	filter_categories int(11) unsigned DEFAULT '0' NOT NULL,
+	hash varchar(255) DEFAULT '' NOT NULL,
 
 	import_source varchar(255) DEFAULT NULL,
 	import_id int(11) unsigned DEFAULT NULL ,
