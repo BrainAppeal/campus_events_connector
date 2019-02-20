@@ -20,8 +20,8 @@ synchronisiert. Über die Campus Events Schnittstelle werden alle aktiven Verans
 ### Erweiterbarkeit / Kombinationen
 * [campus_events_connector](https://github.com/BrainAppeal/campus_events_connector)                  – Datenaustausch von Campus Events zu TYPO3
 * [campus_events_frontend](https://github.com/BrainAppeal/campus_events_frontend)                    – Darstellung von Veranstaltungen und Termin auf TYPO3 Webseiten
-* [campus_events_convert2news](https://github.com/BrainAppeal/campus_events_convert2news)            – wandelt Event-Objekte in EXT:news Objekte 
-* [campus_events_convert2ttnews]( https://github.com/BrainAppeal/campus_events_convert2ttnews)       – wandelt Event-Objekte in EXT:tt_news Objekte 
+* [campus_events_convert2news](https://github.com/BrainAppeal/campus_events_convert2news)            – wandelt Campus Events-Objekte in EXT:news Objekte 
+* [campus_events_convert2ttnews]( https://github.com/BrainAppeal/campus_events_convert2ttnews)       – wandelt Campus Events-Objekte in EXT:tt_news Objekte 
 * [campus_events_convert2ttnewscal]( https://github.com/BrainAppeal/campus_events_convert2ttnewscal) – stellt Veranstaltungen als Kalenderblatt dar 
 
 ## Hinweis für TYPO3 Agenturen
