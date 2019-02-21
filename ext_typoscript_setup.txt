@@ -1,0 +1,9 @@
+# ==============================================
+# Persistence object mapping configuration
+# ==============================================
+config.tx_extbase.persistence.classes {
+	BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration {
+		subclasses {
+		}
+	}
+}

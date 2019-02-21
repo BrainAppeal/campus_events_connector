@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2018-07-03T07:24:15Z" product-name="campus_events_connector">
+		<header/>
+		<body>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event">
+				<source>Events</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.status">
+				<source>Status</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.hash">
+				<source>Hash</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.canceled">
+				<source>Canceled</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.url">
+				<source>Url</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.name">
+				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.subtitle">
+				<source>Subtitle</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.description">
+				<source>Description</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.short_description">
+				<source>Short Description</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.show_in_news">
+				<source>Show In News</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.news_text">
+				<source>News Text</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.learning_objective">
+				<source>Learning Objective</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.images">
+				<source>Images</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.attachments">
+				<source>Attachments</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.registration_possible">
+				<source>Registration Possible</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.min_participants">
+				<source>Min Participants</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.max_participants">
+				<source>Max Participants</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.participants">
+				<source>Participants</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.speakers">
+				<source>Speakers</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.time_ranges">
+				<source>Time Ranges</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.location">
+				<source>Location</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.categories">
+				<source>Categories</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.organizer">
+				<source>Organizer</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.target_groups">
+				<source>Target Groups</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.filter_categories">
+				<source>Filter Categories</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_location">
+				<source>Location</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.name">
+				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.street_name">
+				<source>Street Name</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.town">
+				<source>Town</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.zip_code">
+				<source>Zip Code</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_speaker">
+				<source>Speaker</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.title">
+				<source>Title</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.first_name">
+				<source>First Name</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.last_name">
+				<source>Last Name</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_organizer">
+				<source>Organizer</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_organizer.name">
+				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange">
+				<source>Time Range</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_date">
+				<source>Start Date</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date">
+				<source>End Date</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_category">
+				<source>Category</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_category.name">
+				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_targetgroup">
+				<source>Target Group</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_targetgroup.name">
+				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory">
+				<source>Filter Category</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory.name">
+				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory.parent">
+				<source>Parent Filter Category</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration">
+				<source>Convert Configuration</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.select_type">
+				<source>Select convert target</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_pid">
+				<source>Target PID</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.template_path">
+				<source>Template Path</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.filter_categories">
+				<source>Filter Categories</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_groups">
+				<source>Target Groups</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
