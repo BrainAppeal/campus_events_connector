@@ -9,6 +9,12 @@
 			<trans-unit id="end_date.description">
 				<source>endDate</source>
 			</trans-unit>
+			<trans-unit id="start_date_is_set.description">
+				<source>startDateIsSet</source>
+			</trans-unit>
+			<trans-unit id="end_date_is_set.description">
+				<source>endDateIsSet</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

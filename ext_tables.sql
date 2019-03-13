@@ -213,7 +213,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_timerange (
 	event int(11) unsigned DEFAULT '0' NOT NULL,
 
 	start_date datetime DEFAULT '1900-01-01 00:00:00',
+	start_date_is_set smallint(5) unsigned DEFAULT '0' NOT NULL,
 	end_date datetime DEFAULT '1900-01-01 00:00:00',
+	end_date_is_set smallint(5) unsigned DEFAULT '0' NOT NULL,
 
 	import_source varchar(255) DEFAULT NULL,
 	import_id int(11) unsigned DEFAULT NULL ,
