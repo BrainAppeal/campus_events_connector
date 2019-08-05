@@ -127,8 +127,8 @@ abstract class ImportObjectGenerator implements SingletonInterface
             if (null === $object) {
                 /** @var ImportedModelInterface $object */
                 $object = new $class;
-                $object->setImportId($importId);
-                $object->setImportSource($importSource);
+                $object->setCeImportId($importId);
+                $object->setCeImportSource($importSource);
                 $object->setPid($pid);
             }
             $this->objects[$class][$importId] = $object;
@@ -137,7 +137,7 @@ abstract class ImportObjectGenerator implements SingletonInterface
 
         $object = $this->objects[$class][$importId];
         if (isset($data)) {
-            $object->setImportedAt(time());
+            $object->setCeImportedAt(time());
             $this->assignClassSpecificProperties($class, $object, $data);
         }
 

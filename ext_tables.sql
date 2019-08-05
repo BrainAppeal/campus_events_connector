@@ -31,9 +31,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_event (
 	filter_categories int(11) unsigned DEFAULT '0' NOT NULL,
 	hash varchar(255) DEFAULT '' NOT NULL,
 
-	import_source varchar(255) DEFAULT NULL,
-	import_id int(11) unsigned DEFAULT NULL ,
-	imported_at int(11) unsigned DEFAULT NULL ,
+	ce_import_source varchar(255) DEFAULT NULL,
+	ce_import_id int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL ,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -78,9 +78,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_location (
 	town varchar(255) DEFAULT '' NOT NULL,
 	zip_code varchar(255) DEFAULT '' NOT NULL,
 
-	import_source varchar(255) DEFAULT NULL,
-	import_id int(11) unsigned DEFAULT NULL ,
-	imported_at int(11) unsigned DEFAULT NULL ,
+	ce_import_source varchar(255) DEFAULT NULL,
+	ce_import_id int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL ,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -124,9 +124,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_speaker (
 	first_name varchar(255) DEFAULT '' NOT NULL,
 	last_name varchar(255) DEFAULT '' NOT NULL,
 
-	import_source varchar(255) DEFAULT NULL,
-	import_id int(11) unsigned DEFAULT NULL ,
-	imported_at int(11) unsigned DEFAULT NULL ,
+	ce_import_source varchar(255) DEFAULT NULL,
+	ce_import_id int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL ,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -168,9 +168,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_organizer (
 
 	name varchar(255) DEFAULT '' NOT NULL,
 
-	import_source varchar(255) DEFAULT NULL,
-	import_id int(11) unsigned DEFAULT NULL ,
-	imported_at int(11) unsigned DEFAULT NULL ,
+	ce_import_source varchar(255) DEFAULT NULL,
+	ce_import_id int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL ,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -217,9 +217,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_timerange (
 	end_date datetime DEFAULT '1900-01-01 00:00:00',
 	end_date_is_set smallint(5) unsigned DEFAULT '0' NOT NULL,
 
-	import_source varchar(255) DEFAULT NULL,
-	import_id int(11) unsigned DEFAULT NULL ,
-	imported_at int(11) unsigned DEFAULT NULL ,
+	ce_import_source varchar(255) DEFAULT NULL,
+	ce_import_id int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL ,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -261,9 +261,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_category (
 
 	name varchar(255) DEFAULT '' NOT NULL,
 
-	import_source varchar(255) DEFAULT NULL,
-	import_id int(11) unsigned DEFAULT NULL ,
-	imported_at int(11) unsigned DEFAULT NULL ,
+	ce_import_source varchar(255) DEFAULT NULL,
+	ce_import_id int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL ,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -305,9 +305,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_targetgroup (
 
 	name varchar(255) DEFAULT '' NOT NULL,
 
-	import_source varchar(255) DEFAULT NULL,
-	import_id int(11) unsigned DEFAULT NULL ,
-	imported_at int(11) unsigned DEFAULT NULL ,
+	ce_import_source varchar(255) DEFAULT NULL,
+	ce_import_id int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL ,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -350,9 +350,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_filtercategory (
 	name varchar(255) DEFAULT '' NOT NULL,
 	parent int(11) unsigned DEFAULT '0',
 
-	import_source varchar(255) DEFAULT NULL,
-	import_id int(11) unsigned DEFAULT NULL ,
-	imported_at int(11) unsigned DEFAULT NULL ,
+	ce_import_source varchar(255) DEFAULT NULL,
+	ce_import_id int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL ,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -391,9 +391,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_timerange (
 
 	event int(11) unsigned DEFAULT '0' NOT NULL,
 
-	import_source varchar(255) DEFAULT NULL,
-	import_id int(11) unsigned DEFAULT NULL ,
-	imported_at int(11) unsigned DEFAULT NULL
+	ce_import_source varchar(255) DEFAULT NULL,
+	ce_import_id int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL ,
 
 );
 
@@ -544,7 +544,7 @@ CREATE TABLE tx_campuseventsconnector_event_targetgroup_mm (
 # Table structure for table 'sys_file_reference'
 #
 CREATE TABLE sys_file_reference (
-	import_source varchar(255) DEFAULT NULL,
-	import_id int(11) unsigned DEFAULT NULL ,
-	imported_at int(11) unsigned DEFAULT NULL
+	ce_import_source varchar(255) DEFAULT NULL,
+	ce_import_id int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL ,
 );

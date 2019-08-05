@@ -52,7 +52,7 @@ class Compatibility7DBAL extends \BrainAppeal\CampusEventsConnector\Importer\DBA
             $importTimestamp = intval($importTimestamp);
 
             $where = sprintf(
-                'pid = %d AND import_source = "%s" AND imported_at < %d',
+                'pid = %d AND ce_import_source = "%s" AND ce_imported_at < %d',
                 $pid,
                 $importSource,
                 $importTimestamp

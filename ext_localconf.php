@@ -22,6 +22,7 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\BrainAppeal\Cam
         'additionalFields' => \BrainAppeal\CampusEventsConnector\Task\EventImportAdditionalFieldProvider::class
 );
 
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['importFieldNamesUpdateWizard'] = \BrainAppeal\CampusEventsConnector\Updates\ImportFieldNamesUpdateWizard::class;
 if (TYPO3_MODE === 'BE') {
     $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
     $iconRegistry->registerIcon(
