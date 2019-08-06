@@ -115,8 +115,8 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
         if (null === $object) {
             /** @var ImportedModelInterface $object */
             $object = new $this->objectType;
-            $object->setImportId($importId);
-            $object->setImportSource($importSource);
+            $object->setCeImportId($importId);
+            $object->setCeImportSource($importSource);
             $object->setPid(intval($pid));
         }
 
@@ -135,8 +135,8 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
 
         $query = $this->createQuery();
         $constraints = [
-            $query->like('importSource', $importSource),
-            $query->lessThan('importedAt', $timestamp),
+            $query->like('ceImportSource', $importSource),
+            $query->lessThan('ceImportedAt', $timestamp),
         ];
         $query->matching($query->logicalAnd($constraints));
 

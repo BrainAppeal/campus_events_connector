@@ -163,7 +163,9 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
     protected function assignTimeRangeProperties($class, $object, $data)
     {
         $object->setStartDate(new \DateTime($data['start_date']));
+        $object->setStartDateIsSet(isset($data['start_date_is_set']) ? $data['start_date_is_set'] : true);
         $object->setEndDate(new \DateTime($data['end_date']));
+        $object->setEndDateIsSet(isset($data['end_date_is_set']) ? $data['end_date_is_set'] : true);
     }
 
 }

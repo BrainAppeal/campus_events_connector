@@ -98,7 +98,9 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
 
     private function callHooks()
     {
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'])) {
+        if (isset($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'])
+            && is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'])
+        ) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'] as $classRef) {
                 $hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($classRef);
                 if (method_exists($hookObj, 'postImport')) {

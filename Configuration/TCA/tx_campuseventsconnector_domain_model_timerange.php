@@ -34,10 +34,10 @@ return [
         'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_timerange.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, start_date, end_date',
+        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, start_date, start_date_is_set, end_date, end_date_is_set',
     ],
     'types' => [
-        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, start_date, end_date, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
+        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, start_date, start_date_is_set, end_date, end_date_is_set, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -133,6 +133,18 @@ return [
                 'default' => '0000-00-00 00:00:00'
             ],
         ],
+        'start_date_is_set' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.start_date_is_set',
+            'config' => [
+                'type' => 'check',
+                'items' => [
+                    '1' => [
+                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                    ]
+                ],
+            ],
+        ],
         'end_date' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.end_date',
@@ -144,13 +156,25 @@ return [
                 'default' => '0000-00-00 00:00:00'
             ],
         ],
+        'end_date_is_set' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.end_date_is_set',
+            'config' => [
+                'type' => 'check',
+                'items' => [
+                    '1' => [
+                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                    ]
+                ],
+            ],
+        ],
 
         'event' => [
             'config' => [
                 'type' => 'passthrough',
             ],
         ],
-        'import_source' => [
+        'ce_import_source' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.name',
             'config' => [
@@ -159,7 +183,7 @@ return [
                 'eval' => 'trim'
             ],
         ],
-        'import_id' => [
+        'ce_import_id' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.name',
             'config' => [
@@ -168,7 +192,7 @@ return [
                 'eval' => 'trim'
             ],
         ],
-        'imported_at' => [
+        'ce_imported_at' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.name',
             'config' => [
