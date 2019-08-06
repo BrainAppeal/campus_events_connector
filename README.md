@@ -17,6 +17,9 @@ Mit dieser kostenlosen TYPO3 Extension werden Veranstaltungen und Termine von Ca
 synchronisiert. Über die Campus Events Schnittstelle werden alle aktiven Veranstaltungen von dieser Extension an TYPO3 
 übertragen und dort in Campus Events-Objekte angelegt.
 
+### Kompatibilität
+TYPO3 7 LTS - 9 LTS 
+
 ### Erweiterbarkeit / Kombinationen
 * [campus_events_connector](https://github.com/BrainAppeal/campus_events_connector)                  – Datenaustausch von Campus Events zu TYPO3
 * [campus_events_frontend](https://github.com/BrainAppeal/campus_events_frontend)                    – Darstellung von Veranstaltungen und Termin auf TYPO3 Webseiten
