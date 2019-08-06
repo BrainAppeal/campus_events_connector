@@ -23,37 +23,37 @@ trait ImportedModelTrait
      *
      * @var string
      */
-    protected $importSource = '';
+    protected $ceImportSource = '';
 
     /**
      * importId
      *
      * @var int
      */
-    protected $importId = 0;
+    protected $ceImportId = 0;
 
     /**
      * importedAt
      *
      * @var int
      */
-    protected $importedAt = 0;
+    protected $ceImportedAt = 0;
 
     /**
      * @return string
      */
-    public function getImportSource()
+    public function getCeImportSource()
     {
-        return $this->importSource;
+        return $this->ceImportSource;
     }
 
     /**
-     * @param string $importSource
+     * @param string $ceImportSource
      * @return ImportedModelTrait
      */
-    public function setImportSource($importSource)
+    public function setCeImportSource($ceImportSource)
     {
-        $this->importSource = $importSource;
+        $this->ceImportSource = $ceImportSource;
 
         return $this;
     }
@@ -61,18 +61,18 @@ trait ImportedModelTrait
     /**
      * @return int
      */
-    public function getImportId()
+    public function getCeImportId()
     {
-        return $this->importId;
+        return $this->ceImportId;
     }
 
     /**
-     * @param int $importId
+     * @param int $ceImportId
      * @return ImportedModelTrait
      */
-    public function setImportId($importId)
+    public function setCeImportId($ceImportId)
     {
-        $this->importId = $importId;
+        $this->ceImportId = $ceImportId;
 
         return $this;
     }
@@ -80,18 +80,18 @@ trait ImportedModelTrait
     /**
      * @return int
      */
-    public function getImportedAt()
+    public function getCeImportedAt()
     {
-        return $this->importedAt;
+        return $this->ceImportedAt;
     }
 
     /**
-     * @param int $importedAt
+     * @param int $ceImportedAt
      * @return ImportedModelTrait
      */
-    public function setImportedAt($importedAt)
+    public function setCeImportedAt($ceImportedAt)
     {
-        $this->importedAt = $importedAt;
+        $this->ceImportedAt = $ceImportedAt;
 
         return $this;
     }

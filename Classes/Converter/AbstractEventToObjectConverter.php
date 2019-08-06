@@ -20,6 +20,7 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\EventRepository;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 abstract class AbstractEventToObjectConverter implements EventConverterInterface
 {
@@ -86,7 +87,9 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
      */
     private function setUp($configuration)
     {
-        $dataMapper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
+        //$dataMapper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
+        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ObjectManager::class);
+        $dataMapper = $objectManager->get(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
         $this->importSource = $dataMapper->getDataMap(get_class($configuration))->getTableName() . ':' . $configuration->getUid();
         $this->configuration = $configuration;
     }
@@ -142,7 +145,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
         $this->individualizeObjectByEvent($object, $event, $configuration);
 
         $object->setPid($configuration->getTargetPid());
-        $object->setImportedAt(time());
+        $object->setCeImportedAt(time());
         if ($object->getUid() > 0) {
             $objectRepository->update($object);
         } else {

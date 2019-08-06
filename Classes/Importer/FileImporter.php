@@ -246,9 +246,9 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
         );
 
         $attibs = [
-            'import_source'=> $object->getImportSource(),
-            'import_id'=> $importId,
-            'imported_at'=> time(),
+            'ce_import_source'=> $object->getCeImportSource(),
+            'ce_import_id'=> $importId,
+            'ce_imported_at'=> time(),
         ];
         $this->getDBAL()->addSysFileReference($newFile, $object, $objectProperty, $attibs);
     }

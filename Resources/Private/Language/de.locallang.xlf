@@ -159,6 +159,14 @@
 				<source>End Date</source>
 				<target>Endzeit</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_date_is_set">
+				<source>Start Date is set</source>
+				<target>Startzeit ist definiert</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date_is_set">
+				<source>End Date is set</source>
+				<target>Endzeit ist definiert</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_category">
 				<source>Category</source>
 				<target>Kategorie</target>
@@ -235,11 +243,11 @@
 				<source>Storage Folder</source>
 				<target>Pfad innerhalb des gewählten Storage für importierte Bilder und Anhänge</target>
 			</trans-unit>
-            <trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri">
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri">
                 <source>Invalid Base URI</source>
                 <target>Ungültige Basis URL</target>
-            </trans-unit>
-            <trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_api_key">
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_api_key">
                 <source>Invalid API Key</source>
                 <target>Ungültiger API Key</target>
             </trans-unit>

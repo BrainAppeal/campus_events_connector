@@ -601,7 +601,7 @@ return [
                 ],
             ],
         ],
-        'import_source' => [
+        'ce_import_source' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
@@ -610,7 +610,7 @@ return [
                 'eval' => 'trim'
             ],
         ],
-        'import_id' => [
+        'ce_import_id' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [
@@ -619,7 +619,7 @@ return [
                 'eval' => 'trim'
             ],
         ],
-        'imported_at' => [
+        'ce_imported_at' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
             'config' => [

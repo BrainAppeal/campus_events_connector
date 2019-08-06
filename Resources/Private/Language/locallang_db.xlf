@@ -120,6 +120,12 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date">
 				<source>End Date</source>
 			</trans-unit>
+            <trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_date_is_set">
+                <source>Start Date is set</source>
+            </trans-unit>
+            <trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date_is_set">
+                <source>End Date is set</source>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_category">
 				<source>Category</source>
 			</trans-unit>

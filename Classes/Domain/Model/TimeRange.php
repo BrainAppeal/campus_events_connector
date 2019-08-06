@@ -29,11 +29,25 @@ class TimeRange extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implement
     protected $startDate = null;
 
     /**
+     * startDateIsSet
+     *
+     * @var bool
+     */
+    protected $startDateIsSet;
+
+    /**
      * endDate
      *
      * @var \DateTime
      */
     protected $endDate = null;
+
+    /**
+     * endDateIsSet
+     *
+     * @var bool
+     */
+    protected $endDateIsSet;
 
     /**
      * Returns the startDate
@@ -75,5 +89,37 @@ class TimeRange extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implement
     public function setEndDate(\DateTime $endDate)
     {
         $this->endDate = $endDate;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStartDateIsSet()
+    {
+        return $this->startDateIsSet;
+    }
+
+    /**
+     * @param bool $startDateIsSet
+     */
+    public function setStartDateIsSet($startDateIsSet)
+    {
+        $this->startDateIsSet = $startDateIsSet;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEndDateIsSet()
+    {
+        return $this->endDateIsSet;
+    }
+
+    /**
+     * @param bool $endDateIsSet
+     */
+    public function setEndDateIsSet($endDateIsSet)
+    {
+        $this->endDateIsSet = $endDateIsSet;
     }
 }

@@ -21,33 +21,33 @@ interface ImportedModelInterface extends DomainObjectInterface
     /**
      * @return string
      */
-    public function getImportSource();
+    public function getCeImportSource();
 
     /**
      * @param string $importSource
      * @return ImportedModelInterface
      */
-    public function setImportSource($importSource);
+    public function setCeImportSource($importSource);
 
     /**
      * @return int
      */
-    public function getImportId();
+    public function getCeImportId();
 
     /**
      * @param int $importId
      * @return ImportedModelInterface
      */
-    public function setImportId($importId);
+    public function setCeImportId($importId);
 
     /**
      * @return int
      */
-    public function getImportedAt();
+    public function getCeImportedAt();
 
     /**
      * @param int $importedAt
      * @return ImportedModelInterface
      */
-    public function setImportedAt($importedAt);
+    public function setCeImportedAt($importedAt);
 }

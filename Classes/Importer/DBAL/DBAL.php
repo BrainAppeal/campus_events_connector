@@ -70,7 +70,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
         foreach ($objects as $object) {
             $repository = $this->getRepository(get_class($object));
 
-            $object->setImportedAt(time());
+            $object->setCeImportedAt(time());
             if ($object->getUid() > 0) {
                 $repository->update($object);
             } else {
@@ -89,7 +89,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
         $importTimestamp = intval($importTimestamp);
 
         /** @noinspection SqlResolve */
-        $deleteSql = "DELETE FROM $tableName WHERE pid = ? AND import_source = ? AND imported_at < ?";
+        $deleteSql = "DELETE FROM $tableName WHERE pid = ? AND ce_import_source = ? AND ce_imported_at < ?";
 
         $excludeUidsList = implode(',', array_filter($excludeUids,  'is_numeric'));
         if (strlen($excludeUidsList) > 0) {
