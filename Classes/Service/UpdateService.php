@@ -59,28 +59,21 @@ class UpdateService
             $queryBuilder->getRestrictions()->removeAll();
             $tableContents = $queryBuilder->select('*')->from($table)->execute()->fetch(0);
             foreach ($this->fields as $field) {
-                if (key_exists('zzz_deleted_'.$field, $tableContents) && ($tableContents['ce_'.$field] == '' ||  $tableContents['ce_'.$field] === NULL)) {
-                    $queryBuilder = $connection->getQueryBuilderForTable($table);
-                    $queryBuilder->update($table)
-                        ->where(
-                            $queryBuilder->expr()->eq(
-                                'uid',
-                                $queryBuilder->createNamedParameter($tableContents['uid'], \PDO::PARAM_INT)
+                $fieldPrefixes = ['zzz_deleted_', ''];
+                foreach ($fieldPrefixes as $fieldPrefix) {
+                    if (key_exists($fieldPrefix.$field, $tableContents) && ($tableContents['ce_'.$field] == '' ||  $tableContents['ce_'.$field] === NULL)) {
+                        $queryBuilder = $connection->getQueryBuilderForTable($table);
+                        $queryBuilder->update($table)
+                            ->where(
+                                $queryBuilder->expr()->eq(
+                                    'uid',
+                                    $queryBuilder->createNamedParameter($tableContents['uid'], \PDO::PARAM_INT)
+                                )
                             )
-                        )
-                        ->set('ce_'.$field, $tableContents['zzz_deleted_'.$field]);
-                    $queryBuilder->execute();
-                } else if (key_exists($field, $tableContents) && ($tableContents['ce_'.$field] == '' ||  $tableContents['ce_'.$field] === NULL)) {
-                    $queryBuilder = $connection->getQueryBuilderForTable($table);
-                    $queryBuilder->update($table)
-                        ->where(
-                            $queryBuilder->expr()->eq(
-                                'uid',
-                                $queryBuilder->createNamedParameter($tableContents['uid'], \PDO::PARAM_INT)
-                            )
-                        )
-                        ->set('ce_'.$field, $tableContents[$field]);
-                    $queryBuilder->execute();
+                            ->set('ce_'.$field, $tableContents[$fieldPrefix.$field]);
+                        $queryBuilder->execute();
+                        break;
+                    }
                 }
             }
         }
