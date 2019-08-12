@@ -88,12 +88,12 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
 
         $query = $this->createQuery();
         $constraints = [
-            $query->like('importSource', $importSource),
-            $query->equals('importId', $importId),
+            $query->like('ceImportSource', $importSource),
+            $query->equals('ceImportId', $importId),
         ];
         $query->matching($query->logicalAnd($constraints));
         $query->setOrderings([
-            "importedAt" => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
+            "ceImportedAt" => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
         ]);
 
         /** @var ImportedModelInterface $result */
