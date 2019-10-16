@@ -1,0 +1,2 @@
+ALTER TABLE `tx_campuseventsconnector_domain_model_location` CHANGE `street_name` `street_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `tx_campuseventsconnector_domain_model_location` CHANGE `zip_code` `zip_code` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
