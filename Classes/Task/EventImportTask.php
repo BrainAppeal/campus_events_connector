@@ -93,7 +93,9 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
                 }
             }
         }
-        $this->getCacheService()->clear_cacheCmd(implode(',', $pageIdsToClear));
+        foreach ($pageIdsToClear as $pid) {
+            $this->getCacheService()->clear_cacheCmd($pid);
+        }
     }
 
     private function callHooks()
