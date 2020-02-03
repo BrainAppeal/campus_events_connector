@@ -126,9 +126,9 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
     protected function assignLocationProperties($class, $object, $data)
     {
         $object->setName($data['name']);
-        $object->setStreetName($data['street_name']);
-        $object->setTown($data['town']);
-        $object->setZipCode($data['zip_code']);
+        $object->setStreetName($data['street_name'] ?? '');
+        $object->setTown($data['town'] ?? '');
+        $object->setZipCode($data['zip_code'] ?? '');
     }
 
     /**
@@ -144,9 +144,9 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
      */
     protected function assignSpeakerProperties($class, $object, $data)
     {
-        $object->setTitle($data['title']);
-        $object->setFirstName($data['first_name']);
-        $object->setLastName($data['last_name']);
+        $object->setTitle($data['title'] ?? '');
+        $object->setFirstName($data['first_name'] ?? '');
+        $object->setLastName($data['last_name'] ?? '');
     }
 
     /**
