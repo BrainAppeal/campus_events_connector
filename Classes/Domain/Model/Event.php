@@ -227,7 +227,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function addSpeaker(\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker $speaker)
     {
-        $this->speakers->attach($speaker);
+        $this->getSpeakers()->attach($speaker);
     }
 
     /**
@@ -238,7 +238,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function removeSpeaker(\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker $speakerToRemove)
     {
-        $this->speakers->detach($speakerToRemove);
+        $this->getSpeakers()->detach($speakerToRemove);
     }
 
     /**
@@ -248,6 +248,9 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function getSpeakers()
     {
+        if (null === $this->speakers) {
+            $this->speakers = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        }
         return $this->speakers;
     }
 
@@ -701,7 +704,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function addCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\Category $category)
     {
-        $this->categories->attach($category);
+        $this->getCategories()->attach($category);
     }
 
     /**
@@ -712,7 +715,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function removeCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\Category $categoryToRemove)
     {
-        $this->categories->detach($categoryToRemove);
+        $this->getCategories()->detach($categoryToRemove);
     }
 
     /**
@@ -722,6 +725,9 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function getCategories()
     {
+        if (null === $this->categories) {
+            $this->categories = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        }
         return $this->categories;
     }
 
@@ -744,7 +750,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function addOrganizer(\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer $organizer)
     {
-        $this->organizer->attach($organizer);
+        $this->getOrganizer()->attach($organizer);
     }
 
     /**
@@ -755,7 +761,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function removeOrganizer(\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer $organizerToRemove)
     {
-        $this->organizer->detach($organizerToRemove);
+        $this->getOrganizer()->detach($organizerToRemove);
     }
 
     /**
@@ -765,6 +771,9 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function getOrganizer()
     {
+        if (null === $this->organizer) {
+            $this->organizer = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        }
         return $this->organizer;
     }
 
@@ -833,7 +842,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function addTargetGroup(\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroup)
     {
-        $this->targetGroups->attach($targetGroup);
+        $this->getTargetGroups()->attach($targetGroup);
     }
 
     /**
@@ -844,7 +853,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function removeTargetGroup(\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroupToRemove)
     {
-        $this->targetGroups->detach($targetGroupToRemove);
+        $this->getTargetGroups()->detach($targetGroupToRemove);
     }
 
     /**
@@ -854,6 +863,9 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function getTargetGroups()
     {
+        if (null === $this->targetGroups) {
+            $this->targetGroups = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        }
         return $this->targetGroups;
     }
 
@@ -876,7 +888,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function addFilterCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategory)
     {
-        $this->filterCategories->attach($filterCategory);
+        $this->getFilterCategories()->attach($filterCategory);
     }
 
     /**
@@ -887,7 +899,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function removeFilterCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategoryToRemove)
     {
-        $this->filterCategories->detach($filterCategoryToRemove);
+        $this->getFilterCategories()->detach($filterCategoryToRemove);
     }
 
     /**
@@ -897,6 +909,9 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function getFilterCategories()
     {
+        if (null === $this->filterCategories) {
+            $this->filterCategories = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        }
         return $this->filterCategories;
     }
 
