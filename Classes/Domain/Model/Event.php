@@ -787,7 +787,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function addTimeRange(\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $timeRange)
     {
-        $this->timeRanges->attach($timeRange);
+        $this->getTimeRanges()->attach($timeRange);
     }
 
     /**
@@ -798,7 +798,7 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function removeTimeRange(\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $timeRangeToRemove)
     {
-        $this->timeRanges->detach($timeRangeToRemove);
+        $this->getTimeRanges()->detach($timeRangeToRemove);
     }
 
     /**
