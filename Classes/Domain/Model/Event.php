@@ -808,6 +808,9 @@ class Event extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements Im
      */
     public function getTimeRanges()
     {
+        if (null === $this->timeRanges) {
+            $this->timeRanges = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        }
         return $this->timeRanges;
     }
 
