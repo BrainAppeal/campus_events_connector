@@ -13,35 +13,7 @@
 
 defined('TYPO3_MODE') || die('Access denied.');
 
-$tempColumns = array(
-
-    'ce_import_source' => [
-        'exclude' => true,
-        'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_sysfile.name',
-        'config' => [
-            'type' => 'input',
-            'size' => 30,
-            'eval' => 'trim'
-        ],
-    ],
-    'ce_import_id' => [
-        'exclude' => true,
-        'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_sysfile.name',
-        'config' => [
-            'type' => 'input',
-            'size' => 30,
-            'eval' => 'trim'
-        ],
-    ],
-    'ce_imported_at' => [
-        'exclude' => true,
-        'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_sysfile.name',
-        'config' => [
-            'type' => 'input',
-            'size' => 30,
-            'eval' => 'trim'
-        ],
-    ],
-
+TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns(
+    'sys_file_reference',
+    \BrainAppeal\CampusEventsConnector\Utility\TCAUtility::getImportFieldConfiguration()
 );
-TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('sys_file_reference',$tempColumns);
