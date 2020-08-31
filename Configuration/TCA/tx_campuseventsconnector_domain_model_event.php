@@ -11,6 +11,7 @@
  * @link      https://www.campus-events.com/
  */
 
+$importColumns = \BrainAppeal\CampusEventsConnector\Utility\TCAUtility::getImportFieldConfiguration();
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event',
@@ -76,12 +77,12 @@ return [
             ],
         ],
         't3ver_label' => [
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.versionLabel',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.versionLabel',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'max' => 255,
-            ],
+                'max' => 30
+            ]
         ],
         'hidden' => [
             'exclude' => true,
@@ -97,22 +98,22 @@ return [
         ],
         'starttime' => [
             'exclude' => true,
-            'l10n_mode' => 'mergeIfNotBlank',
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.starttime',
+            'l10n_mode' => 'exclude',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.starttime',
             'config' => [
                 'type' => 'input',
-                'size' => 13,
+                'renderType' => 'inputDateTime',
                 'eval' => 'datetime',
                 'default' => 0,
             ],
         ],
         'endtime' => [
             'exclude' => true,
-            'l10n_mode' => 'mergeIfNotBlank',
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.endtime',
+            'l10n_mode' => 'exclude',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.endtime',
             'config' => [
                 'type' => 'input',
-                'size' => 13,
+                'renderType' => 'inputDateTime',
                 'eval' => 'datetime',
                 'default' => 0,
                 'range' => [
@@ -235,37 +236,39 @@ return [
                     'appearance' => [
                         'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:images.addFileReference'
                     ],
-                    'foreign_types' => [
-                        '0' => [
-                            'showitem' => '
+                    'overrideChildTca' => [
+                        'types' => [
+                            '0' => [
+                                'showitem' => '
                             --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
+                            ],
+                            \TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => [
+                                'showitem' => '
+                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;;filePalette'
+                            ],
+                            \TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => [
+                                'showitem' => '
+                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;;filePalette'
+                            ],
+                            \TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => [
+                                'showitem' => '
+                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;;filePalette'
+                            ],
+                            \TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => [
+                                'showitem' => '
+                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;;filePalette'
+                            ],
+                            \TYPO3\CMS\Core\Resource\File::FILETYPE_APPLICATION => [
+                                'showitem' => '
+                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;;filePalette'
+                            ]
                         ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_APPLICATION => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ]
                     ],
                     'maxitems' => 9999
                 ],
@@ -281,37 +284,39 @@ return [
                     'appearance' => [
                         'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:media.addFileReference'
                     ],
-                    'foreign_types' => [
-                        '0' => [
-                            'showitem' => '
+                    'overrideChildTca' => [
+                        'types' => [
+                            '0' => [
+                                'showitem' => '
                             --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
+                            ],
+                            \TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => [
+                                'showitem' => '
+                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;;filePalette'
+                            ],
+                            \TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => [
+                                'showitem' => '
+                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;;filePalette'
+                            ],
+                            \TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => [
+                                'showitem' => '
+                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;;filePalette'
+                            ],
+                            \TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => [
+                                'showitem' => '
+                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;;filePalette'
+                            ],
+                            \TYPO3\CMS\Core\Resource\File::FILETYPE_APPLICATION => [
+                                'showitem' => '
+                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;;filePalette'
+                            ]
                         ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_APPLICATION => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ]
                     ],
                     'maxitems' => 9999
                 ]
@@ -369,32 +374,14 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'wizards' => [
-                    '_PADDING' => 1,
-                    '_VERTICAL' => 1,
-                    'edit' => [
-                        'module' => [
-                            'name' => 'wizard_edit',
-                        ],
-                        'type' => 'popup',
-                        'title' => 'Edit', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.edit
-                        'icon' => 'actions-open',
-                        'popup_onlyOpenIfSelected' => 1,
-                        'JSopenParams' => 'height=350,width=580,status=0,menubar=0,scrollbars=1',
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
                     ],
-                    'add' => [
-                        'module' => [
-                            'name' => 'wizard_add',
-                        ],
-                        'type' => 'script',
-                        'title' => 'Create new', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.add
-                        'icon' => 'actions-add',
-                        'params' => [
-                            'table' => 'tx_campuseventsconnector_domain_model_speaker',
-                            'pid' => '###CURRENT_PID###',
-                            'setValue' => 'prepend'
-                        ],
-                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
                 ],
             ],
 
@@ -446,32 +433,14 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'wizards' => [
-                    '_PADDING' => 1,
-                    '_VERTICAL' => 1,
-                    'edit' => [
-                        'module' => [
-                            'name' => 'wizard_edit',
-                        ],
-                        'type' => 'popup',
-                        'title' => 'Edit', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.edit
-                        'icon' => 'actions-open',
-                        'popup_onlyOpenIfSelected' => 1,
-                        'JSopenParams' => 'height=350,width=580,status=0,menubar=0,scrollbars=1',
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
                     ],
-                    'add' => [
-                        'module' => [
-                            'name' => 'wizard_add',
-                        ],
-                        'type' => 'script',
-                        'title' => 'Create new', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.add
-                        'icon' => 'actions-add',
-                        'params' => [
-                            'table' => 'tx_campuseventsconnector_domain_model_category',
-                            'pid' => '###CURRENT_PID###',
-                            'setValue' => 'prepend'
-                        ],
-                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
                 ],
             ],
 
@@ -488,32 +457,14 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'wizards' => [
-                    '_PADDING' => 1,
-                    '_VERTICAL' => 1,
-                    'edit' => [
-                        'module' => [
-                            'name' => 'wizard_edit',
-                        ],
-                        'type' => 'popup',
-                        'title' => 'Edit', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.edit
-                        'icon' => 'actions-open',
-                        'popup_onlyOpenIfSelected' => 1,
-                        'JSopenParams' => 'height=350,width=580,status=0,menubar=0,scrollbars=1',
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
                     ],
-                    'add' => [
-                        'module' => [
-                            'name' => 'wizard_add',
-                        ],
-                        'type' => 'script',
-                        'title' => 'Create new', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.add
-                        'icon' => 'actions-add',
-                        'params' => [
-                            'table' => 'tx_campuseventsconnector_domain_model_organizer',
-                            'pid' => '###CURRENT_PID###',
-                            'setValue' => 'prepend'
-                        ],
-                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
                 ],
             ],
 
@@ -530,32 +481,14 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'wizards' => [
-                    '_PADDING' => 1,
-                    '_VERTICAL' => 1,
-                    'edit' => [
-                        'module' => [
-                            'name' => 'wizard_edit',
-                        ],
-                        'type' => 'popup',
-                        'title' => 'Edit', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.edit
-                        'icon' => 'actions-open',
-                        'popup_onlyOpenIfSelected' => 1,
-                        'JSopenParams' => 'height=350,width=580,status=0,menubar=0,scrollbars=1',
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
                     ],
-                    'add' => [
-                        'module' => [
-                            'name' => 'wizard_add',
-                        ],
-                        'type' => 'script',
-                        'title' => 'Create new', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.add
-                        'icon' => 'actions-add',
-                        'params' => [
-                            'table' => 'tx_campuseventsconnector_domain_model_targetgroup',
-                            'pid' => '###CURRENT_PID###',
-                            'setValue' => 'prepend'
-                        ],
-                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
                 ],
             ],
 
@@ -572,62 +505,20 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'wizards' => [
-                    '_PADDING' => 1,
-                    '_VERTICAL' => 1,
-                    'edit' => [
-                        'module' => [
-                            'name' => 'wizard_edit',
-                        ],
-                        'type' => 'popup',
-                        'title' => 'Edit', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.edit
-                        'icon' => 'actions-open',
-                        'popup_onlyOpenIfSelected' => 1,
-                        'JSopenParams' => 'height=350,width=580,status=0,menubar=0,scrollbars=1',
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
                     ],
-                    'add' => [
-                        'module' => [
-                            'name' => 'wizard_add',
-                        ],
-                        'type' => 'script',
-                        'title' => 'Create new', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.add
-                        'icon' => 'actions-add',
-                        'params' => [
-                            'table' => 'tx_campuseventsconnector_domain_model_filtercategory',
-                            'pid' => '###CURRENT_PID###',
-                            'setValue' => 'prepend'
-                        ],
-                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
                 ],
             ],
         ],
-        'ce_import_source' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
-            'config' => [
-                'type' => 'input',
-                'size' => 30,
-                'eval' => 'trim'
-            ],
-        ],
-        'ce_import_id' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
-            'config' => [
-                'type' => 'input',
-                'size' => 30,
-                'eval' => 'trim'
-            ],
-        ],
-        'ce_imported_at' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_filtercategory.name',
-            'config' => [
-                'type' => 'input',
-                'size' => 30,
-                'eval' => 'trim'
-            ],
-        ],
+        'ce_import_source' => $importColumns['ce_import_source'],
+        'ce_import_id' => $importColumns['ce_import_id'],
+        'ce_imported_at' => $importColumns['ce_imported_at'],
         'hash' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.hash',

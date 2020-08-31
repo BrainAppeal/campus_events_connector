@@ -139,10 +139,13 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
         if (!empty($object->getUid())) {
             $sha1 = $data['hash'];
             /** @var FileReference $fileReference */
-            foreach ($object->_getProperty($property) as $fileReference) {
-                if ($sha1 == $fileReference->getOriginalResource()->getSha1()) {
-                    return $fileReference;
-                };
+            $fileReferenceList = $object->_getProperty($property);
+            if (null !== $fileReferenceList) {
+                foreach ($fileReferenceList as $fileReference) {
+                    if ($sha1 == $fileReference->getOriginalResource()->getSha1()) {
+                        return $fileReference;
+                    }
+                }
             }
         }
 

@@ -80,12 +80,12 @@ return [
             ],
         ],
         't3ver_label' => [
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.versionLabel',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.versionLabel',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'max' => 255,
-            ],
+                'max' => 30
+            ]
         ],
         'hidden' => [
             'exclude' => true,
@@ -101,22 +101,22 @@ return [
         ],
         'starttime' => [
             'exclude' => true,
-            'l10n_mode' => 'mergeIfNotBlank',
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.starttime',
+            'l10n_mode' => 'exclude',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.starttime',
             'config' => [
                 'type' => 'input',
-                'size' => 13,
+                'renderType' => 'inputDateTime',
                 'eval' => 'datetime',
                 'default' => 0,
             ],
         ],
         'endtime' => [
             'exclude' => true,
-            'l10n_mode' => 'mergeIfNotBlank',
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.endtime',
+            'l10n_mode' => 'exclude',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.endtime',
             'config' => [
                 'type' => 'input',
-                'size' => 13,
+                'renderType' => 'inputDateTime',
                 'eval' => 'datetime',
                 'default' => 0,
                 'range' => [
@@ -133,7 +133,6 @@ return [
                 'items' => [
                     0 => ['LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_convertconfiguration.select_type', 0, 'ext-convertconfiguration-type-default']
                 ],
-                'showIconTable' => false,
                 'size' => 1,
                 'maxitems' => 1,
             ]
@@ -162,7 +161,6 @@ return [
                 'size' => 1,
                 'maxitems' => 1,
                 'minitems' => 0,
-                'show_thumbs' => 0,
                 'eval' => 'trim'
             ],
 
@@ -202,32 +200,14 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'wizards' => [
-                    '_PADDING' => 1,
-                    '_VERTICAL' => 1,
-                    'edit' => [
-                        'module' => [
-                            'name' => 'wizard_edit',
-                        ],
-                        'type' => 'popup',
-                        'title' => 'Edit', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.edit
-                        'icon' => 'actions-open',
-                        'popup_onlyOpenIfSelected' => 1,
-                        'JSopenParams' => 'height=350,width=580,status=0,menubar=0,scrollbars=1',
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
                     ],
-                    'add' => [
-                        'module' => [
-                            'name' => 'wizard_add',
-                        ],
-                        'type' => 'script',
-                        'title' => 'Create new', // todo define label: LLL:EXT:.../Resources/Private/Language/locallang_tca.xlf:wizard.add
-                        'icon' => 'actions-add',
-                        'params' => [
-                            'table' => 'tx_campuseventsconnector_domain_model_filtercategory',
-                            'pid' => '###CURRENT_PID###',
-                            'setValue' => 'prepend'
-                        ],
-                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
                 ],
             ],
         ],

@@ -165,6 +165,15 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_groups">
 				<source>Target Groups</source>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.ce_import_source">
+				<source>Import Source</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.ce_import_id">
+				<source>IMport ID</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.ce_imported_at">
+				<source>Imported at</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
