@@ -14,12 +14,12 @@
 namespace BrainAppeal\CampusEventsConnector\Task;
 
 use TYPO3\CMS\Lang\LanguageService;
-use TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface;
+use TYPO3\CMS\Scheduler\AbstractAdditionalFieldProvider;
 
 /**
  * Additional BE fields for ip address anonymization task.
  */
-class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInterface
+class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 {
     /**
      * Add additional fields
@@ -188,13 +188,13 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
 
         $baseUri = $submittedData['campusEventsConnector_eventImport_baseUri'];
         if (empty($baseUri)) {
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
             $validData = false;
         }
 
         $apiKey = $submittedData['campusEventsConnector_eventImport_apiKey'];
         if (empty($apiKey) || preg_match('/^[\w]{8}-[\w]{16}-[\w]{8}$/', $apiKey) !== 1) {
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_api_key'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_api_key'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
             $validData = false;
         }
 
@@ -208,14 +208,14 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
             try {
                 $validData = $apiConnector->checkApiVersion();
             } catch (\BrainAppeal\CampusEventsConnector\Http\HttpException $httpException) {
-                $parentObject->addMessage(
+                self::addMessage(
                     $httpException->getMessage(),
                     \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
                 );
                 $validData = false;
             }
             if (!$validData) {
-                $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+                self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
             }
         }
 
@@ -237,7 +237,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         }
         if (!$validData) {
             // Issue error message
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_pid'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_pid'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
         }
         return $validData;
     }
@@ -255,7 +255,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
             $validData = true;
         } else {
             // Issue error message
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_id'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_id'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
         }
         return $validData;
     }
@@ -273,7 +273,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
             $validData = true;
         } else {
             // Issue error message
-            $parentObject->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_folder'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_folder'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
         }
         return $validData;
     }
