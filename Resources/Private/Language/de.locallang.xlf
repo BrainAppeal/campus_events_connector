@@ -252,8 +252,8 @@
                 <target>Ungültiger API Key</target>
             </trans-unit>
             <trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_pid">
-                <source>Invalid Page ID</source>
-                <target>Ungültige SeitenID</target>
+                <source>Invalid Page ID. Please check if the page exists and is not deactivated.</source>
+                <target>Ungültige SeitenID. Bitte stellen Sie sicher dass diese Seite existiert und dass Sie nicht deaktiviert ist.</target>
             </trans-unit>
             <trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_id">
                 <source>Invalid Storage ID</source>
