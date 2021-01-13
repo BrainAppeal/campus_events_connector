@@ -87,14 +87,16 @@ abstract class ImportObjectGenerator implements SingletonInterface
     public function generateMultiple($class, $dataArray)
     {
         $objects = [];
-        foreach ($dataArray as $data) {
-            if (is_array($data)) {
-                $object = $this->generate($class, $data['id'], $data);
-            } else {
-                $object = $this->generate($class, $data, null);
-            }
-            if (null !== $object) {
-                $objects[] = $object;
+        if(!empty($dataArray)) {
+            foreach ($dataArray as $data) {
+                if (is_array($data)) {
+                    $object = $this->generate($class, $data['id'], $data);
+                } else {
+                    $object = $this->generate($class, $data, null);
+                }
+                if (null !== $object) {
+                    $objects[] = $object;
+                }
             }
         }
 
