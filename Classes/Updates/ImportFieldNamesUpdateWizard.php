@@ -10,6 +10,7 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 class ImportFieldNamesUpdateWizard implements UpgradeWizardInterface
 {
+    public const IDENTIFIER = 'campusEventsConnector';
 
     /** @var UpdateService */
     protected $updateService;
@@ -17,14 +18,14 @@ class ImportFieldNamesUpdateWizard implements UpgradeWizardInterface
     /**
      * @var string
      */
-    protected $title = 'importFieldNamesUpdateWizard';
+    protected $title = 'Campus Events: Migrate import fields';
 
-    public static $identifier = 'campus_events_connector';
+    public static $identifier = self::IDENTIFIER;
 
     /**
      * @var string
      */
-    protected $description = 'Migrates the old import fields to the new named ones.';
+    protected $description = 'Campus Events: Migrates the old import fields to the new named ones.';
 
     /**
      * @var OutputInterface
@@ -67,7 +68,7 @@ class ImportFieldNamesUpdateWizard implements UpgradeWizardInterface
      */
     public function getIdentifier(): string
     {
-        return $this->identifier ?? static::class;
+        return self::IDENTIFIER;
     }
 
     /**
@@ -129,7 +130,9 @@ class ImportFieldNamesUpdateWizard implements UpgradeWizardInterface
     {
         $description = '';
         $result = $this->checkForUpdate();
-        $this->output->write($description);
+        if (null !== $this->output) {
+            $this->output->write($description);
+        }
         return $result;
     }
 
