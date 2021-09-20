@@ -18,5 +18,30 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
  */
 class EventRepository extends AbstractImportedRepository
 {
+    /**
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration $configuration
+     */
+    public function findAllByConvertConfiguration($configuration)
+    {
+        $this->setPidRestriction($configuration->getPid());
+        $query = $this->createQuery();
+        $filterCategories = $configuration->getFilterCategories();
+        $targetGroups = $configuration->getTargetGroups();
+        $filterCategoryConstraints = [];
+        $targetGroupConstraints = [];
 
+        foreach ($filterCategories as $filterCategory) {
+            $filterCategoryConstraints = $query->contains('filter_categories', $filterCategory);
+        }
+        foreach ($targetGroups as $targetGroup) {
+            $targetGroupConstraints = $query->contains('target_groups', $targetGroup);
+        }
+        if ($filterCategoryConstraints) {
+            $query->logicalAnd($filterCategoryConstraints);
+        }
+        if ($targetGroupConstraints) {
+            $query->logicalAnd($targetGroupConstraints);
+        }
+        return $query->execute();
+    }
 }

@@ -170,21 +170,20 @@ return [
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_convertconfiguration.target_groups',
             'config' => [
                 'MM' => 'tx_campuseventsconnector_convertconf_targetgroup_mm',
-
                 'type' => 'select',
-                'renderType' => 'selectTree',
-                'foreign_table' => 'tx_campuseventsconnector_domain_model_filtercategory',
+                'renderType' => 'selectMultipleSideBySide',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_targetgroup',
                 'minitems' => 0,
                 'maxitems' => 9999,
-
                 'size' => 10,
-                'treeConfig' => array(
-                    'parentField' => 'parent',
-                    'appearance' => array(
-                        'expandAll' => true,
-                        'showHeader' => false,
-                    ),
-                ),
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
+                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
+                ],
             ],
 
         ],
