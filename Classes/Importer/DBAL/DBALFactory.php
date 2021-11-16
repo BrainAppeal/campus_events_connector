@@ -27,11 +27,7 @@ class DBALFactory
     public static function getInstance()
     {
         if (null === self::$instance) {
-            if (\TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version()) < 8000000) {
-                self::$instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BrainAppeal\CampusEventsConnector\Importer\DBAL\Compatibility7DBAL');
-            } else {
-                self::$instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BrainAppeal\CampusEventsConnector\Importer\DBAL\DBAL');
-            }
+            self::$instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\BrainAppeal\CampusEventsConnector\Importer\DBAL\DBAL::class);
         }
 
         return self::$instance;

@@ -69,7 +69,6 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
     {
         foreach ($objects as $object) {
             $repository = $this->getRepository(get_class($object));
-
             $object->setCeImportedAt(time());
             if ($object->getUid() > 0) {
                 $repository->update($object);
@@ -101,6 +100,36 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
         $connection = $connectionPool->getConnectionForTable($tableName);
         $statement = $connection->prepare($deleteSql);
         $statement->execute([$pid, $importSource, $importTimestamp]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function processImportedItems($tableName, $importIdList, $importSource, $tstamp)
+    {
+        $uidListCsv = implode(',', array_filter($importIdList,  'is_numeric'));
+        $connection = $this->getConnectionForTable($tableName);
+        if (!empty($uidListCsv)) {
+            // Update timestamp for all items from the api list result + mark as not deleted
+            $sql = "UPDATE $tableName SET ce_imported_at = ?, deleted = 0 WHERE ce_import_source = ? AND ce_import_id IN ($uidListCsv)";
+
+            $statement = $connection->prepare($sql);
+            $statement->execute([$tstamp, $importSource]);
+        }
+        // Mark all items as deleted that were not included in the api list result
+        $sql = "UPDATE $tableName SET tstamp = ?, deleted = 1 WHERE ce_import_source = ?";
+        if (!empty($uidListCsv)) {
+            $sql .= " AND ce_import_id NOT IN ($uidListCsv)";
+        }
+        $statement = $connection->prepare($sql);
+        $statement->execute([$tstamp, $importSource]);
+    }
+
+    protected function getConnectionForTable($tableName)
+    {
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ConnectionPool::class);
+        return $connectionPool->getConnectionForTable($tableName);
     }
 
     public function removeNotUpdatedObjects($modelClass, $importSource, $pid, $importTimestamp, $excludeUids = [])

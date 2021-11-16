@@ -76,63 +76,48 @@
 				<target>Teilnehmer</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.speakers">
-				<source>Speakers</source>
 				<target>Referenten</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.time_ranges">
-				<source>Time Ranges</source>
 				<target>Veranstaltungszeiten</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.location">
-				<source>Location</source>
 				<target>Veranstaltungsort</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.categories">
-				<source>Categories</source>
 				<target>Kategorien</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.organizer">
-				<source>Organizer</source>
 				<target>Organisator</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.target_groups">
-				<source>Target Groups</source>
 				<target>Zielgruppen</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.filter_categories">
-				<source>Filter Categories</source>
 				<target>Filterkategorien</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_location">
-				<source>Location</source>
 				<target>Veranstaltungsort</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_location.name">
-				<source>Name</source>
 				<target>Name</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_location.street_name">
-				<source>Street Name</source>
 				<target>Straße</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_location.town">
-				<source>Town</source>
 				<target>Stadt</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_location.zip_code">
-				<source>Zip Code</source>
 				<target>PLZ</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_speaker">
-				<source>Speaker</source>
 				<target>Referent</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.title">
-				<source>Title</source>
 				<target>Titel</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.first_name">
-				<source>First Name</source>
 				<target>Vorname</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.last_name">
@@ -148,119 +133,105 @@
 				<target>Name</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_timerange">
-				<source>Time Range</source>
 				<target>Veranstaltungszeit</target>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_date">
-				<source>Start Date</source>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_tstamp">
 				<target>Startzeit</target>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date">
-				<source>End Date</source>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_tstamp">
 				<target>Endzeit</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_date_is_set">
-				<source>Start Date is set</source>
 				<target>Startzeit ist definiert</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date_is_set">
-				<source>End Date is set</source>
 				<target>Endzeit ist definiert</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.event">
+				<target>Veranstaltung</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.event_session">
+				<target>Zeitraum</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_category">
-				<source>Category</source>
 				<target>Kategorie</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_category.name">
-				<source>Name</source>
 				<target>Name</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_targetgroup">
-				<source>Target Group</source>
 				<target>Zielgruppe</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_targetgroup.name">
-				<source>Name</source>
 				<target>Name</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory">
-				<source>Filter Category</source>
 				<target>Filterkategorie</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory.name">
-				<source>Name</source>
 				<target>Name</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory.parent">
-				<source>Parent Filter Category</source>
 				<target>Übergeordnete Filterkategorie</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration">
-				<source>Convert Configuration</source>
 				<target>Kontervierungs Konfiguration</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_pid">
-				<source>Target PID</source>
 				<target>Ziel PID</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.template_path">
-				<source>Template Path</source>
 				<target>Template Pfad</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.filter_categories">
-				<source>Filter Categories</source>
 				<target>Filterkategorien</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_groups">
-				<source>Target Groups</source>
 				<target>Zielgruppen</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.name">
-				<source>Import events from CampusEvents</source>
 				<target>Events von CampusEvents importieren</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.description">
-				<source>Task for importing Events from defined source</source>
 				<target>Aufgabe um Events von einem definierten System zu importieren</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.base_uri">
-				<source>Base URL of source system</source>
 				<target>Basis URL des Quellsystems</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.api_key">
-				<source>API Key for source system</source>
 				<target>API Key für das Quellsystems</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.api_version">
+				<target>API Version</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.api_version.below-2-27-0">
+				<target>API Version geringer als 2.27.0</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.api_version.below-2-27-0">
+				<target>API Version höher als 2.27.0</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.pid">
-				<source>PageID for imported records</source>
 				<target>SeitenID für importierte Datensätze</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.storage_id">
-				<source>Storage ID</source>
 				<target>Storage ID für importierte Bilder und Anhänge</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.storage_folder">
-				<source>Storage Folder</source>
 				<target>Pfad innerhalb des gewählten Storage für importierte Bilder und Anhänge</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri">
-                <source>Invalid Base URI</source>
                 <target>Ungültige Basis URL</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_api_key">
-                <source>Invalid API Key</source>
                 <target>Ungültiger API Key</target>
             </trans-unit>
             <trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_pid">
-                <source>Invalid Page ID. Please check if the page exists and is not deactivated.</source>
                 <target>Ungültige SeitenID. Bitte stellen Sie sicher dass diese Seite existiert und dass Sie nicht deaktiviert ist.</target>
             </trans-unit>
             <trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_id">
-                <source>Invalid Storage ID</source>
                 <target>Ungültige Storage ID</target>
             </trans-unit>
             <trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_folder">
-                <source>Invalid Storage Folder</source>
                 <target>Ungültiger Pfad</target>
             </trans-unit>
 		</body>

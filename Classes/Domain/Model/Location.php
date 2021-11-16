@@ -17,9 +17,8 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 /**
  * Location
  */
-class Location extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements ImportedModelInterface
+class Location extends AbstractImportedEntity
 {
-    use ImportedModelTrait;
 
     /**
      * name
@@ -48,6 +47,41 @@ class Location extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements
      * @var string
      */
     protected $zipCode = '';
+
+    /**
+     * listViewDisplayName
+     *
+     * @var string
+     */
+    protected $listViewDisplayName = '';
+
+    /**
+     * building
+     *
+     * @var string
+     */
+    protected $building = '';
+
+    /**
+     * room
+     *
+     * @var string
+     */
+    protected $room = '';
+
+    /**
+     * longitude
+     *
+     * @var string
+     */
+    protected $longitude = '';
+
+    /**
+     * latitude
+     *
+     * @var string
+     */
+    protected $latitude = '';
 
     /**
      * Returns the name
@@ -131,5 +165,85 @@ class Location extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements
     public function setZipCode($zipCode)
     {
         $this->zipCode = $zipCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getListViewDisplayName()
+    {
+        return $this->listViewDisplayName;
+    }
+
+    /**
+     * @param string $listViewDisplayName
+     */
+    public function setListViewDisplayName($listViewDisplayName)
+    {
+        $this->listViewDisplayName = $listViewDisplayName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBuilding()
+    {
+        return $this->building;
+    }
+
+    /**
+     * @param string $building
+     */
+    public function setBuilding($building)
+    {
+        $this->building = $building;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoom()
+    {
+        return $this->room;
+    }
+
+    /**
+     * @param string $room
+     */
+    public function setRoom($room)
+    {
+        $this->room = $room;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * @param string $longitude
+     */
+    public function setLongitude($longitude)
+    {
+        $this->longitude = $longitude;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * @param string $latitude
+     */
+    public function setLatitude($latitude)
+    {
+        $this->latitude = $latitude;
     }
 }

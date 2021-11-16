@@ -17,9 +17,8 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 /**
  * TargetGroup
  */
-class TargetGroup extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements ImportedModelInterface
+class TargetGroup extends AbstractImportedEntity
 {
-    use ImportedModelTrait;
 
     /**
      * name

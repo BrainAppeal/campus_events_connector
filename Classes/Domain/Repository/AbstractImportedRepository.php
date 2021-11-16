@@ -103,6 +103,30 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
     }
 
     /**
+     * @param int $importId
+     * @param null|int|int[] $pid
+     * @return ImportedModelInterface|null
+     */
+    public function findByImportId($importId, $pid = null)
+    {
+        $this->setPidRestriction($pid);
+
+        $query = $this->createQuery();
+        $constraints = [
+            $query->equals('ceImportId', $importId),
+        ];
+        $query->matching($query->logicalAnd($constraints));
+        $query->setOrderings([
+            "ceImportedAt" => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
+        ]);
+
+        /** @var ImportedModelInterface $result */
+        $result = $query->execute()->getFirst();
+
+        return $result;
+    }
+
+    /**
      * @param string $importSource
      * @param int $importId
      * @param null|int|int[] $pid

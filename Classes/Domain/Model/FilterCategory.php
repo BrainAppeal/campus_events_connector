@@ -17,9 +17,8 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 /**
  * FilterCategory
  */
-class FilterCategory extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements ImportedModelInterface
+class FilterCategory extends AbstractImportedEntity
 {
-    use ImportedModelTrait;
 
     /**
      * name

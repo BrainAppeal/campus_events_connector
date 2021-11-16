@@ -20,10 +20,15 @@ class EventRepository extends AbstractImportedRepository
 {
     /**
      * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration $configuration
+     * @param int|bool|null $restrictToPid Restrict results to page UID; NULL := $configuration->getPid(); false := no restriction
+     * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      */
-    public function findAllByConvertConfiguration($configuration)
+    public function findAllByConvertConfiguration($configuration, $restrictToPid = null)
     {
-        $this->setPidRestriction($configuration->getPid());
+        if (false !== $restrictToPid) {
+            $pid = $restrictToPid ?? $configuration->getPid();
+            $this->setPidRestriction($pid);
+        }
         $query = $this->createQuery();
         $filterCategories = $configuration->getFilterCategories();
         $targetGroups = $configuration->getTargetGroups();
@@ -31,16 +36,16 @@ class EventRepository extends AbstractImportedRepository
         $targetGroupConstraints = [];
 
         foreach ($filterCategories as $filterCategory) {
-            $filterCategoryConstraints = $query->contains('filter_categories', $filterCategory);
+            $filterCategoryConstraints[] = $query->contains('filterCategories', $filterCategory);
         }
         foreach ($targetGroups as $targetGroup) {
-            $targetGroupConstraints = $query->contains('target_groups', $targetGroup);
+            $targetGroupConstraints[] = $query->contains('targetGroups', $targetGroup);
         }
         if ($filterCategoryConstraints) {
-            $query->logicalAnd($filterCategoryConstraints);
+            $query->matching($query->logicalAnd($filterCategoryConstraints));
         }
         if ($targetGroupConstraints) {
-            $query->logicalAnd($targetGroupConstraints);
+            $query->matching($query->logicalAnd($targetGroupConstraints));
         }
         return $query->execute();
     }

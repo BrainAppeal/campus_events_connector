@@ -34,6 +34,7 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
         $additionalFields = [];
         $additionalFields['task_eventImport_baseUri'] = $this->getBaseUriAdditionalField($taskInfo, $task);
         $additionalFields['task_eventImport_apiKey'] = $this->getApiKeyAdditionalField($taskInfo, $task);
+        $additionalFields['task_eventImport_apiVersion'] = $this->getApiVersionAdditionalField($taskInfo, $task);
         $additionalFields['task_eventImport_pid'] = $this->getPidAdditionalField($taskInfo, $task);
         $additionalFields['task_eventImport_storageId'] = $this->getStorageIdAdditionalField($task);
         $additionalFields['task_eventImport_storageFolder'] = $this->getStorageFolderAdditionalField($taskInfo, $task);
@@ -56,6 +57,35 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
         $fieldConfiguration = [
             'code' => $fieldHtml,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.api_key',
+            'cshKey' => '_MOD_system_txschedulerM1',
+            'cshLabel' => $fieldId
+        ];
+        return $fieldConfiguration;
+    }
+
+    /**
+     * @param array $taskInfo Reference to the array containing the info used in the add/edit form
+     * @param \TYPO3\CMS\Scheduler\Task\AbstractTask|EventImportTask|null $task When editing, reference to the current task. NULL when adding.
+     * @return array Array containing all the information pertaining to the additional fields
+     */
+    protected function getApiVersionAdditionalField(array &$taskInfo, $task)
+    {
+        $fieldId = 'campusEventsConnector_eventImport_apiVersion';
+        $taskInfo[$fieldId] = isset($task->apiVersion) && $task->apiVersion == 1 ? 'checked="checked"' : '';
+        $fieldName = 'tx_scheduler[' . $fieldId . ']';
+
+        $options = [];
+        $optionValues = ['below-2-27-0' => "geringer als 2.27.0", 'above-2-27-0' => "2.27.0 oder höher"];
+        foreach ($optionValues as $optionValue => $optionName) {
+            $selAttr = null !== $task && $task->apiVersion === $optionValue ? ' selected="selected"' : '';
+            $options[] = '<option value="' . $optionValue . '"'.$selAttr.'>' . $optionName . '</option>';
+        }
+
+        $fieldHtml = '<select class="form-control" name="' . $fieldName . '" id="' . $fieldId . '">' . implode("\n", $options) . '</select>';
+
+        $fieldConfiguration = [
+            'code' => $fieldHtml,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.api_version',
             'cshKey' => '_MOD_system_txschedulerM1',
             'cshLabel' => $fieldId
         ];
@@ -119,22 +149,18 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
         $storages = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\StorageRepository::class)->findAll();
         $options = [];
         foreach ($storages as $storage) {
-            if ($task != null && $task->storageId === $storage->getUid()) {
-                $options[] = '<option value="' . $storage->getUid() . '" selected="selected">' . $storage->getName() . '</option>';
-            } else {
-                $options[] = '<option value="' . $storage->getUid() . '">' . $storage->getName() . '</option>';
-            }
+            $selAttr = null !== $task && (int) $task->storageId === $storage->getUid() ? ' selected="selected"' : '';
+            $options[] = '<option value="' . $storage->getUid() . '"'.$selAttr.'>' . $storage->getName() . '</option>';
         }
 
         $fieldHtml = '<select class="form-control" name="' . $fieldName . '" id="' . $fieldId . '">' . implode("\n", $options) . '</select>';
 
-        $fieldConfiguration = [
+        return [
             'code' => $fieldHtml,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.storage_id',
             'cshKey' => '_MOD_system_txschedulerM1',
             'cshLabel' => $fieldId
         ];
-        return $fieldConfiguration;
     }
 
     /**
@@ -287,6 +313,7 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     public function saveAdditionalFields(array $submittedData, \TYPO3\CMS\Scheduler\Task\AbstractTask $task)
     {
         $task->apiKey = $submittedData['campusEventsConnector_eventImport_apiKey'];
+        $task->apiVersion = $submittedData['campusEventsConnector_eventImport_apiVersion'];
         $task->baseUri = $submittedData['campusEventsConnector_eventImport_baseUri'];
         $task->pid = $submittedData['campusEventsConnector_eventImport_pid'];
         $task->storageId = $submittedData['campusEventsConnector_eventImport_storageId'];

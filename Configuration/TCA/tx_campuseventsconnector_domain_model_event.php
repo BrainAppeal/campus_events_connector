@@ -24,7 +24,7 @@ return [
         'languageField' => 'sys_language_uid',
         'transOrigPointerField' => 'l10n_parent',
         'transOrigDiffSourceField' => 'l10n_diffsource',
-//        'delete' => 'deleted',
+        'delete' => 'deleted',
         'enablecolumns' => [
 //            'disabled' => 'hidden',
 //            'starttime' => 'starttime',
@@ -34,33 +34,77 @@ return [
         'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_event.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, images, attachments, registration_possible, min_participants, max_participants, participants, hash, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories',
+        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, images, attachments, registration_possible, min_participants, max_participants, participants, hash, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories, disturber_message, start_tstamp, end_tstamp, event_attendance_mode, event_number, external_order_email_address, external_order_url, modified_at_recursive, order_type, referents_title, seo_description, seo_title, sponsors_title, alternative_events, contact_persons, event_attachments, event_images, event_sessions, event_ticket_price_variants, locations, referents, sponsors',
     ],
     'types' => [
-        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, registration_possible, min_participants, max_participants, participants, hash, --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_csh_tx_campuseventsconnector_domain_model_event.xlf:tabs.relations, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories, --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_csh_tx_campuseventsconnector_domain_model_event.xlf:tabs.media, images, attachments, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
+        '1' => ['showitem' => 'name, subtitle, url, 
+        disturber_message,
+        short_description, 
+        description, 
+        --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.meta_data,
+            seo_title, seo_description,
+            show_in_news, news_text,
+            learning_objective,
+            event_attendance_mode, event_number,
+            order_type,
+        --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.event_times,
+            --palette--;;eventTimespan,
+            event_sessions,
+        --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.registration, 
+            registration_possible,
+            --palette--;;eventParticipants,
+            event_ticket_price_variants, 
+            external_order_email_address, external_order_url, 
+        --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.relations,
+            organizer,
+            alternative_events, contact_persons, event_attachments, event_images, locations,
+            --palette--;;paletteReferents,
+            --palette--;;paletteSponsors,
+        --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.classification,
+             target_groups, categories, filter_categories, 
+        --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.other, 
+            status, canceled, speakers, time_ranges, hash, modified_at_recursive,
+            location,
+        --palette--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.palette.media;eventMedia,
+        --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
+        --palette--;;paletteLanguage,
+        --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
+    ],
+    'palettes' => [
+        'eventMedia' => ['showitem' => 'images, attachments'],
+        'eventTimespan' => ['showitem' => 'start_tstamp, end_tstamp'],
+        'eventParticipants' => ['showitem' => 'min_participants, max_participants, participants'],
+        'paletteReferents' => ['showitem' => 'referents_title,
+            --linebreak--,referents'],
+        'paletteSponsors' => ['showitem' => 'sponsors_title, 
+            --linebreak--,sponsors'],
+        'paletteLanguage' => [
+            'showitem' => '
+                sys_language_uid;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:sys_language_uid_formlabel,l10n_parent, l10n_diffsource,
+            ',
+        ],
     ],
     'columns' => [
         'sys_language_uid' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.language',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'special' => 'languages',
                 'items' => [
                     [
-                        'LLL:EXT:lang/locallang_general.xlf:LGL.allLanguages',
+                        'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.allLanguages',
                         -1,
                         'flags-multiple'
-                    ]
+                    ],
                 ],
                 'default' => 0,
-            ],
+            ]
         ],
         'l10n_parent' => [
             'displayCond' => 'FIELD:sys_language_uid:>:0',
-            'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.l18n_parent',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -69,6 +113,7 @@ return [
                 ],
                 'foreign_table' => 'tx_campuseventsconnector_domain_model_event',
                 'foreign_table_where' => 'AND tx_campuseventsconnector_domain_model_event.pid=###CURRENT_PID### AND tx_campuseventsconnector_domain_model_event.sys_language_uid IN (-1,0)',
+                'default' => 0
             ],
         ],
         'l10n_diffsource' => [
@@ -76,22 +121,14 @@ return [
                 'type' => 'passthrough',
             ],
         ],
-        't3ver_label' => [
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.versionLabel',
-            'config' => [
-                'type' => 'input',
-                'size' => 30,
-                'max' => 30
-            ]
-        ],
         'hidden' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
             ],
@@ -138,7 +175,7 @@ return [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
                 'default' => 0,
@@ -181,15 +218,14 @@ return [
                 'eval' => 'trim',
                 'enableRichtext' => true,
             ],
-            // 'defaultExtras' => 'richtext:rte_transform' // Deprecated
         ],
         'short_description' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.short_description',
             'config' => [
-                'type' => 'input',
-                'size' => 30,
-                'eval' => 'trim'
+                'type' => 'text',
+                'cols' => 60,
+                'rows' => 3,
             ],
         ],
         'show_in_news' => [
@@ -199,7 +235,7 @@ return [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
                 'default' => 0,
@@ -240,32 +276,32 @@ return [
                         'types' => [
                             '0' => [
                                 'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => [
                                 'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => [
                                 'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => [
                                 'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => [
                                 'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_APPLICATION => [
                                 'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
                             ]
                         ],
@@ -288,32 +324,32 @@ return [
                         'types' => [
                             '0' => [
                                 'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => [
                                 'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => [
                                 'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => [
                                 'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => [
                                 'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_APPLICATION => [
                                 'showitem' => '
-                            --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
                             --palette--;;filePalette'
                             ]
                         ],
@@ -329,7 +365,7 @@ return [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
                 'default' => 0,
@@ -395,14 +431,13 @@ return [
                 'foreign_field' => 'event',
                 'maxitems' => 9999,
                 'appearance' => [
-                    'collapseAll' => 0,
+                    'collapseAll' => true,
                     'levelLinksPosition' => 'top',
                     'showSynchronizationLink' => 1,
                     'showPossibleLocalizationRecords' => 1,
                     'showAllLocalizationLink' => 1
                 ],
             ],
-
         ],
         'location' => [
             'exclude' => true,
@@ -413,7 +448,7 @@ return [
                 'minitems' => 0,
                 'maxitems' => 1,
                 'appearance' => [
-                    'collapseAll' => 0,
+                    'collapseAll' => true,
                     'levelLinksPosition' => 'top',
                     'showSynchronizationLink' => 1,
                     'showPossibleLocalizationRecords' => 1,
@@ -515,6 +550,323 @@ return [
                     ]
                 ],
             ],
+        ],
+        'alternative_events' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.alternative_events',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_event',
+                'MM' => 'tx_campuseventsconnector_event_alternative_event_mm',
+                'size' => 10,
+                'autoSizeMax' => 30,
+                'maxitems' => 9999,
+                'multiple' => 0,
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
+                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
+                ],
+            ],
+
+        ],
+        'contact_persons' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.contact_persons',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_contactperson',
+                'MM' => 'tx_campuseventsconnector_event_contactperson_mm',
+                'size' => 10,
+                'autoSizeMax' => 30,
+                'maxitems' => 9999,
+                'multiple' => 0,
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
+                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
+                ],
+            ],
+
+        ],
+        'disturber_message' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.disturber_message',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'start_tstamp' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.start_tstamp',
+            'config' => [
+                'type' => 'input',
+                'renderType' => 'inputDateTime',
+                'size' => 12,
+                'eval' => 'datetime',
+                'default' => 0,
+            ],
+        ],
+        'end_tstamp' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.end_tstamp',
+            'config' => [
+                'type' => 'input',
+                'renderType' => 'inputDateTime',
+                'size' => 12,
+                'eval' => 'datetime',
+                'default' => 0,
+            ],
+        ],
+        'event_sessions' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_sessions',
+            'config' => [
+                'type' => 'inline',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_eventsession',
+                'foreign_field' => 'event',
+                'maxitems' => 9999,
+                'appearance' => [
+                    'collapseAll' => true,
+                    'expandSingle' => true,
+                    'levelLinksPosition' => 'top',
+                    'showSynchronizationLink' => 1,
+                    'showPossibleLocalizationRecords' => 1,
+                    'showAllLocalizationLink' => 1
+                ],
+            ],
+        ],
+        'event_attachments' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_attachments',
+            'config' => [
+                'type' => 'inline',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_eventattachment',
+                'foreign_field' => 'event',
+                'maxitems' => 9999,
+                'appearance' => [
+                    'collapseAll' => true,
+                    'levelLinksPosition' => 'top',
+                    'showSynchronizationLink' => 1,
+                    'showPossibleLocalizationRecords' => 1,
+                    'showAllLocalizationLink' => 1
+                ],
+            ],
+        ],
+        'event_images' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_images',
+            'config' => [
+                'type' => 'inline',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_eventimage',
+                'foreign_field' => 'event',
+                'maxitems' => 9999,
+                'appearance' => [
+                    'collapseAll' => true,
+                    'levelLinksPosition' => 'top',
+                    'showSynchronizationLink' => 1,
+                    'showPossibleLocalizationRecords' => 1,
+                    'showAllLocalizationLink' => 1
+                ],
+            ],
+        ],
+
+        'event_attendance_mode' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_attendance_mode',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'event_number' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_number',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'event_ticket_price_variants' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_ticket_price_variants',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_eventticketpricevariant',
+                'MM' => 'tx_campuseventsconnector_event_eventticketpricevariant_mm',
+                'size' => 10,
+                'autoSizeMax' => 30,
+                'maxitems' => 9999,
+                'multiple' => 0,
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
+                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
+                ],
+            ],
+
+        ],
+        'external_order_email_address' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.external_order_email_address',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'external_order_url' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.external_order_url',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'locations' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.locations',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_location',
+                'MM' => 'tx_campuseventsconnector_event_location_mm',
+                'size' => 10,
+                'autoSizeMax' => 30,
+                'maxitems' => 9999,
+                'multiple' => 0,
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
+                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
+                ],
+            ],
+
+        ],
+        'modified_at_recursive' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.modified_at_recursive',
+            'config' => [
+                'type' => 'passthrough'
+            ],
+        ],
+        'order_type' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.order_type',
+            'config' => [
+                'type' => 'input',
+                'size' => 4,
+                'eval' => 'int'
+            ]
+        ],
+        'referents' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.referents',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_referent',
+                'MM' => 'tx_campuseventsconnector_event_referent_mm',
+                'size' => 10,
+                'autoSizeMax' => 30,
+                'maxitems' => 9999,
+                'multiple' => 0,
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
+                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
+                ],
+            ],
+
+        ],
+        'referents_title' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.referents_title',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'seo_description' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.seo_description',
+            'config' => [
+                'type' => 'text',
+                'cols' => 40,
+                'rows' => 15,
+                'eval' => 'trim'
+            ]
+        ],
+        'seo_title' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.seo_title',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'sponsors_title' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.sponsors_title',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'sponsors' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.sponsors',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_sponsor',
+                'MM' => 'tx_campuseventsconnector_event_sponsor_mm',
+                'size' => 10,
+                'autoSizeMax' => 30,
+                'maxitems' => 9999,
+                'multiple' => 0,
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
+                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
+                ],
+            ],
+
         ],
         'ce_import_source' => $importColumns['ce_import_source'],
         'ce_import_id' => $importColumns['ce_import_id'],

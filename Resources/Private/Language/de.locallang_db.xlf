@@ -78,6 +78,72 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.filter_categories">
 				<target>Filterkategorien</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.alternative_events">
+				<target>Alternative events</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.contact_persons">
+				<target>Kontaktpersonen</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.disturber_message">
+				<target>Disturber message</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.start_tstamp">
+				<target>Startdatum</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.end_tstamp">
+				<target>Enddatum</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.event_attachments">
+				<target>Eventanhänge</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.event_attendance_mode">
+				<target>Event attendance mode</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.event_images">
+				<target>Eventbilder</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.event_number">
+				<target>Event number</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.event_sessions">
+				<target>Event sessions</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.event_ticket_price_variants">
+				<target>Event ticket price variants</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.external_order_email_address">
+				<target>External order email address</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.external_order_url">
+				<target>External order url</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.locations">
+				<target>Orte</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.modified_at_recursive">
+				<target>Modified at recursive</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type">
+				<target>Order type</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.referents">
+				<target>Moderatoren</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.referents_title">
+				<target>Moderatorenüberschrift</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.seo_description">
+				<target>SEO Beschreibung</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.seo_title">
+				<target>SEO Titel</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.sponsors">
+				<target>Sponsoren</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.sponsors_title">
+				<target>Sponsorenüberschrift</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_location">
 				<target>Veranstaltungsort</target>
 			</trans-unit>
@@ -88,17 +154,81 @@
 				<target>Straße</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_location.town">
-				<source>Town</source>
 				<target>Stadt</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_location.zip_code">
 				<target>PLZ</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.building">
+				<target>Gebäude</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.room">
+				<target>Raum</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.longitude">
+				<target>Längengrad</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.latitude">
+				<target>Breitengrad</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_location.list_view_display_name">
+				<target>Listenansicht-Name</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_contactperson">
+				<target>Kontaktperson</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_contactperson.title">
+				<target>Titel</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_contactperson.first_name">
+				<target>Vorname</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_contactperson.last_name">
+				<target>Nachname</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_contactperson.position">
+				<target>Position</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_contactperson.department">
+				<target>Department</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_contactperson.institution">
+				<target>Institution</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_contactperson.phone">
+				<target>Telefon</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_contactperson.mail_address">
+				<target>Mailadresse</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventattachment">
+				<target>Eventanhang</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventattachment.name">
+				<target>Name</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventattachment.file_hash">
+				<target>Filehash</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventattachment.attachment_file">
+				<target>Anhangsdatei</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventimage">
+				<target>Eventbild</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventimage.name">
+				<target>Name</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventimage.file_hash">
+				<target>Filehash</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventimage.image_file">
+				<target>Bilddatei</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_speaker">
 				<target>Referent</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.title">
-				<source>Title</source>
 				<target>Titel</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.first_name">
@@ -116,10 +246,10 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_timerange">
 				<target>Veranstaltungszeit</target>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_date">
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_tstamp">
 				<target>Startzeit</target>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date">
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_tstamp">
 				<target>Endzeit</target>
 			</trans-unit>
             <trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_date_is_set">
@@ -127,6 +257,54 @@
             </trans-unit>
             <trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date_is_set">
                 <target>Endzeit ist definiert</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.event">
+				<target>Veranstaltung</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.event_session">
+				<target>Zeitraum</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventsession">
+				<target>Event Session</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventsession.start_tstamp">
+				<target>Startzeit</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventsession.end_tstamp">
+				<target>Endzeit</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant">
+				<target>Event ticket price variant</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant.bookable_from">
+				<target>Buchbar von</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant.bookable_till">
+				<target>Buchbar bis</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant.quota">
+				<target>Quota</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant.name">
+				<target>Name</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant.price">
+				<target>Preis</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant.tax_rate">
+				<target>Tax rate</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant.tax">
+				<target>Tax</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant.direct_checkout_url">
+				<target>Direct checkout url</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_pricecategory">
+				<target>Preiskategorie</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_pricecategory.name">
+				<target>Name</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_category">
 				<target>Kategorie</target>
@@ -139,6 +317,66 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_targetgroup.name">
 				<target>Name</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent">
+				<target>Referent</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.title">
+				<target>Titel</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.first_name">
+				<target>Vorname</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.last_name">
+				<target>Nachname</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.external_url">
+				<target>Externe Url</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.academic_degree">
+				<target>Academic degree</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.institution">
+				<target>Institution</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.phone">
+				<target>Telefon</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.email">
+				<target>Email</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.business_address">
+				<target>Business_address</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.publications">
+				<target>Publications</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.focus_of_work">
+				<target>Focus of work</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.event_formats">
+				<target>Event formats</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.references">
+				<target>References</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.description">
+				<target>Beschreibung</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor">
+				<target>Sponsor</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.name">
+				<target>Name</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.url">
+				<target>Url</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.image_hash">
+				<target>Bild-Hash</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.image_file">
+				<target>Bild Datei</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory">
 				<target>Filterkategorie</target>
@@ -175,6 +413,27 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.ce_imported_at">
 				<target>Import-Zeitpunkt</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.tabs.meta_data">
+				<target>Metadaten</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.tabs.event_times">
+				<target>Veranstaltungszeitraum</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.tabs.registration">
+				<target>Anmeldung</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.tabs.relations">
+				<target>Relationen</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.tabs.classification">
+				<target>Klassifizierung</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.tabs.other">
+				<target>Weitere Daten</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.palette.media">
+				<target>Medien</target>
 			</trans-unit>
 		</body>
 	</file>

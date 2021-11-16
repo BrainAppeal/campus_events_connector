@@ -17,9 +17,8 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 /**
  * Organizer
  */
-class Organizer extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements ImportedModelInterface
+class Organizer extends AbstractImportedEntity
 {
-    use ImportedModelTrait;
 
     /**
      * name

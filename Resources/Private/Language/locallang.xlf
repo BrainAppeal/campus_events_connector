@@ -114,17 +114,23 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_timerange">
 				<source>Time Range</source>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_date">
-				<source>Start Date</source>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_tstamp">
+				<source>Start date</source>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date">
-				<source>End Date</source>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_tstamp">
+				<source>End date</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.start_date_is_set">
-				<source>Start Date is set</source>
+				<source>Start date is set</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date_is_set">
-				<source>End Date is set</source>
+				<source>End date is set</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.event">
+				<source>Event</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.event_session">
+				<source>Event session</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_category">
 				<source>Category</source>
@@ -173,6 +179,15 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.api_key">
 				<source>API Key for source system</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.api_version">
+				<source>API Version</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.api_version.below-2-27-0">
+				<source>API Version less than 2.27.0</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.api_version.below-2-27-0">
+				<source>API Version higher than 2.27.0</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.pid">
 				<source>PageID for imported records</source>

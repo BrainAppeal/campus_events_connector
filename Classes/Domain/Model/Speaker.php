@@ -16,10 +16,10 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
 /**
  * Speaker
+ * @deprecated new api use Referent instead
  */
-class Speaker extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements ImportedModelInterface
+class Speaker extends AbstractImportedEntity
 {
-    use ImportedModelTrait;
 
     /**
      * title

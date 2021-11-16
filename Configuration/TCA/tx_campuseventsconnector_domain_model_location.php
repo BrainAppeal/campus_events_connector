@@ -23,43 +23,42 @@ return [
         'languageField' => 'sys_language_uid',
         'transOrigPointerField' => 'l10n_parent',
         'transOrigDiffSourceField' => 'l10n_diffsource',
-//        'delete' => 'deleted',
+        'delete' => 'deleted',
         'enablecolumns' => [
 //            'disabled' => 'hidden',
 //            'starttime' => 'starttime',
 //            'endtime' => 'endtime',
         ],
-        'searchFields' => 'name,street_name,town,zip_code',
+        'searchFields' => 'name,street_name,town,zip_code,building,room,longitude,latitude,list_view_display_name',
         'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_location.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, street_name, town, zip_code',
+        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, street_name, town, zip_code, building,room,longitude,latitude,list_view_display_name',
     ],
     'types' => [
-        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, street_name, town, zip_code, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
+        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, street_name, town, zip_code,building,room,longitude,latitude,list_view_display_name, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
     ],
     'columns' => [
         'sys_language_uid' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.language',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'special' => 'languages',
                 'items' => [
                     [
-                        'LLL:EXT:lang/locallang_general.xlf:LGL.allLanguages',
+                        'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.allLanguages',
                         -1,
                         'flags-multiple'
-                    ]
+                    ],
                 ],
                 'default' => 0,
-            ],
+            ]
         ],
         'l10n_parent' => [
             'displayCond' => 'FIELD:sys_language_uid:>:0',
-            'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.l18n_parent',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -68,6 +67,7 @@ return [
                 ],
                 'foreign_table' => 'tx_campuseventsconnector_domain_model_location',
                 'foreign_table_where' => 'AND tx_campuseventsconnector_domain_model_location.pid=###CURRENT_PID### AND tx_campuseventsconnector_domain_model_location.sys_language_uid IN (-1,0)',
+                'default' => 0
             ],
         ],
         'l10n_diffsource' => [
@@ -75,22 +75,14 @@ return [
                 'type' => 'passthrough',
             ],
         ],
-        't3ver_label' => [
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.versionLabel',
-            'config' => [
-                'type' => 'input',
-                'size' => 30,
-                'max' => 30
-            ]
-        ],
         'hidden' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
             ],
@@ -152,6 +144,51 @@ return [
         'zip_code' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_location.zip_code',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'building' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_location.building',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'room' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_location.room',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'longitude' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_location.longitude',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'latitude' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_location.latitude',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'list_view_display_name' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_location.list_view_display_name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,

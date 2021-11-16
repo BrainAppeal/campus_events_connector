@@ -23,6 +23,18 @@ interface DBALInterface
 
     public function removeNotUpdatedObjects($modelClass, $importSource, $pid, $importTimestamp, $excludeUids = []);
 
+    /**
+     * Update the import fields of all records that were found in the api list call;
+     * Mark all records as deleted that were not found
+     *
+     * @param string $tableName
+     * @param array $importIdList
+     * @param string $importSource
+     * @param int $tstamp
+     * @return mixed
+     */
+    public function processImportedItems($tableName, $importIdList, $importSource, $tstamp);
+
     public function addSysFileReference($sysFile, $target, $property, $attribs = []);
 
     public function updateSysFileReference($sysFileReference, $attribs = []);

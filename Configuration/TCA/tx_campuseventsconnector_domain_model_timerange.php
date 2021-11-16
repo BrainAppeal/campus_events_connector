@@ -15,8 +15,8 @@ $importColumns = \BrainAppeal\CampusEventsConnector\Utility\TCAUtility::getImpor
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange',
-        'label' => 'start_date',
-        'label_alt' => 'end_date',
+        'label' => 'start_tstamp',
+        'label_alt' => 'end_tstamp',
         'label_alt_force' => 1,
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -25,43 +25,57 @@ return [
         'languageField' => 'sys_language_uid',
         'transOrigPointerField' => 'l10n_parent',
         'transOrigDiffSourceField' => 'l10n_diffsource',
-//        'delete' => 'deleted',
+        'delete' => 'deleted',
         'enablecolumns' => [
             'disabled' => 'hidden',
             'starttime' => 'starttime',
             'endtime' => 'endtime',
         ],
-        'searchFields' => 'start_date,end_date',
+        'searchFields' => 'start_tstamp,end_tstamp',
         'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_timerange.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, start_date, start_date_is_set, end_date, end_date_is_set',
+        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, start_tstamp, start_date_is_set, end_tstamp, end_date_is_set',
     ],
     'types' => [
-        '1' => ['showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, start_date, start_date_is_set, end_date, end_date_is_set, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'],
+        '1' => ['showitem' => '--palette--;;paletteTimespan, 
+        event, event_session,
+        --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
+        --palette--;;paletteLanguage,
+        --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access'
+        ],
+    ],
+    'palettes' => [
+        'paletteTimespan' => ['showitem' => 'start_tstamp, start_date_is_set,
+            --linebreak--,
+            end_tstamp, end_date_is_set'],
+        'paletteLanguage' => [
+            'showitem' => '
+                sys_language_uid;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:sys_language_uid_formlabel,l10n_parent, l10n_diffsource,
+            ',
+        ],
     ],
     'columns' => [
         'sys_language_uid' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.language',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'special' => 'languages',
                 'items' => [
                     [
-                        'LLL:EXT:lang/locallang_general.xlf:LGL.allLanguages',
+                        'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.allLanguages',
                         -1,
                         'flags-multiple'
-                    ]
+                    ],
                 ],
                 'default' => 0,
-            ],
+            ]
         ],
         'l10n_parent' => [
             'displayCond' => 'FIELD:sys_language_uid:>:0',
-            'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.l18n_parent',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -70,6 +84,7 @@ return [
                 ],
                 'foreign_table' => 'tx_campuseventsconnector_domain_model_timerange',
                 'foreign_table_where' => 'AND tx_campuseventsconnector_domain_model_timerange.pid=###CURRENT_PID### AND tx_campuseventsconnector_domain_model_timerange.sys_language_uid IN (-1,0)',
+                'default' => 0
             ],
         ],
         'l10n_diffsource' => [
@@ -77,22 +92,14 @@ return [
                 'type' => 'passthrough',
             ],
         ],
-        't3ver_label' => [
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.versionLabel',
-            'config' => [
-                'type' => 'input',
-                'size' => 30,
-                'max' => 30
-            ]
-        ],
         'hidden' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
             ],
@@ -123,16 +130,15 @@ return [
             ],
         ],
 
-        'start_date' => [
+        'start_tstamp' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.start_date',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.start_tstamp',
             'config' => [
-                'dbType' => 'datetime',
                 'type' => 'input',
                 'renderType' => 'inputDateTime',
                 'size' => 12,
                 'eval' => 'datetime',
-                'default' => '0000-00-00 00:00:00'
+                'default' => 0,
             ],
         ],
         'start_date_is_set' => [
@@ -142,21 +148,20 @@ return [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
             ],
         ],
-        'end_date' => [
+        'end_tstamp' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.end_date',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.end_tstamp',
             'config' => [
-                'dbType' => 'datetime',
                 'type' => 'input',
                 'renderType' => 'inputDateTime',
                 'size' => 12,
                 'eval' => 'datetime',
-                'default' => '0000-00-00 00:00:00'
+                'default' => 0,
             ],
         ],
         'end_date_is_set' => [
@@ -166,16 +171,23 @@ return [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
             ],
         ],
 
         'event' => [
+            'label' => 'event',
             'config' => [
                 'type' => 'passthrough',
             ],
+        ],
+        'event_session' => [
+            'label' => 'event_session',
+            'config' => [
+                'type' => 'passthrough'
+            ]
         ],
         'ce_import_source' => $importColumns['ce_import_source'],
         'ce_import_id' => $importColumns['ce_import_id'],

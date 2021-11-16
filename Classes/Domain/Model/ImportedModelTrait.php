@@ -49,7 +49,7 @@ trait ImportedModelTrait
 
     /**
      * @param string $ceImportSource
-     * @return ImportedModelTrait
+     * @return ImportedModelInterface
      */
     public function setCeImportSource($ceImportSource)
     {
@@ -68,7 +68,7 @@ trait ImportedModelTrait
 
     /**
      * @param int $ceImportId
-     * @return ImportedModelTrait
+     * @return ImportedModelInterface
      */
     public function setCeImportId($ceImportId)
     {
@@ -87,7 +87,7 @@ trait ImportedModelTrait
 
     /**
      * @param int $ceImportedAt
-     * @return ImportedModelTrait
+     * @return ImportedModelInterface
      */
     public function setCeImportedAt($ceImportedAt)
     {

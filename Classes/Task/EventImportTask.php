@@ -13,12 +13,18 @@
 
 namespace BrainAppeal\CampusEventsConnector\Task;
 
-class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
+class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
+{
 
     /**
      * @var string
      */
     public $apiKey;
+
+    /**
+     * @var string
+     */
+    public $apiVersion;
 
     /**
      * @var string
@@ -52,6 +58,17 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
     }
 
     /**
+     * @return \BrainAppeal\CampusEventsConnector\Importer\ExtendedImporter
+     */
+    private function getExtendedImporter()
+    {
+        /** @var \BrainAppeal\CampusEventsConnector\Importer\ExtendedImporter $importer */
+        $importer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\BrainAppeal\CampusEventsConnector\Importer\ExtendedImporter::class);
+
+        return $importer;
+    }
+
+    /**
      * @return \TYPO3\CMS\Core\DataHandling\DataHandler
      */
     private function getCacheService()
@@ -66,9 +83,15 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
     /**
      * @inheritdoc
      */
-    public function execute() {
-        $importer = $this->getImporter();
-        $success = $importer->import($this->baseUri, $this->apiKey, $this->pid, $this->storageId, $this->storageFolder);
+    public function execute()
+    {
+        if ($this->apiVersion == 'above-2-27-0') {
+            $importer = $this->getExtendedImporter();
+        } else {
+            $importer = $this->getImporter();
+        }
+
+        $success = $importer->import($this->baseUri, $this->apiKey, $this->pid, (int) $this->storageId, $this->storageFolder);
 
         $this->callHooks();
 
@@ -93,8 +116,8 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
                 }
             }
         }
-        foreach ($pageIdsToClear as $pid) {
-            $this->getCacheService()->clear_cacheCmd($pid);
+        foreach ($pageIdsToClear as $ccPid) {
+            $this->getCacheService()->clear_cacheCmd($ccPid);
         }
     }
 

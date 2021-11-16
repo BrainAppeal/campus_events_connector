@@ -15,7 +15,7 @@ defined('TYPO3_MODE') or die();
 
 
 call_user_func(
-    function($extKey) {
+    function ($extKey) {
         // Add caching framework garbage collection task
         /** @var string $extKey */
 

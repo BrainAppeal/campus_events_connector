@@ -17,16 +17,19 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 /**
  * TimeRange
  */
-class TimeRange extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implements ImportedModelInterface
+class TimeRange extends AbstractImportedEntity implements BelongsToEventInterface
 {
-    use ImportedModelTrait;
+    use DatePeriodTrait;
 
     /**
-     * startDate
-     *
-     * @var \DateTime
+     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\Event
      */
-    protected $startDate = null;
+    protected $event = null;
+
+    /**
+     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\EventSession
+     */
+    protected $eventSession = null;
 
     /**
      * startDateIsSet
@@ -36,13 +39,6 @@ class TimeRange extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implement
     protected $startDateIsSet;
 
     /**
-     * endDate
-     *
-     * @var \DateTime
-     */
-    protected $endDate = null;
-
-    /**
      * endDateIsSet
      *
      * @var bool
@@ -50,45 +46,35 @@ class TimeRange extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity implement
     protected $endDateIsSet;
 
     /**
-     * Returns the startDate
-     *
-     * @return \DateTime $startDate
+     * @return Event
      */
-    public function getStartDate()
+    public function getEvent(): ?Event
     {
-        return $this->startDate;
+        return $this->event;
     }
 
     /**
-     * Sets the startDate
-     *
-     * @param \DateTime $startDate
-     * @return void
+     * @param Event $event
      */
-    public function setStartDate(\DateTime $startDate)
+    public function setEvent(?Event $event): void
     {
-        $this->startDate = $startDate;
+        $this->event = $event;
     }
 
     /**
-     * Returns the endDate
-     *
-     * @return \DateTime $endDate
+     * @return EventSession
      */
-    public function getEndDate()
+    public function getEventSession(): ?EventSession
     {
-        return $this->endDate;
+        return $this->eventSession;
     }
 
     /**
-     * Sets the endDate
-     *
-     * @param \DateTime $endDate
-     * @return void
+     * @param EventSession $eventSession
      */
-    public function setEndDate(\DateTime $endDate)
+    public function setEventSession(?EventSession $eventSession): void
     {
-        $this->endDate = $endDate;
+        $this->eventSession = $eventSession;
     }
 
     /**
