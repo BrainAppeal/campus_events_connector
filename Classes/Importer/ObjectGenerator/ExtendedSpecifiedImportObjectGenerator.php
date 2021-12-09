@@ -57,11 +57,19 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
             return;
         }
         $object->setName($data['name']);
+        $urls = [];
+        if (array_key_exists('@urls', $data)) {
+            $urls = $data['@urls'];
+        }
+        if (empty($urls['eventUrl']) && !empty($this->baseUri)) {
+            $urls['eventUrl'] = rtrim($this->baseUri, '/') . '/event/' . $importMappingModel->getImportId();
+        }
+        $object->setUrl($urls['eventUrl'] ?? '');
         if ($data['subtitle']) {
             $object->setSubtitle($data['subtitle']);
         }
         if ($data['description']) {
-            $object->setDescription($data['description']);
+            $object->setDescription($this->cleanupHtmlForRTE($data['description']));
         }
         if ($data['shortDescription']) {
             $object->setShortDescription($data['shortDescription']);
@@ -194,6 +202,15 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
                 $locations,
                 'location'
             );
+            if ((null !== $objectLocations = $object->getLocations()) && $objectLocations->count() > 0) {
+                foreach ($objectLocations as $location) {
+                    if ($location instanceof Location) {
+                        $object->setLocation($location);
+                        break;
+                    }
+                }
+            }
+
         }
         if (!empty($data['referents'])){
             $this->processReferencesMultiple(
@@ -209,6 +226,45 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
                 'sponsor'
             );
         }
+    }
+
+    /**
+     * Remove line breaks after end tags in html, to prevent RTE from adding unnecessary empty lines
+     * @param string $html
+     * @return string
+     */
+    private function cleanupHtmlForRTE($html)
+    {
+        $replaceHtmlWith = [
+            '<br>' => ['<br />', '<br/>'],
+            'ä' => '&auml;',
+            'ö' => '&ouml;',
+            'ü' => '&uuml;',
+            'Ä' => '&Auml;',
+            'Ö' => '&Ouml;',
+            'Ü' => '&Uuml;',
+            'ß' => '&szlig;',
+        ];
+        $cleanedHtml = $html;
+        foreach ($replaceHtmlWith as $replaceWith => $searchFor) {
+            $cleanedHtml = str_replace($searchFor, $replaceWith, $cleanedHtml);
+        }
+        $removeLineBreaksBeforeAndAfterTags = ['br', 'p', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'h5', 'div', 'table'];
+        try {
+            foreach ($removeLineBreaksBeforeAndAfterTags as $tag) {
+                $tagStart = '<' . $tag . '>';
+                $tagEnd = '</' . $tag . '>';
+                if (stripos($cleanedHtml, $tagStart) !== false) {
+                    $cleanedHtml = preg_replace('/\s*(<' . $tag . '[^>]*>)\s*/i', '$1', $cleanedHtml);
+                }
+                if (stripos($cleanedHtml, $tagEnd) !== false) {
+                    $cleanedHtml = preg_replace('/\s*(<\/' . $tag . '>)\s*/i', '$1', $cleanedHtml);
+                }
+            }
+        } catch (\Exception $e) {
+            return $html;
+        }
+        return $cleanedHtml;
     }
 
     /**
@@ -434,7 +490,7 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
             return;
         }
         $object->setName($data['name']);
-        $object->setUrl($data['url']);
+        $object->setUrl($data['url'] ?? '');
         $object->setImageHash($data['imageHash']);
         if ($data['imageFile']['url']) {
             $this->fileImporter->enqueueFileMapping($object, 'image_file', $data['imageFile']);

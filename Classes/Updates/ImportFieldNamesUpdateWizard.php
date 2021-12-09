@@ -32,9 +32,15 @@ class ImportFieldNamesUpdateWizard implements UpgradeWizardInterface
      */
     protected $output;
 
-    public function __construct()
+    /**
+     * @return UpdateService
+     */
+    protected function getUpdateService()
     {
-        $this->updateService = GeneralUtility::makeInstance(UpdateService::class);
+        if (null === $this->updateService) {
+            $this->updateService = GeneralUtility::makeInstance(UpdateService::class);
+        }
+        return $this->updateService;
     }
 
     /**
@@ -112,7 +118,7 @@ class ImportFieldNamesUpdateWizard implements UpgradeWizardInterface
      */
     public function executeUpdate(): bool
     {
-        $updatesPerformed = $this->updateService->performUpdates();
+        $updatesPerformed = $this->getUpdateService()->performUpdates();
         if ($updatesPerformed === true) {
             $this->markWizardAsDone();
         }
@@ -167,7 +173,7 @@ class ImportFieldNamesUpdateWizard implements UpgradeWizardInterface
      */
     public function checkForUpdate(): bool
     {
-        $updateCheck = $this->updateService->checkIfUpdateIsNeeded();
+        $updateCheck = $this->getUpdateService()->checkIfUpdateIsNeeded();
 
         if ($this->isWizardDone()) {
             return false;

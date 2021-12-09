@@ -29,7 +29,7 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
     /**
      * @var string
      */
-    private $importSource;
+    protected $baseUri;
 
     /**
      * @var int
@@ -87,7 +87,7 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
     {
         $this->fileImporter = $fileImporter;
         $this->dataMap = $dataMap;
-        $this->importSource = $importSource;
+        $this->baseUri = $importSource;
         $this->pid = (int)$pid;
         $this->importMappingObjectStorage = [];
         /** @var ImportScheduleUtility $importScheduleUtility */
@@ -147,12 +147,12 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
         if (null === $mappingModel->getDomainModel()) {
             $dataTypeMap = $this->dataMap[$importType];
             $class = $dataTypeMap['class'];
-            $domainModel = $this->getDBAL()->findByImport($class, $this->importSource, $importId, $this->pid);
+            $domainModel = $this->getDBAL()->findByImport($class, $this->baseUri, $importId, $this->pid);
             if (null === $domainModel) {
                 /** @var ImportedModelInterface $object */
                 $domainModel = new $class;
                 $domainModel->setCeImportId($importId);
-                $domainModel->setCeImportSource($this->importSource);
+                $domainModel->setCeImportSource($this->baseUri);
                 $domainModel->setPid($this->pid);
             }
             $mappingModel->setDomainModel($domainModel);
@@ -179,11 +179,11 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
     protected function assignClassSpecificProperties(ImportMappingModel $importMappingModel)
     {
         $domainModel = $importMappingModel->getDomainModel();
+        $importType = $importMappingModel->getImportType();
+        $importId = $importMappingModel->getImportId();
         if (!($domainModel instanceof ImportedModelInterface) || !$importMappingModel->existsInApi()) {
             return;
         }
-        $importType = $importMappingModel->getImportType();
-        $importId = $importMappingModel->getImportId();
         $domainModel->setCeImportedAt(time());
         $domainModel->setCeImportId($importId);
         switch ($importType) {

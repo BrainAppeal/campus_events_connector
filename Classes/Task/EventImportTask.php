@@ -13,6 +13,8 @@
 
 namespace BrainAppeal\CampusEventsConnector\Task;
 
+use BrainAppeal\CampusEventsConnector\Importer\PostImportHookInterface;
+
 class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
 {
 
@@ -102,6 +104,10 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
         return $success;
     }
 
+    /**
+     * Clear the cache for the given page id and the cache tag "tx_campus_events"
+     * @param int $pid
+     */
     private function clearPageCache($pid)
     {
         $pageIdsToClear[$pid] = $pid;
@@ -116,8 +122,10 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
                 }
             }
         }
+        $cacheService = $this->getCacheService();
+        $cacheService->clear_cacheCmd('cacheTag:tx_campus_events');
         foreach ($pageIdsToClear as $ccPid) {
-            $this->getCacheService()->clear_cacheCmd($ccPid);
+            $cacheService->clear_cacheCmd($ccPid);
         }
     }
 
@@ -128,7 +136,7 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
         ) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'] as $classRef) {
                 $hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($classRef);
-                if (method_exists($hookObj, 'postImport')) {
+                if ($hookObj instanceof PostImportHookInterface || method_exists($hookObj, 'postImport')) {
                     $hookObj->postImport($this->pid);
                 }
             }

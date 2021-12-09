@@ -28,6 +28,8 @@ class EventRepository extends AbstractImportedRepository
         if (false !== $restrictToPid) {
             $pid = $restrictToPid ?? $configuration->getPid();
             $this->setPidRestriction($pid);
+        } else {
+            $this->setPidRestriction(null);
         }
         $query = $this->createQuery();
         $filterCategories = $configuration->getFilterCategories();

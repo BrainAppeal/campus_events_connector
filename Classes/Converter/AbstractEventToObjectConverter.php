@@ -92,6 +92,10 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
         $dataMapper = $objectManager->get(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
         $this->importSource = $dataMapper->getDataMap(get_class($configuration))->getTableName() . ':' . $configuration->getUid();
         $this->configuration = $configuration;
+        // Set current language to "de" so news description translations are german
+        if (null !== $languageService = $this->getLanguageService()) {
+            $languageService->lang = 'de';
+        }
     }
 
     /**
@@ -105,7 +109,9 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
 
         $timestamp = time();
         foreach ($events as $event) {
-            $this->convertEvent($event);
+            if ($this->isConversionPossible($event)) {
+                $this->convertEvent($event);
+            }
         }
 
         $objectRepository = $this->getObjectRepository();
@@ -125,6 +131,17 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
      * @api Use this method to individualize your object
      */
     protected abstract function individualizeObjectByEvent(&$object, $event, $configuration);
+
+    /**
+     * Returns true, if the event can be converted to the target object model; Override this function in custom
+     * converter to support skipping import of single events
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Event $event
+     * @return bool
+     */
+    protected function isConversionPossible($event)
+    {
+        return true;
+    }
 
     /**
      * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Event $event
@@ -151,5 +168,13 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
         } else {
             $objectRepository->add($object);
         }
+    }
+
+    /**
+     * @return \TYPO3\CMS\Core\Localization\LanguageService
+     */
+    protected function getLanguageService()
+    {
+        return $GLOBALS['LANG'];
     }
 }

@@ -160,12 +160,13 @@ class ImportScheduleUtility implements SingletonInterface
 
     /**
      * Clean up old queue items
+     * @param string $timModifier
      */
-    public function cleanUp()
+    public function cleanUp($timModifier = '-1 week')
     {
         $deleteQueryBuilder = $this->getScheduleQueryBuilder();
         $deleteQueryBuilder->delete(self::TABLE_IMPORT_ROW)
-            ->where('crdate < ' . strtotime('-1 week'))
+            ->where('crdate < ' . strtotime($timModifier))
             ->execute();
     }
 

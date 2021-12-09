@@ -388,7 +388,7 @@
 				<target>Übergeordnete Filterkategorie</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration">
-				<target>Kontervierungs Konfiguration</target>
+				<target>Konvertierungs Konfiguration</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.select_type">
 				<target>Bitte wählen Sie den Konvertierungstyp</target>

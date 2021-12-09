@@ -48,7 +48,6 @@ class Event extends AbstractImportedEntity
      * url
      *
      * @var string
-     * @deprecated
      */
     protected $url = '';
 
@@ -488,7 +487,6 @@ class Event extends AbstractImportedEntity
      * Returns the url
      *
      * @return string $url
-     * @deprecated
      */
     public function getUrl()
     {
@@ -500,7 +498,6 @@ class Event extends AbstractImportedEntity
      *
      * @param string $url
      * @return void
-     * @deprecated
      */
     public function setUrl($url)
     {
@@ -1691,6 +1688,9 @@ class Event extends AbstractImportedEntity
      */
     public function addLocation(\BrainAppeal\CampusEventsConnector\Domain\Model\Location $location)
     {
+        if (null === $this->location) {
+            $this->location = $location;
+        }
         $this->getLocations()->attach($location);
     }
 

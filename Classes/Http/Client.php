@@ -13,6 +13,7 @@
 
 namespace BrainAppeal\CampusEventsConnector\Http;
 
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
@@ -123,7 +124,7 @@ class Client
         if ($this->isGuzzleAvailable()) {
             try {
                 $response = $this->client->get($uri, $options);
-            } catch (\Exception $e) {
+            } catch (GuzzleException|\Throwable $e) {
                 throw new HttpException($e->getMessage(), $e->getCode(), $e);
             }
         } else {
@@ -136,7 +137,7 @@ class Client
                 } else {
                     $response = $request->send();
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 throw new HttpException($e->getMessage(), $e->getCode(), $e);
             }
         }
@@ -153,7 +154,8 @@ class Client
         if ($this->isGuzzleAvailable()) {
             try {
                 $promise = $this->client->getAsync($uri, $options);
-            } catch (\Exception $e) {
+                $promise = new GuzzlePromise($promise);
+            } catch (GuzzleException|\Throwable $e) {
                 throw new HttpException($e->getMessage(), $e->getCode(), $e);
             }
         } else {

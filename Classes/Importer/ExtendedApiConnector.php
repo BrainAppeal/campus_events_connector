@@ -67,7 +67,7 @@ class ExtendedApiConnector
      */
     protected static $apiTypeEntryPoints = [
         'Event' => 'events',
-        'ContactPerson' => 'contact_people',
+        'ContactPerson' => 'contact_persons',
         'Category' => 'categories',
         'EventSession' => 'event_sessions',
         'EventAttachment' => 'event_attachments',

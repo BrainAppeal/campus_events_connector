@@ -13,9 +13,6 @@
 
 namespace BrainAppeal\CampusEventsConnector\Task;
 
-use TYPO3\CMS\Lang\LanguageService;
-use TYPO3\CMS\Scheduler\AbstractAdditionalFieldProvider;
-
 /**
  * Additional BE fields for ip address anonymization task.
  */
@@ -281,7 +278,7 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
             $validData = true;
         } else {
             // Issue error message
-            self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_id'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $this->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_id'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
         }
         return $validData;
     }
@@ -299,7 +296,7 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
             $validData = true;
         } else {
             // Issue error message
-            self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_folder'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $this->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_folder'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
         }
         return $validData;
     }
@@ -323,7 +320,7 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     /**
      * Returns an instance of LanguageService
      *
-     * @return LanguageService
+     * @return \TYPO3\CMS\Core\Localization\LanguageService
      */
     protected function getLanguageService()
     {

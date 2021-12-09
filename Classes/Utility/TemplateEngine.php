@@ -13,6 +13,9 @@
 
 namespace BrainAppeal\CampusEventsConnector\Utility;
 
+use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 class TemplateEngine
 {
 
@@ -46,8 +49,12 @@ class TemplateEngine
     private function resolvePath($path)
     {
         if (preg_match('/^\d+:/', $path)) {
-            $resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
-            $path = $resourceFactory->getFolderObjectFromCombinedIdentifier($path)->getPublicUrl();
+            /** @var \TYPO3\CMS\Core\Resource\ResourceFactory $resourceFactory */
+            $resourceFactory = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\ResourceFactory::class);
+            $folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($path);
+            if ($folder instanceof Folder) {
+                $path = $folder->getPublicUrl();
+            }
         }
 
         return \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($path);

@@ -157,7 +157,7 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
      * @param string $property
      * @param array $data
      * @param string $tempFilenameAndPath
-     * @param Promise|PromiseInterface $promise
+     * @param \BrainAppeal\CampusEventsConnector\Http\PromiseInterface|PromiseInterface $promise
      */
     private function addToQueue($object, $property, $data, $tempFilenameAndPath, $promise)
     {
@@ -209,7 +209,7 @@ class FileImporter implements \TYPO3\CMS\Core\SingletonInterface
     private function getDownloadFromQueueEntry($queueEntry)
     {
         /**
-         * @var Promise $downloadPromise
+         * @var \BrainAppeal\CampusEventsConnector\Http\PromiseInterface $downloadPromise
          */
         $downloadPromise = $queueEntry['download']['promise'];
         $downloadFile = $queueEntry['download']['file'];

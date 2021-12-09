@@ -44,7 +44,7 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
 
         $object->setName($data['name']);
         $object->setCanceled($data['canceled']);
-        $object->setUrl($data['url']);
+        $object->setUrl($data['url'] ?? '');
         $object->setSubtitle($data['subtitle']);
         $object->setDescription($data['description']);
         $object->setShortDescription($data['short_description']);

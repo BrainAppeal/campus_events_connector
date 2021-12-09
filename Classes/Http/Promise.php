@@ -14,15 +14,9 @@
 
 namespace BrainAppeal\CampusEventsConnector\Http;
 
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7\Response;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
 use TYPO3\CMS\Core\Http\HttpRequest;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class Promise
+class Promise implements PromiseInterface
 {
     const PENDING = 'pending';
     const FULFILLED = 'fulfilled';
@@ -73,10 +67,10 @@ class Promise
     {
         if (null === $this->response) {
             return self::PENDING;
-        } elseif ($this->response->getStatus() == 200) {
-            return self::FULFILLED;
-        } else {
-            return self::REJECTED;
         }
+        if ($this->response->getStatus() == 200) {
+            return self::FULFILLED;
+        }
+        return self::REJECTED;
     }
 }

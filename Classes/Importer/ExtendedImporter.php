@@ -29,7 +29,7 @@ class ExtendedImporter
 
     /**
      * Toggle debug mode
-     * @var bool
+     * @var bool|string
      */
     private $debug = false;
 
@@ -54,8 +54,8 @@ class ExtendedImporter
     {
         // Enable debug mode to keep queue item data (prevent repeated API access for the same data)
         // + force update of all found items
-        // $this->debug = true;
-        if (!$this->debug) {
+        // $this->debug = true;//'forceUpdate'
+        if (!$this->debug || $this->debug === 'forceUpdate') {
             $this->getImportScheduleUtility()->cleanUp();
         }
         $importStartTimestamp = time();
@@ -73,7 +73,7 @@ class ExtendedImporter
             $fileImporter->initialize($storageId, $storageFolder, $baseUri);
             /** @var ExtendedImportObjectGenerator $importObjectGenerator */
             $importObjectGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ExtendedSpecifiedImportObjectGenerator::class);
-            $updatedDomainModels = $importObjectGenerator->processQueue($dataMap, $baseUri, $pid, $fileImporter, $this->debug);
+            $updatedDomainModels = $importObjectGenerator->processQueue($dataMap, $baseUri, $pid, $fileImporter, $this->debug !== false);
             $dbal = DBALFactory::getInstance();
             $dbal->updateObjects($updatedDomainModels);
             $fileImporter->runQueue();
@@ -182,13 +182,17 @@ class ExtendedImporter
         $itemImportType = ImportScheduleUtility::IMPORT_TYPE_NO_CHANGE;
         if ($doImport || $this->debug) {
             // Debug mode: Reuse the api data from the previous entry, instead of making the api call
-            if ($this->debug && !empty($prevQueueItem['import_data'])) {
+            // but only if the data is not marked as changed anyway
+            if (!$this->debug || $this->debug === 'forceUpdate' || empty($prevQueueItem['import_data'])) {
+                $apiResponse = $apiConnector->fetchRecordData($importId, $importModelType);
+            } else {
                 $apiResponse = json_decode($prevQueueItem['import_data'], true);
                 if (empty($apiResponse) || !is_array($apiResponse) || empty($apiResponse['@type'])) {
                     $apiResponse = $apiConnector->fetchRecordData($importId, $importModelType);
                 }
-            } else {
-                $apiResponse = $apiConnector->fetchRecordData($importId, $importModelType);
+            }
+            if ($this->debug || empty($modified)) {
+                $modified = time();
             }
             if (empty($prevQueueItem)) {
                 $itemImportType = ImportScheduleUtility::IMPORT_TYPE_INSERT;
@@ -200,7 +204,7 @@ class ExtendedImporter
                 $importModelType,
                 $itemImportType,
                 $apiResponse,
-                $modified ?? time(),
+                $modified,
                 $dataHash,
                 $prevQueueItem
             );

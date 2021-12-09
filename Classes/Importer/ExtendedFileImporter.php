@@ -14,11 +14,9 @@
 namespace BrainAppeal\CampusEventsConnector\Importer;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
-use BrainAppeal\CampusEventsConnector\Http\Promise;
 use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
-use BrainAppeal\CampusEventsConnector\Http\Client;
-use GuzzleHttp\Promise\PromiseInterface;
 
 class ExtendedFileImporter implements \TYPO3\CMS\Core\SingletonInterface
 {
@@ -31,11 +29,6 @@ class ExtendedFileImporter implements \TYPO3\CMS\Core\SingletonInterface
      * @var int[]
      */
     private $updateReferenceIds;
-
-    /**
-     * @var Client
-     */
-    private $client;
 
     /**
      * @var \TYPO3\CMS\Core\Resource\Folder
@@ -57,6 +50,11 @@ class ExtendedFileImporter implements \TYPO3\CMS\Core\SingletonInterface
      */
     private $storageFolder;
 
+    /**
+     * @var string
+     */
+    private $baseUri;
+
     public function __construct()
     {
         $this->newReferenceQueue = [];
@@ -75,10 +73,7 @@ class ExtendedFileImporter implements \TYPO3\CMS\Core\SingletonInterface
     {
         $this->storageId = $storageId;
         $this->storageFolder = $storageFolder;
-        $this->client = new Client(
-            [
-                'base_uri' => $baseUri,
-            ]);
+        $this->baseUri = $baseUri;
     }
 
     /**
@@ -140,7 +135,7 @@ class ExtendedFileImporter implements \TYPO3\CMS\Core\SingletonInterface
      */
     private function getFileReferenceIfExists($object, $property, $data)
     {
-        if (!empty($object->getUid())) {
+        if ((int) $object->getUid() > 0) {
             $size = $data['size'];
             /** @var FileReference $fileReference */
             $fileReferenceList = $object->_getProperty($property);
@@ -161,9 +156,9 @@ class ExtendedFileImporter implements \TYPO3\CMS\Core\SingletonInterface
      * @param string $property
      * @param array $data
      * @param string $tempFilenameAndPath
-     * @param Promise|PromiseInterface $promise
+     * @param string $url
      */
-    private function addToQueue($object, $property, $data, $tempFilenameAndPath, $promise)
+    private function addToQueue($object, $property, $data, $tempFilenameAndPath, $url)
     {
         $this->newReferenceQueue[] = [
             'object' => $object,
@@ -171,7 +166,7 @@ class ExtendedFileImporter implements \TYPO3\CMS\Core\SingletonInterface
             'data' => $data,
             'download' => [
                 'file' => $tempFilenameAndPath,
-                'promise' => $promise,
+                'url' => $url,
             ],
         ];
     }
@@ -183,7 +178,7 @@ class ExtendedFileImporter implements \TYPO3\CMS\Core\SingletonInterface
      */
     public function enqueueFileMapping($object, $property, $data)
     {
-        if (empty($data['url'])) {
+        if (empty($data['url']) || empty($this->baseUri)) {
             return;
         }
 
@@ -194,14 +189,8 @@ class ExtendedFileImporter implements \TYPO3\CMS\Core\SingletonInterface
             $this->updateReferenceIds[$fileReferenceUid] = $fileReferenceUid;
         } else {
             $tempFilenameAndPath = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('tx_campuseventsconnector_');
-
-            try {
-                $promise = $this->client->getAsync($data['url'], ['sink' => $tempFilenameAndPath]);
-            } catch (\BrainAppeal\CampusEventsConnector\Http\HttpException $e) {
-                unset($e);
-                return;
-            }
-            $this->addToQueue($object, $property, $data, $tempFilenameAndPath, $promise);
+            $downloadUrl = rtrim($this->baseUri, '/') . '/' . ltrim($data['url'], '/');
+            $this->addToQueue($object, $property, $data, $tempFilenameAndPath, $downloadUrl);
         }
     }
 
@@ -211,20 +200,14 @@ class ExtendedFileImporter implements \TYPO3\CMS\Core\SingletonInterface
      */
     private function getDownloadFromQueueEntry($queueEntry)
     {
-        /**
-         * @var Promise $downloadPromise
-         */
-        $downloadPromise = $queueEntry['download']['promise'];
+        $downloadUrl = $queueEntry['download']['url'];
         $downloadFile = $queueEntry['download']['file'];
-        try {
-            $downloadPromise->wait();
-        } catch (\BrainAppeal\CampusEventsConnector\Http\HttpException $e) {
-            unset($e);
-        }
-
-        if ('fulfilled' == $downloadPromise->getState()) {
+        $fileContent = GeneralUtility::getUrl($downloadUrl);
+        if (false !== $fileContent) {
+            file_put_contents($downloadFile, $fileContent);
             return $downloadFile;
         }
+
         return null;
     }
 
@@ -250,19 +233,18 @@ class ExtendedFileImporter implements \TYPO3\CMS\Core\SingletonInterface
             $deleteAfterAddingToFAL = true // remove $tempFilenameAndPath
         );
 
-        $attibs = [
+        $attribs = [
             'ce_import_source'=> $object->getCeImportSource(),
             'ce_import_id'=> $importId,
             'ce_imported_at'=> time(),
         ];
-        $this->getDBAL()->addSysFileReference($newFile, $object, $objectProperty, $attibs);
+        $this->getDBAL()->addSysFileReference($newFile, $object, $objectProperty, $attribs);
     }
 
     public function runQueue()
     {
         foreach ($this->newReferenceQueue as $queueEntry) {
             $downloadFile = $this->getDownloadFromQueueEntry($queueEntry);
-
             if (!empty($downloadFile)) {
 
                 /** @var ImportedModelInterface $object */
