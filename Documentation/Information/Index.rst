@@ -20,8 +20,6 @@ Converters
 ====
 
 - TYPO3 Extension campus_events_convert2news => `EXT:news <https://extensions.typo3.org/extension/news/>`__
-- TYPO3 Extension campus_events_convert2ttnews => `EXT:tt_news <https://extensions.typo3.org/extension/tt_news/>`__
-- TYPO3 Extension campus_events_convert2ttnewscal => `EXT:ttnews_calendar <https://extensions.typo3.org/extension/ttnews_calendar/>`__
 
 Converts the imported records into target extensions records. The Conversation is defined in a configuration record in the respective target folder of the import. In the future, there will be a filter/limitation feature. You can define the position on which the content is displayed, by Fluid-Templates. TYPO3 Admins can overwrite the Fluid-Templates.
 

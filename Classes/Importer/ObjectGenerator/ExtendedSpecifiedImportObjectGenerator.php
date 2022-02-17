@@ -89,15 +89,15 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if ($data['externalOrderUrl']) {
             $object->setExternalOrderUrl($data['externalOrderUrl']);
         }
-        if (strtotime($data['modifiedAtRecursive'])) {
-            $modifiedAtRecursive = strtotime($data['modifiedAtRecursive']);
-            $object->setModifiedAtRecursive($modifiedAtRecursive);
+        $object->setDirectRegistrationUrl($urls['directRegistrationUrl'] ?? '');
+        if ($tstamp = $this->strToTime($data['modifiedAtRecursive'])) {
+            $object->setModifiedAtRecursive($tstamp);
         }
-        if (strtotime($data['startDate'])) {
-            $object->setStartTstamp(strtotime($data['startDate']));
+        if ($tstamp = $this->strToTime($data['startDate'])) {
+            $object->setStartTstamp($tstamp);
         }
-        if (strtotime($data['endDate'])) {
-            $object->setEndTstamp(strtotime($data['endDate']));
+        if ($tstamp = $this->strToTime($data['endDate'])) {
+            $object->setEndTstamp($tstamp);
         }
         if ($data['orderType']) {
             $object->setOrderType($data['orderType']);
@@ -114,6 +114,7 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if ($data['sponsorsTitle']) {
             $object->setSponsorsTitle($data['sponsorsTitle']);
         }
+        $object->setCanceled(!empty($data['canceled']));
 
         if (!empty($data['organizers'])){
             $this->processReferencesMultiple(
@@ -413,11 +414,11 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if (!($object instanceof EventSession) || empty($data)) {
             return;
         }
-        if (strtotime($data['endDate'])) {
-            $object->setEndTstamp(strtotime($data['endDate']));
+        if ($tstamp = $this->strToTime($data['endDate'])) {
+            $object->setEndTstamp($tstamp);
         }
-        if (strtotime($data['startDate'])) {
-            $object->setStartTstamp(strtotime($data['startDate']));
+        if ($tstamp = $this->strToTime($data['startDate'])) {
+            $object->setStartTstamp($tstamp);
         }
         if (!empty($data['sessionDates'])){
             $this->processReferencesMultiple(
@@ -437,13 +438,20 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if (!($object instanceof EventTicketPriceVariant) || empty($data)) {
             return;
         }
-        if (strtotime($data['bookableFrom'])) {
+        if ($this->strToTime($data['bookableFrom']) !== false) {
             $object->setBookableFrom(date_create($data['bookableFrom']));
         }
-        if (strtotime($data['bookableTill'])) {
+        if ($this->strToTime($data['bookableTill']) !== false) {
             $object->setBookableTill(date_create($data['bookableTill']));
         }
-        $object->setDirectCheckoutUrl($data['directCheckoutUrl'] ?? '');
+        $urls = [];
+        if (array_key_exists('@urls', $data)) {
+            $urls = $data['@urls'];
+        }
+        if (empty($urls['directCheckoutUrl']) && !empty($data['directCheckoutUrl'])) {
+            $urls['directCheckoutUrl'] = $data['directCheckoutUrl'];
+        }
+        $object->setDirectCheckoutUrl($urls['directCheckoutUrl'] ?? '');
         $object->setName($data['name'] ?? '');
         $object->setPrice($data['price'] ?? '');
         $object->setQuota($data['quota'] ?? '');
@@ -468,11 +476,11 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if (!($object instanceof TimeRange) || empty($data)) {
             return;
         }
-        if (strtotime($data['endDate'])) {
-            $object->setEndTstamp(strtotime($data['endDate']));
+        if ($tstamp = $this->strToTime($data['endDate'])) {
+            $object->setEndTstamp($tstamp);
         }
-        if (strtotime($data['startDate'])) {
-            $object->setStartTstamp(strtotime($data['startDate']));
+        if ($tstamp = $this->strToTime($data['startDate'])) {
+            $object->setStartTstamp($tstamp);
         }
         $object->setEndDateIsSet($data['endDateTimeIsSet']);
         $object->setStartDateIsSet($data['startDateTimeIsSet']);
@@ -495,5 +503,19 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if ($data['imageFile']['url']) {
             $this->fileImporter->enqueueFileMapping($object, 'image_file', $data['imageFile']);
         }
+    }
+
+    /**
+     * Returns a valid unix timestamp or false
+     *
+     * @param string|mixed $dateValue
+     * @return false|int
+     */
+    protected function strToTime($dateValue)
+    {
+        if (($tstamp = strtotime($dateValue)) && $tstamp <= self::UNIX_TIMESTAMP_MAX) {
+            return $tstamp;
+        }
+        return false;
     }
 }

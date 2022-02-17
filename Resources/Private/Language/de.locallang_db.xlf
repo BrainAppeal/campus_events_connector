@@ -79,13 +79,13 @@
 				<target>Filterkategorien</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.alternative_events">
-				<target>Alternative events</target>
+				<target>Ersatztermine</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.contact_persons">
 				<target>Kontaktpersonen</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.disturber_message">
-				<target>Disturber message</target>
+				<target>Störer-Label</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.start_tstamp">
 				<target>Startdatum</target>
@@ -97,25 +97,28 @@
 				<target>Eventanhänge</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.event_attendance_mode">
-				<target>Event attendance mode</target>
+				<target>Veranstaltungsformat</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.event_images">
 				<target>Eventbilder</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.event_number">
-				<target>Event number</target>
+				<target>Veranstaltungsnr.</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.event_sessions">
 				<target>Event sessions</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.event_ticket_price_variants">
-				<target>Event ticket price variants</target>
+				<target>Ticket Preiskategorien</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.external_order_email_address">
-				<target>External order email address</target>
+				<target>Externe E-Mail-Adresse Bestellung</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.external_order_url">
-				<target>External order url</target>
+				<target>Externe URL Bestellung</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.direct_registration_url">
+				<target>URL zur Direktbuchung</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.locations">
 				<target>Orte</target>
@@ -124,7 +127,7 @@
 				<target>Modified at recursive</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type">
-				<target>Order type</target>
+				<target>Anmeldungs-Typ</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.referents">
 				<target>Moderatoren</target>
@@ -190,7 +193,7 @@
 				<target>Position</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_contactperson.department">
-				<target>Department</target>
+				<target>Abteilung</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_contactperson.institution">
 				<target>Institution</target>
@@ -199,10 +202,10 @@
 				<target>Telefon</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_contactperson.mail_address">
-				<target>Mailadresse</target>
+				<target>E-Mail-Adresse</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventattachment">
-				<target>Eventanhang</target>
+				<target>Event-Anhang</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventattachment.name">
 				<target>Name</target>
@@ -265,7 +268,7 @@
 				<target>Zeitraum</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventsession">
-				<target>Event Session</target>
+				<target>Termin</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventsession.start_tstamp">
 				<target>Startzeit</target>
@@ -274,7 +277,7 @@
 				<target>Endzeit</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant">
-				<target>Event ticket price variant</target>
+				<target>Preis-Varianten</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant.bookable_from">
 				<target>Buchbar von</target>
@@ -334,7 +337,7 @@
 				<target>Externe Url</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_referent.academic_degree">
-				<target>Academic degree</target>
+				<target>Hochschulabschluss</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_referent.institution">
 				<target>Institution</target>
@@ -343,22 +346,22 @@
 				<target>Telefon</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_referent.email">
-				<target>Email</target>
+				<target>E-Mail</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_referent.business_address">
-				<target>Business_address</target>
+				<target>Geschäftsadresse</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_referent.publications">
-				<target>Publications</target>
+				<target>Veröffentlichungen</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_referent.focus_of_work">
-				<target>Focus of work</target>
+				<target>Schwerpunkt der Arbeit</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_referent.event_formats">
-				<target>Event formats</target>
+				<target>Veranstaltungsformate</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_referent.references">
-				<target>References</target>
+				<target>Referenzen</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_referent.description">
 				<target>Beschreibung</target>
@@ -388,7 +391,7 @@
 				<target>Übergeordnete Filterkategorie</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration">
-				<target>Konvertierungs Konfiguration</target>
+				<target>Konvertierung Konfiguration</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.select_type">
 				<target>Bitte wählen Sie den Konvertierungstyp</target>

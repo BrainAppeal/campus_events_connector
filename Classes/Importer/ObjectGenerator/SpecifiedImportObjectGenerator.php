@@ -162,10 +162,28 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
      */
     protected function assignTimeRangeProperties($class, $object, $data)
     {
-        $object->setStartTstamp(strtotime($data['start_date']));
+        if ($tstamp = $this->strToTime($data['end_date'])) {
+            $object->setEndTstamp($tstamp);
+        }
+        if ($tstamp = $this->strToTime($data['start_date'])) {
+            $object->setStartTstamp($tstamp);
+        }
         $object->setStartDateIsSet(isset($data['start_date_is_set']) ? $data['start_date_is_set'] : true);
-        $object->setEndTstamp(strtotime($data['end_date']));
         $object->setEndDateIsSet(isset($data['end_date_is_set']) ? $data['end_date_is_set'] : true);
+    }
+
+    /**
+     * Returns a valid unix timestamp or false
+     *
+     * @param string|mixed $dateValue
+     * @return false|int
+     */
+    protected function strToTime($dateValue)
+    {
+        if (($tstamp = strtotime($dateValue)) && $tstamp <= self::UNIX_TIMESTAMP_MAX) {
+            return $tstamp;
+        }
+        return false;
     }
 
 }

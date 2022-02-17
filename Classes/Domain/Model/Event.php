@@ -52,18 +52,25 @@ class Event extends AbstractImportedEntity
     protected $url = '';
 
     /**
-     * externalOrderUrl
+     * External order url
      *
      * @var string
      */
     protected $externalOrderUrl = '';
 
     /**
-     * externalOrderEmailAddress
+     * External order email address
      *
      * @var string
      */
     protected $externalOrderEmailAddress = '';
+
+    /**
+     * Direct registration url
+     *
+     * @var string
+     */
+    protected $directRegistrationUrl = '';
 
     /**
      * name
@@ -1230,6 +1237,22 @@ class Event extends AbstractImportedEntity
     public function setExternalOrderEmailAddress($externalOrderEmailAddress)
     {
         $this->externalOrderEmailAddress = $externalOrderEmailAddress;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDirectRegistrationUrl()
+    {
+        return $this->directRegistrationUrl;
+    }
+
+    /**
+     * @param string $directRegistrationUrl
+     */
+    public function setDirectRegistrationUrl(string $directRegistrationUrl)
+    {
+        $this->directRegistrationUrl = $directRegistrationUrl;
     }
 
     /**

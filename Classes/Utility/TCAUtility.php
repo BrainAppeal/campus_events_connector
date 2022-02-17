@@ -46,7 +46,7 @@ class TCAUtility
                 'config' => [
                     'type' => 'input',
                     'renderType' => 'inputDateTime',
-                    'eval' => 'datetime',
+                    'eval' => 'datetime,int',
                     'readOnly' => 1,
                 ],
             ],

@@ -15,11 +15,13 @@
 namespace BrainAppeal\CampusEventsConnector\Converter;
 
 
+use BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration;
 use BrainAppeal\CampusEventsConnector\Domain\Model\Event;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\EventRepository;
-use BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 abstract class AbstractEventToObjectConverter implements EventConverterInterface
@@ -151,30 +153,83 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     {
         $configuration = $this->configuration;
 
-
-        $importSource = $this->importSource;
-        $importId = $event->getUid();
-
         $objectRepository = $this->getObjectRepository();
-        /** @var ImportedModelInterface $object */
-        $object = $objectRepository->findByImportOrCreate($importSource, $importId);
+        // Use DataHandler to prevent problems with news proxy classes (e.g. EXT:yoast_news defines a news model constructor, which is not valid)
+        $object = $this->createNewModelInstance($event, $configuration->getTargetPid());
 
-        $this->individualizeObjectByEvent($object, $event, $configuration);
+        if ($object instanceof ImportedModelInterface) {
+            $this->individualizeObjectByEvent($object, $event, $configuration);
 
-        $object->setPid($configuration->getTargetPid());
-        $object->setCeImportedAt(time());
-        if ($object->getUid() > 0) {
-            $objectRepository->update($object);
-        } else {
-            $objectRepository->add($object);
+            $object->setCeImportedAt(time());
+            if ($object->getUid() > 0) {
+                $objectRepository->update($object);
+            } else {
+                $objectRepository->add($object);
+            }
         }
     }
 
     /**
-     * @return \TYPO3\CMS\Core\Localization\LanguageService
+     * @return \TYPO3\CMS\Core\Localization\LanguageService|\TYPO3\CMS\Lang\LanguageService
      */
     protected function getLanguageService()
     {
         return $GLOBALS['LANG'];
+    }
+
+    /**
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Event $event
+     * @param int $pid The target page id for storing the records
+     * @return ImportedModelInterface
+     */
+    protected function createNewModelInstance($event, $pid)
+    {
+        $object = null;
+        $objectRepository = $this->getObjectRepository();
+        $importTable = $objectRepository->getImportTableName();
+        $importSource = $this->importSource;
+        $importId = $event->getUid();
+        if ($importTable && isset($GLOBALS['TCA'][$importTable])) {
+            $newIdPrefix = 'NEW123456';
+            $saveId = $newIdPrefix . '0';
+            $importData = array_merge($this->getAdditionDataHandlerValues($event), [
+                'pid' => $pid,
+                'ce_import_source' => $importSource,
+                'ce_import_id' => $importId,
+            ]);
+            $tcaColumns = array_keys($GLOBALS['TCA'][$importTable]['columns']);
+            $dataColumns = array_keys($importData);
+            foreach ($dataColumns as $column) {
+                if (!in_array($column, $tcaColumns)) {
+                    unset($importData[$column]);
+                }
+            }
+
+            $data = [
+                $importTable => [
+                    $saveId => $importData,
+                ],
+            ];
+            /** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->start($data, []);
+            $dataHandler->enableLogging = false;
+            $dataHandler->process_datamap();
+            $object = $objectRepository->findByImport($importSource, $importId);
+        }
+        if (null === $object) {
+            $object = $objectRepository->createNewModelInstance($importSource, $importId, $pid);
+        }
+        return $object;
+    }
+
+    /**
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Event $event
+     * @return array
+     */
+    protected function getAdditionDataHandlerValues($event)
+    {
+        $data = [];
+        return $data;
     }
 }

@@ -27,6 +27,8 @@ use TYPO3\CMS\Core\SingletonInterface;
 
 abstract class ImportObjectGenerator implements SingletonInterface
 {
+    const UNIX_TIMESTAMP_MAX = 2147483647;
+
     /**
      * @var string
      */
@@ -67,7 +69,7 @@ abstract class ImportObjectGenerator implements SingletonInterface
     public function init($importSource, $pid)
     {
         $this->importSource = $importSource;
-        $this->pid = intval($pid);
+        $this->pid = (int)$pid;
         $this->objects = [];
     }
 
@@ -115,7 +117,7 @@ abstract class ImportObjectGenerator implements SingletonInterface
             return null;
         }
 
-        $importId = intval($importId);
+        $importId = (int)$importId;
         $importSource = $this->importSource;
         $pid = $this->pid;
 

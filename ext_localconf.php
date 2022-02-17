@@ -35,14 +35,18 @@ call_user_func(
             ];
         }
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['campusEventsConnector'] = \BrainAppeal\CampusEventsConnector\Updates\ImportFieldNamesUpdateWizard::class;
-        if (TYPO3_MODE === 'BE') {
-            $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
-            $iconRegistry->registerIcon(
-                'ext-convertconfiguration-type-default',
-                \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
-                ['source' => 'EXT:'.$extKey.'/Resources/Public/Icons/tx_campuseventsconnector_domain_model_convertconfiguration.svg']
-            );
-        }
+
+        $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
+        $iconRegistry->registerIcon(
+            'ext-convertconfiguration-type-default',
+            \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
+            ['source' => 'EXT:'.$extKey.'/Resources/Public/Icons/tx_campuseventsconnector_domain_model_convertconfiguration.svg']
+        );
+
+        // Page TSConfig
+        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
+            chr (10) . '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:campus_events_connector/Configuration/TSConfig/Page/Config.tsconfig">' . chr(10)
+        );
     },
     'campus_events_connector'
 );

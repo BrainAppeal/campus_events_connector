@@ -27,6 +27,11 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
     /**
+     * @var string
+     */
+    private $importTableName;
+
+    /**
      * @param null|int|int[] $pid
      */
     protected function setPidRestriction($pid)
@@ -129,22 +134,33 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
     /**
      * @param string $importSource
      * @param int $importId
-     * @param null|int|int[] $pid
+     * @param int $pid
      * @return ImportedModelInterface
      */
-    public function findByImportOrCreate($importSource, $importId, $pid = null)
+    public function createNewModelInstance($importSource, $importId, $pid)
     {
-        $object = $this->findByImport($importSource, $importId, $pid);
-
-        if (null === $object) {
-            /** @var ImportedModelInterface $object */
-            $object = new $this->objectType;
-            $object->setCeImportId($importId);
-            $object->setCeImportSource($importSource);
-            $object->setPid(intval($pid));
-        }
+        /** @var ImportedModelInterface $object */
+        $object = $this->objectManager->get($this->objectType);
+        $object->setCeImportId($importId);
+        $object->setCeImportSource($importSource);
+        $object->setPid((int)$pid);
 
         return $object;
+    }
+
+    /**
+     * Returns the table name for the current object
+     *
+     * @return string
+     */
+    public function getImportTableName()
+    {
+        if (null === $this->importTableName) {
+            $dataMapper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory::class);
+            $this->importTableName = $dataMapper->buildDataMap($this->objectType)->getTableName();
+        }
+
+        return $this->importTableName;
     }
 
     /**

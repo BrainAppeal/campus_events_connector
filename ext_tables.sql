@@ -43,6 +43,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_event (
     event_ticket_price_variants int(11) unsigned DEFAULT '0' NOT NULL,
     external_order_email_address varchar(255) DEFAULT '' NOT NULL,
     external_order_url varchar(255) DEFAULT '' NOT NULL,
+	direct_registration_url varchar(255) DEFAULT '' NOT NULL,
     locations int(11) unsigned DEFAULT '0' NOT NULL,
 	modified_at_recursive int(11) DEFAULT '0',
     order_type int(11) unsigned DEFAULT '0' NOT NULL,

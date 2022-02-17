@@ -34,7 +34,7 @@ return [
         'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_event.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, images, attachments, registration_possible, min_participants, max_participants, participants, hash, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories, disturber_message, start_tstamp, end_tstamp, event_attendance_mode, event_number, external_order_email_address, external_order_url, modified_at_recursive, order_type, referents_title, seo_description, seo_title, sponsors_title, alternative_events, contact_persons, event_attachments, event_images, event_sessions, event_ticket_price_variants, locations, referents, sponsors',
+        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, images, attachments, registration_possible, min_participants, max_participants, participants, hash, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories, disturber_message, start_tstamp, end_tstamp, event_attendance_mode, event_number, external_order_email_address, external_order_url, direct_registration_url, modified_at_recursive, order_type, referents_title, seo_description, seo_title, sponsors_title, alternative_events, contact_persons, event_attachments, event_images, event_sessions, event_ticket_price_variants, locations, referents, sponsors',
     ],
     'types' => [
         '1' => ['showitem' => 'name, subtitle, url, 
@@ -54,7 +54,7 @@ return [
             registration_possible,
             --palette--;;eventParticipants,
             event_ticket_price_variants, 
-            external_order_email_address, external_order_url, 
+            direct_registration_url, external_order_email_address, external_order_url, 
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.relations,
             organizer,
             alternative_events, contact_persons, event_attachments, event_images, locations,
@@ -737,6 +737,15 @@ return [
         'external_order_url' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.external_order_url',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'direct_registration_url' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.direct_registration_url',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
