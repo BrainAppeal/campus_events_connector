@@ -28,4 +28,4 @@ Converts the imported records into target extensions records. The Conversation i
 Frontend-Extension
 ====
 
-This extension allows the individual display of the imported records. All files can be accessed. Curretnly there is only a list view (detail view is untested), which redirects directly to Campus-Events. In the future you can adjust the display of the view with Fluid-Templates.
+This extension allows the individual display of the imported records. All files can be accessed. Currently there is only a list view (detail view is untested), which redirects directly to Campus-Events. In the future you can adjust the display of the view with Fluid-Templates.

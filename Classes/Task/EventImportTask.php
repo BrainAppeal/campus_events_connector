@@ -143,4 +143,52 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
         }
     }
 
+    /**
+     * @return string
+     */
+    public function getApiKey(): string
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getApiVersion(): string
+    {
+        return $this->apiVersion;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseUri(): string
+    {
+        return $this->baseUri;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getPid(): ?int
+    {
+        return $this->pid;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStorageId(): int
+    {
+        return $this->storageId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStorageFolder(): string
+    {
+        return $this->storageFolder;
+    }
+
 }

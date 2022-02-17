@@ -155,6 +155,9 @@ class ExtendedApiConnector
      */
     public function setBaseUri($baseUri)
     {
+        if (strpos($baseUri, 'http') === false) {
+            $baseUri = 'https://' . $baseUri;
+        }
         $this->baseUri = $baseUri;
 
         return $this;

@@ -46,8 +46,9 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     protected function getApiKeyAdditionalField(array &$taskInfo, $task)
     {
         $fieldId = 'campusEventsConnector_eventImport_apiKey';
+        $apiKey = null !== $task ? $task->getApiKey() : null;
         if (empty($taskInfo[$fieldId])) {
-            $taskInfo[$fieldId] = isset($task->apiKey) ? $task->apiKey : '00000000-0000000000000000-00000000';
+            $taskInfo[$fieldId] = !empty($apiKey) ? $apiKey : '00000000-0000000000000000-00000000';
         }
         $fieldName = 'tx_scheduler[' . $fieldId . ']';
         $fieldHtml = '<input class="form-control" type="text" ' . 'name="' . $fieldName . '" ' . 'id="' . $fieldId . '" ' . 'value="' . $taskInfo[$fieldId] . '" ' . 'size="4">';
@@ -68,7 +69,8 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     protected function getApiVersionAdditionalField(array &$taskInfo, $task)
     {
         $fieldId = 'campusEventsConnector_eventImport_apiVersion';
-        $taskInfo[$fieldId] = isset($task->apiVersion) && $task->apiVersion == 1 ? 'checked="checked"' : '';
+        $apiVersion = null !== $task ? $task->getApiVersion() : null;
+        $taskInfo[$fieldId] = $apiVersion == 1 ? 'checked="checked"' : '';
         $fieldName = 'tx_scheduler[' . $fieldId . ']';
 
         $options = [];
@@ -97,8 +99,9 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     protected function getBaseUriAdditionalField(array &$taskInfo, $task)
     {
         $fieldId = 'campusEventsConnector_eventImport_baseUri';
+        $baseUri = null !== $task ? $task->getBaseUri() : null;
         if (empty($taskInfo[$fieldId])) {
-            $taskInfo[$fieldId] = isset($task->baseUri) ? $task->baseUri : 'https://campusevents.example.com/';
+            $taskInfo[$fieldId] = !empty($baseUri) ? $baseUri : 'https://campusevents.example.com/';
         }
         $fieldName = 'tx_scheduler[' . $fieldId . ']';
         $fieldHtml = '<input class="form-control" type="text" ' . 'name="' . $fieldName . '" ' . 'id="' . $fieldId . '" ' . 'value="' . $taskInfo[$fieldId] . '" ' . 'size="4">';
@@ -119,8 +122,9 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     protected function getPidAdditionalField(array &$taskInfo, $task)
     {
         $fieldId = 'campusEventsConnector_eventImport_pid';
+        $pid = null !== $task ? $task->getPid() : null;
         if (empty($taskInfo[$fieldId])) {
-            $taskInfo[$fieldId] = empty($task->pid) ? 0 : intval($task->pid);
+            $taskInfo[$fieldId] = empty($pid) ? 0 : (int)$pid;
         }
         $fieldName = 'tx_scheduler[' . $fieldId . ']';
         $fieldHtml = '<input class="form-control" type="text" ' . 'name="' . $fieldName . '" ' . 'id="' . $fieldId . '" ' . 'value="' . $taskInfo[$fieldId] . '" ' . '>';
@@ -168,9 +172,10 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     protected function getStorageFolderAdditionalField(array &$taskInfo, $task)
     {
         $fieldId = 'campusEventsConnector_eventImport_storageFolder';
+        $storageFolder = null !== $task ? $task->getStorageFolder() : null;
         if (empty($taskInfo[$fieldId])) {
             $taskUid = (null === $task) ? time()%10000 : $task->getTaskUid();
-            $taskInfo[$fieldId] = empty($task->storageFolder) ? 'campus_events_import/task-'.$taskUid.'/' : $task->storageFolder;
+            $taskInfo[$fieldId] = empty($storageFolder) ? 'campus_events_import/task-'.$taskUid.'/' : $storageFolder;
         }
         $fieldName = 'tx_scheduler[' . $fieldId . ']';
         $fieldHtml = '<input class="form-control" type="text" ' . 'name="' . $fieldName . '" ' . 'id="' . $fieldId . '" ' . 'value="' . $taskInfo[$fieldId] . '" ' . '>';
@@ -208,7 +213,6 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     public function validateBaseUriAndApiKeyAdditionalField(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
     {
         $validData = true;
-
         $baseUri = $submittedData['campusEventsConnector_eventImport_baseUri'];
         if (empty($baseUri)) {
             self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
@@ -311,7 +315,11 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     {
         $task->apiKey = $submittedData['campusEventsConnector_eventImport_apiKey'];
         $task->apiVersion = $submittedData['campusEventsConnector_eventImport_apiVersion'];
-        $task->baseUri = $submittedData['campusEventsConnector_eventImport_baseUri'];
+        $baseUri = $submittedData['campusEventsConnector_eventImport_baseUri'];
+        if (!empty($baseUri) && strpos($baseUri, 'http') !== 0) {
+            $baseUri = 'https://' . $baseUri;
+        }
+        $task->baseUri = $baseUri;
         $task->pid = $submittedData['campusEventsConnector_eventImport_pid'];
         $task->storageId = $submittedData['campusEventsConnector_eventImport_storageId'];
         $task->storageFolder = $submittedData['campusEventsConnector_eventImport_storageFolder'];
