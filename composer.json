@@ -36,7 +36,6 @@
         }
     },
     "replace": {
-        "brainappeal/campus_events_connector": "self.version",
         "typo3-ter/campus_events_connector": "self.version"
     },
     "extra": {
