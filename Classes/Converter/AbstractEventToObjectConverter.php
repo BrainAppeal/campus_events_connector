@@ -153,9 +153,15 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     {
         $configuration = $this->configuration;
 
+        $importSource = $this->importSource;
+        $importId = $event->getUid();
+
         $objectRepository = $this->getObjectRepository();
-        // Use DataHandler to prevent problems with news proxy classes (e.g. EXT:yoast_news defines a news model constructor, which is not valid)
-        $object = $this->createNewModelInstance($event, $configuration->getTargetPid());
+        $object = $objectRepository->findByImport($importSource, $importId);
+        if (null === $object) {
+            // Use DataHandler to prevent problems with news proxy classes (e.g. EXT:yoast_news defines a news model constructor, which is not valid)
+            $object = $this->createNewModelInstance($event, $configuration->getTargetPid());
+        }
 
         if ($object instanceof ImportedModelInterface) {
             $this->individualizeObjectByEvent($object, $event, $configuration);
