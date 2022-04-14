@@ -14,14 +14,14 @@
 /** @var string $_EXTKEY */
 $EM_CONF[$_EXTKEY] = [
     'title' => 'CampusEvents Connector',
-    'description' => '',
+    'description' => 'Connecting the event software campus events with TYPO3, to import the event data into TYPO3 as data records. Get futher information about Campus Events: www.campus-events.com',
     'category' => 'be',
-    'author' => 'Joshua Billert',
+    'author' => 'Brain Appeal Team',
     'author_company' => 'Brain Appeal GmbH',
     'author_email' => 'info@brain-appeal.com',
     'state' => 'stable',
     'clearCacheOnLoad' => 1,
-    'version' => '2.0.2',
+    'version' => '2.0.3',
     'constraints' => [
         'depends' => [
             'typo3' => '8.7.0-10.4.99',
