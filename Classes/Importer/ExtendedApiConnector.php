@@ -108,7 +108,7 @@ class ExtendedApiConnector
             [
                 'base_uri' => $this->baseUri,
                 'defaults' => [
-                    'headers' => ['Authorization' => 'Bearer '.$this->apiKey],
+                    'headers' => ['X-API-KEY' => $this->apiKey],
                 ]
             ]);
         try {
