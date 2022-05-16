@@ -199,7 +199,7 @@
 				<source>Storage Folder</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri">
-                <source>Invalid Base URI</source>
+                <source>Invalid Base URI. Please enter the domain of your Campus Events instance.</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_api_key">
                 <source>Invalid API Key</source>

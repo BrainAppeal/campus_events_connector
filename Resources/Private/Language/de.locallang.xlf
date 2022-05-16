@@ -220,7 +220,7 @@
 				<target>Pfad innerhalb des gewählten Storage für importierte Bilder und Anhänge</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri">
-                <target>Ungültige Basis URL</target>
+                <target>Ungültige Basis URL. Bitte geben Sie die URL Ihrer Campus Events Instanz ein.</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_api_key">
                 <target>Ungültiger API Key</target>

@@ -48,7 +48,7 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
         $fieldId = 'campusEventsConnector_eventImport_apiKey';
         $apiKey = null !== $task ? $task->getApiKey() : null;
         if (empty($taskInfo[$fieldId])) {
-            $taskInfo[$fieldId] = !empty($apiKey) ? $apiKey : '00000000-0000000000000000-00000000';
+            $taskInfo[$fieldId] = !empty($apiKey) ? $apiKey : EventImportTask::API_KEY_DEFAULT;
         }
         $fieldName = 'tx_scheduler[' . $fieldId . ']';
         $fieldHtml = '<input class="form-control" type="text" ' . 'name="' . $fieldName . '" ' . 'id="' . $fieldId . '" ' . 'value="' . $taskInfo[$fieldId] . '" ' . 'size="4">';
@@ -69,14 +69,19 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     protected function getApiVersionAdditionalField(array &$taskInfo, $task)
     {
         $fieldId = 'campusEventsConnector_eventImport_apiVersion';
-        $apiVersion = null !== $task ? $task->getApiVersion() : null;
-        $taskInfo[$fieldId] = $apiVersion == 1 ? 'checked="checked"' : '';
+        $selectedApiVersion = null !== $task ? $task->getApiVersion() : EventImportTask::API_VERSION_ABOVE_227;
+        if (empty($taskInfo[$fieldId])) {
+            $taskInfo[$fieldId] = $selectedApiVersion;
+        }
         $fieldName = 'tx_scheduler[' . $fieldId . ']';
 
         $options = [];
-        $optionValues = ['below-2-27-0' => "geringer als 2.27.0", 'above-2-27-0' => "2.27.0 oder höher"];
+        $optionValues = [
+            EventImportTask::API_VERSION_LEGACY => "geringer als 2.27.0",
+            EventImportTask::API_VERSION_ABOVE_227 => "2.27.0 oder höher"
+        ];
         foreach ($optionValues as $optionValue => $optionName) {
-            $selAttr = null !== $task && $task->apiVersion === $optionValue ? ' selected="selected"' : '';
+            $selAttr = $selectedApiVersion === $optionValue ? ' selected="selected"' : '';
             $options[] = '<option value="' . $optionValue . '"'.$selAttr.'>' . $optionName . '</option>';
         }
 
@@ -99,9 +104,9 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     protected function getBaseUriAdditionalField(array &$taskInfo, $task)
     {
         $fieldId = 'campusEventsConnector_eventImport_baseUri';
-        $baseUri = null !== $task ? $task->getBaseUri() : null;
+        $baseUri = null !== $task ? $task->getBaseUri() : EventImportTask::BASE_URI_DEFAULT;
         if (empty($taskInfo[$fieldId])) {
-            $taskInfo[$fieldId] = !empty($baseUri) ? $baseUri : 'https://campusevents.example.com/';
+            $taskInfo[$fieldId] = $baseUri;
         }
         $fieldName = 'tx_scheduler[' . $fieldId . ']';
         $fieldHtml = '<input class="form-control" type="text" ' . 'name="' . $fieldName . '" ' . 'id="' . $fieldId . '" ' . 'value="' . $taskInfo[$fieldId] . '" ' . 'size="4">';
@@ -231,14 +236,18 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
                 \BrainAppeal\CampusEventsConnector\Importer\ApiConnector::class
             );
             $apiConnector->setBaseUri($baseUri);
+            if ($baseUri !== \BrainAppeal\CampusEventsConnector\Task\EventImportTask::BASE_URI_DEFAULT) {
 
-            try {
-                $validData = $apiConnector->checkApiVersion();
-            } catch (\BrainAppeal\CampusEventsConnector\Http\HttpException $httpException) {
-                self::addMessage(
-                    $httpException->getMessage(),
-                    \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
-                );
+                try {
+                    $validData = $apiConnector->checkApiVersion();
+                } catch (\BrainAppeal\CampusEventsConnector\Http\HttpException $httpException) {
+                    self::addMessage(
+                        $httpException->getMessage(),
+                        \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
+                    );
+                    $validData = false;
+                }
+            } else {
                 $validData = false;
             }
             if (!$validData) {

@@ -17,6 +17,12 @@ use BrainAppeal\CampusEventsConnector\Importer\PostImportHookInterface;
 
 class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
 {
+    public const API_VERSION_LEGACY = 'below-2-27-0';
+    public const API_VERSION_ABOVE_227 = 'above-2-27-0';
+
+    public const API_KEY_DEFAULT = '00000000-0000000000000000-00000000';
+
+    public const BASE_URI_DEFAULT = 'https://campusevents.example.com/';
 
     /**
      * @var string
@@ -148,7 +154,7 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
      */
     public function getApiKey(): string
     {
-        return $this->apiKey;
+        return $this->apiKey ?: self::API_KEY_DEFAULT;
     }
 
     /**
@@ -156,7 +162,7 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
      */
     public function getApiVersion(): string
     {
-        return $this->apiVersion;
+        return $this->apiVersion ?: self::API_VERSION_ABOVE_227;
     }
 
     /**
@@ -164,7 +170,7 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
      */
     public function getBaseUri(): string
     {
-        return $this->baseUri;
+        return $this->baseUri ?: self::BASE_URI_DEFAULT;
     }
 
     /**

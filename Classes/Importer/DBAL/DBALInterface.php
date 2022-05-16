@@ -14,6 +14,8 @@
 namespace BrainAppeal\CampusEventsConnector\Importer\DBAL;
 
 
+use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+
 interface DBALInterface
 {
 
@@ -35,6 +37,13 @@ interface DBALInterface
      */
     public function processImportedItems($tableName, $importIdList, $importSource, $tstamp);
 
+    /**
+     * @param \TYPO3\CMS\Core\Resource\File $sysFile
+     * @param ImportedModelInterface $target
+     * @param string $field
+     * @param array $attribs
+     * @return int|null
+     */
     public function addSysFileReference($sysFile, $target, $property, $attribs = []);
 
     public function updateSysFileReference($sysFileReference, $attribs = []);

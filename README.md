@@ -39,3 +39,20 @@ TYPO3 10.4 LTS - 11.5 LTS
 ## Hinweis für TYPO3 Agenturen
 Setzen Sie Campus Events für Ihre Kunden ein und profitieren Sie von einer durchdachten Lösung und interessanten 
 Provisionen. Bitte kontaktieren Sie uns und fragen Sie nach dem Partnerprogramm.
+
+## Allgemeine Einstellungen
+
+Für die korrekte Anzeige der Uhrzeiten muss die Zeitzone auf dem Server richtig konfiguriert sein.
+Alternativ kann die Zeitzone auch in den TYPO3-Einstellungen festgelegt werden:
+
+```
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['phpTimeZone'] = 'Europe/Berlin';
+``
+
+## Changelog for v3.x
+
+- v3.0.0: Compatiblity with TYPO3 11.5
+- v3.0.1: Fix creation of new instances in object converter
+- v3.0.2: Fix passing api key by header für CE version >= 2.28
+- v3.0.3: Improve file import handling
+

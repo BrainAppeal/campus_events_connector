@@ -180,6 +180,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
      * @param ImportedModelInterface $target
      * @param string $field
      * @param array $attribs
+     * @return int|null
      */
     public function addSysFileReference($sysFile, $target, $field, $attribs = [])
     {
@@ -209,6 +210,10 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
         $dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\DataHandling\DataHandler::class);
         $dataHandler->start($data, array());
         $dataHandler->process_datamap();
+        if (!empty($dataHandler->substNEWwithIDs[$newId])) {
+            return $dataHandler->substNEWwithIDs[$newId];
+        }
+        return null;
     }
 
 
