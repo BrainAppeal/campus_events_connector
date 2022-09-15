@@ -29,6 +29,9 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
 use BrainAppeal\CampusEventsConnector\Http\Client;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ExtendedApiConnector
@@ -59,6 +62,11 @@ class ExtendedApiConnector
      * @var array
      */
     protected $apiTypeMapping = [];
+
+    /**
+     * @var array
+     */
+    protected $exceptions = [];
 
     /**
      * Entry points for api data types
@@ -106,15 +114,22 @@ class ExtendedApiConnector
         /** @var \GuzzleHttp\Client $client */
         $client = new Client(
             [
-                'base_uri' => $this->baseUri,
-                'defaults' => [
-                    'headers' => ['X-API-KEY' => $this->apiKey],
-                ]
+                'base_uri' => rtrim($this->baseUri, '/'),
+                'headers' => [
+                    'X-API-KEY' => $this->apiKey
+                ],
             ]);
         try {
             $response = $client->get($uri);
             $response = json_decode($response->getBody(), true);
         } catch (\Exception $e) {
+            $this->exceptions[] = $e;
+            // maybe the file does not exist or the video is private now!
+            $logger = self::getLogger();
+            $logger->error($e->getMessage(), [
+                'apiKey' => $this->apiKey,
+                'apiUrl' => $uri,
+            ]);
             $response = [];
         }
 
@@ -334,6 +349,22 @@ class ExtendedApiConnector
         }
 
         return null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExceptions(): array
+    {
+        return $this->exceptions;
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    protected static function getLogger()
+    {
+        return GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
 
 }

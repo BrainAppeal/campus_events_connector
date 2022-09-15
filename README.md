@@ -47,12 +47,8 @@ Alternativ kann die Zeitzone auch in den TYPO3-Einstellungen festgelegt werden:
 
 ```
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['phpTimeZone'] = 'Europe/Berlin';
-``
+```
 
-## Changelog for v3.x
+## Änderungen
 
-- v3.0.0: Compatiblity with TYPO3 11.5
-- v3.0.1: Fix creation of new instances in object converter
-- v3.0.2: Fix passing api key by header für CE version >= 2.28
-- v3.0.3: Improve file import handling
-
+Siehe: [CHANGELOG.md](CHANGELOG.md)

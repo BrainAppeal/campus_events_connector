@@ -41,6 +41,11 @@ class ExtendedImporter
     private $hasChangedData;
 
     /**
+     * @var array
+     */
+    protected $exceptions = [];
+
+    /**
      * Run the import task
      *
      * @param string $baseUri The API base uri
@@ -81,7 +86,11 @@ class ExtendedImporter
             $dbal->removeNotUpdatedObjects(FileReference::class, $baseUri, $pid, $importStartTimestamp, $excludeFileReferenceUids);
         }
 
-        return true;
+        foreach ($apiConnector->getExceptions() as $exception) {
+            $this->exceptions[] = $exception;
+        }
+
+        return empty($this->exceptions);
     }
 
     /**
@@ -218,6 +227,14 @@ class ExtendedImporter
     public function hasChangedData()
     {
         return $this->hasChangedData;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExceptions(): array
+    {
+        return $this->exceptions;
     }
 
     protected function getImportScheduleUtility()

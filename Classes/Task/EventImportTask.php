@@ -95,11 +95,18 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
     {
         if ($this->apiVersion == 'above-2-27-0') {
             $importer = $this->getExtendedImporter();
+            $success = $importer->import($this->baseUri, $this->apiKey, $this->pid, (int) $this->storageId, $this->storageFolder);
+            if (!$success) {
+                $exceptions = $importer->getExceptions();
+                if (!empty($exceptions)) {
+                    $this->logException($exceptions[0]);
+                }
+            }
         } else {
             $importer = $this->getImporter();
+            $success = $importer->import($this->baseUri, $this->apiKey, $this->pid, (int) $this->storageId, $this->storageFolder);
         }
 
-        $success = $importer->import($this->baseUri, $this->apiKey, $this->pid, (int) $this->storageId, $this->storageFolder);
 
         $this->callHooks();
 
