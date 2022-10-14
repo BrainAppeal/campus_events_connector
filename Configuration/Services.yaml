@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  BrainAppeal\CampusEventsConnector\:
+    resource: '../Classes/*'
+
+  BrainAppeal\CampusEventsConnector\Command\CleanupFilesCommand:
+    tags:
+      - name: 'console.command'
+        command: 'ce:cleanup:files'
+        description: 'Apps: Cleanup for imported files'

@@ -15,6 +15,7 @@ namespace BrainAppeal\CampusEventsConnector\Importer;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderReadPermissionsException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -166,10 +167,12 @@ abstract class AbstractFileImporter
 
     /**
      * Delete all previously imported files, that are not used anymore
-     * @return void
+     * @return array List of deleted file names with deleted state information
+     * @throws \Exception
      */
-    private function cleanupFiles()
+    private function cleanupFiles(): array
     {
+        $fileDeleteStates = [];
         if (!empty($this->newReferenceQueue)) {
             $falFolder = $this->getFalFolder();
             try {
@@ -184,7 +187,12 @@ abstract class AbstractFileImporter
             foreach ($existingFiles as $file) {
                 // Delete all files, that are not used anymore
                 if (!isset($activeFileNames[$file->getName()])) {
-                    $file->delete();
+                    try {
+                        $file->delete();
+                        $fileDeleteStates[$file->getName()] = 1;
+                    } catch (InsufficientFolderReadPermissionsException $e) {
+                        $fileDeleteStates[$file->getName()] = -1;
+                    }
                 } else {
                     $queueOffset = $activeFileNames[$file->getName()];
                     $queueEntry =& $this->newReferenceQueue[$queueOffset];
@@ -199,6 +207,29 @@ abstract class AbstractFileImporter
                         $queueEntry['file_exists'] = $file->getModificationTime() > $minTstamp;
                     }
                     $queueEntry['_min_tstamp'] = $minTstamp;
+                }
+            }
+        }
+        self::cleanupTemporaryFiles();
+        return $fileDeleteStates;
+    }
+
+    /**
+     * Delete all previously generated temporary files
+     *
+     * @return void
+     * @see \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam
+     */
+    public static function cleanupTemporaryFiles()
+    {
+        $temporaryPath = Environment::getVarPath() . '/transient/';
+        if (is_dir($temporaryPath)) {
+            $filePrefix = 'tx_campuseventsconnector_';
+            $files = glob($temporaryPath . '/' . $filePrefix . '*');
+            $threshold = strtotime('-1 week');
+            foreach ($files as $file) {
+                if (is_writable($file) && filemtime($file) < $threshold) {
+                    unlink($file);
                 }
             }
         }
