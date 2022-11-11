@@ -18,7 +18,7 @@ Kernfunktionen:
 * Massen-E-Mail Funktion an Teilnehmer und/oder die Warteliste
 * Für interne und öffentliche Events
 
-Mehr auf [https://www.campus-events.com](https://www.campus-events.com). 
+Mehr auf [https://www.campus-events.com](https://www.campus-events.com) und [https://hilfe.campus-events.com](https://hilfe.campus-events.com). 
 
 ## TYPO3 Extension
 
