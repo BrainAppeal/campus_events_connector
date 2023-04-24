@@ -2,6 +2,7 @@
 
 namespace BrainAppeal\CampusEventsConnector\Service;
 
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -20,6 +21,7 @@ class UpdateService
         'tx_campuseventsconnector_domain_model_targetgroup',
         'tx_campuseventsconnector_domain_model_filtercategory',
         'tx_campuseventsconnector_domain_model_convertconfiguration',
+        'tx_campuseventsconnector_domain_model_viewlist',
         'sys_file_reference',
     ];
     protected $fields = [
@@ -70,7 +72,7 @@ class UpdateService
                                 ->where(
                                     $queryBuilder->expr()->eq(
                                         'uid',
-                                        $queryBuilder->createNamedParameter($tableContents['uid'], \PDO::PARAM_INT)
+                                        $queryBuilder->createNamedParameter($tableContents['uid'], Connection::PARAM_INT)
                                     )
                                 )
                                 ->set('ce_'.$field, $tableContents[$fieldPrefix.$field]);

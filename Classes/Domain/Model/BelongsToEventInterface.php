@@ -15,7 +15,7 @@
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
 /**
- * Indicates that the entity belongs to an event (i.e has an event property)
+ * Indicates that the entity belongs to an event (i.e. has an event property)
  */
 interface BelongsToEventInterface
 {

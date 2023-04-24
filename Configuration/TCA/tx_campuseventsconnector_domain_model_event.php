@@ -30,11 +30,11 @@ return [
 //            'starttime' => 'starttime',
 //            'endtime' => 'endtime',
         ],
-        'searchFields' => 'status,canceled,url,name,subtitle,description,short_description,show_in_news,news_text,learning_objective,images,attachments,registration_possible,min_participants,max_participants,participants,speakers,time_ranges,location,categories,organizer,target_groups,filter_categories',
+        'searchFields' => 'status,canceled,url,name,subtitle,description,short_description,show_in_news,news_text,learning_objective,images,attachments,registration_possible,min_participants,max_participants,participants,speakers,time_ranges,location,categories,organizer,target_groups,view_lists,filter_categories',
         'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_event.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, images, attachments, registration_possible, min_participants, max_participants, participants, hash, speakers, time_ranges, location, categories, organizer, target_groups, filter_categories, disturber_message, start_tstamp, end_tstamp, event_attendance_mode, event_number, external_order_email_address, external_order_url, direct_registration_url, modified_at_recursive, order_type, referents_title, seo_description, seo_title, sponsors_title, alternative_events, contact_persons, event_attachments, event_images, event_sessions, event_ticket_price_variants, locations, referents, sponsors',
+        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, images, attachments, registration_possible, min_participants, max_participants, participants, hash, speakers, time_ranges, location, categories, organizer, target_groups, view_lists, filter_categories, disturber_message, start_tstamp, end_tstamp, event_attendance_mode, event_number, external_order_email_address, external_order_url, direct_registration_url, modified_at_recursive, order_type, referents_title, seo_description, seo_title, sponsors_title, alternative_events, contact_persons, event_attachments, event_images, event_sessions, event_ticket_price_variants, locations, referents, sponsors',
     ],
     'types' => [
         '1' => ['showitem' => 'name, subtitle, url, 
@@ -61,7 +61,7 @@ return [
             --palette--;;paletteReferents,
             --palette--;;paletteSponsors,
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.classification,
-             target_groups, categories, filter_categories, 
+             target_groups, categories, filter_categories, view_lists, 
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.other, 
             status, canceled, speakers, time_ranges, hash, modified_at_recursive,
             location,
@@ -550,6 +550,30 @@ return [
                     ]
                 ],
             ],
+        ],
+        'view_lists' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.view_lists',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_viewlist',
+                'MM' => 'tx_campuseventsconnector_event_viewlist_mm',
+                'size' => 10,
+                'autoSizeMax' => 30,
+                'maxitems' => 9999,
+                'multiple' => 0,
+                'enableMultiSelectFilterTextfield' => true,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
+                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
+                ],
+            ],
+
         ],
         'alternative_events' => [
             'exclude' => true,

@@ -14,7 +14,6 @@
 namespace BrainAppeal\CampusEventsConnector\Importer;
 
 use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory;
-use BrainAppeal\CampusEventsConnector\Importer\ObjectGenerator\ExtendedImportObjectGenerator;
 use BrainAppeal\CampusEventsConnector\Importer\ObjectGenerator\ExtendedSpecifiedImportObjectGenerator;
 use BrainAppeal\CampusEventsConnector\Utility\ImportScheduleUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -59,13 +58,13 @@ class ExtendedImporter
     {
         // Enable debug mode to keep queue item data (prevent repeated API access for the same data)
         // + force update of all found items
-        // $this->debug = true;//'forceUpdate'
+        //$this->debug = true;//'forceUpdate'
         if (!$this->debug || $this->debug === 'forceUpdate') {
             $this->getImportScheduleUtility()->cleanUp();
         }
         $importStartTimestamp = time();
         /** @var ExtendedApiConnector $apiConnector */
-        $apiConnector = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ExtendedApiConnector::class);
+        $apiConnector = GeneralUtility::makeInstance(ExtendedApiConnector::class);
         $apiConnector->setBaseUri($baseUri);
         $apiConnector->setApiKey($apiKey);
         // If we have a lot of data some day, the number of processed items can be limited and instead of fetching the
@@ -73,23 +72,35 @@ class ExtendedImporter
         $this->fetchDataFromApi($apiConnector, $importStartTimestamp);
         if ($this->hasChangedData) {
             $dataMap = $apiConnector->getDataMap();
-            /** @var ExtendedFileImporter $fileImporter */
-            $fileImporter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ExtendedFileImporter::class);
-            $fileImporter->initialize($storageId, $storageFolder, $baseUri);
-            /** @var ExtendedImportObjectGenerator $importObjectGenerator */
-            $importObjectGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ExtendedSpecifiedImportObjectGenerator::class);
-            $updatedDomainModels = $importObjectGenerator->processQueue($dataMap, $baseUri, $pid, $fileImporter, $this->debug !== false);
-            $dbal = DBALFactory::getInstance();
-            $dbal->updateObjects($updatedDomainModels);
-            $fileImporter->runQueue();
-            $excludeFileReferenceUids = $fileImporter->getExcludeFileReferenceUids();
-            $dbal->removeNotUpdatedObjects(FileReference::class, $baseUri, $pid, $importStartTimestamp, $excludeFileReferenceUids);
+            try {
+                /** @var ExtendedFileImporter $fileImporter */
+                $fileImporter = GeneralUtility::makeInstance(ExtendedFileImporter::class);
+                $fileImporter->initialize($storageId, $storageFolder, $baseUri);
+                /** @var ExtendedSpecifiedImportObjectGenerator $importObjectGenerator */
+                $importObjectGenerator = GeneralUtility::makeInstance(ExtendedSpecifiedImportObjectGenerator::class);
+                $updatedDomainModels = $importObjectGenerator->processQueue($dataMap, $baseUri, $pid, $fileImporter, $this->debug !== false);
+                $dbal = DBALFactory::getInstance();
+                $dbal->updateObjects($updatedDomainModels);
+                $fileImporter->runQueue();
+                if ($fileImporter->hasUpdates()) {
+                    $excludeFileReferenceUidList = $fileImporter->getExcludeFileReferenceUids();
+                    $dbal->removeNotUpdatedObjects(FileReference::class, $baseUri, $pid, $importStartTimestamp, $excludeFileReferenceUidList);
+                }
+            } catch (\Throwable $e) {
+                // Store exception, so that it can be saved to database
+                $this->exceptions[] = $e;
+            }
         }
 
         foreach ($apiConnector->getExceptions() as $exception) {
             $this->exceptions[] = $exception;
         }
-
+        if ($this->debug && !empty($this->exceptions)) {
+            /** @var \Throwable $exception */
+            foreach ($this->exceptions as $exception) {
+                echo $exception->getMessage() . ' ['.$exception->getFile() . '::' . $exception->getLine() . ']' . "\n";
+            }
+        }
         return empty($this->exceptions);
     }
 

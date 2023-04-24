@@ -57,6 +57,7 @@ class ExtendedFileImporter extends AbstractFileImporter implements \TYPO3\CMS\Co
             'import_id' => $importId,
             'target_file_name' => $targetFileName,
         ];
+
     }
 
     /**
@@ -79,7 +80,7 @@ class ExtendedFileImporter extends AbstractFileImporter implements \TYPO3\CMS\Co
             $fileReferenceUid = $existingReference->getOriginalResource()->getUid();
             $this->updateReferenceIds[$fileReferenceUid] = $fileReferenceUid;
         } else {
-            $tempFilenameAndPath = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('tx_campuseventsconnector_');
+            $tempFilenameAndPath = $this->getTempFilePath();
             $downloadUrl = rtrim($this->baseUri, '/') . '/' . ltrim($data['url'], '/');
             $this->addToQueue($object, $property, $data, $tempFilenameAndPath, $downloadUrl, $targetFileName);
         }

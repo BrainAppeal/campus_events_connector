@@ -1,5 +1,19 @@
 # CHANGELOG.md
 
+## 3.0.7 (2023-04-24)
+
+### Added
+- Import view list model
+- add link to documentation website in README
+
+### Changed:
+- improve cleanup of temporary files
+- consider max lengths of varchar fields
+
+### Fixed:
+- don't use strtotime with null values
+- remove object passed by reference; code cleanup
+
 ## 3.0.6 (2022-10-14)
 
 ### Fixed:
@@ -33,4 +47,4 @@
 ## 3.0.0
 
 ### Added
-- Compatiblity with TYPO3 11.5
+- Compatibility with TYPO3 11.5

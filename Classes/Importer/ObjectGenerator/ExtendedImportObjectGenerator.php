@@ -248,6 +248,10 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
             case 'TargetGroup':
                 $this->assignTargetGroupProperties($importMappingModel);
                 break;
+
+            case 'ViewList':
+                $this->assignViewListProperties($importMappingModel);
+                break;
         }
     }
 
@@ -274,21 +278,25 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
         $getter = 'get' . ucfirst($objectPropertyPlural);
         $addFunction = 'add' . ucfirst($objectProperty);
         $removeFunction = 'remove' . ucfirst($objectProperty);
-        $mapExistingReferences = [];
+        $mapPreviouslyImportedReferences = [];
         $existingReferences = $object->$getter();
         foreach ($existingReferences as $reference) {
             if (($reference instanceof ImportedModelInterface) && $refUid = $reference->getUid()) {
-                $mapExistingReferences[$refUid] = $reference;
+                $mapPreviouslyImportedReferences[$refUid] = $reference;
             }
         }
+        $mapExistingReferences = [];
         foreach ($referencesFromApi as $referenceData) {
             $refImportMappingModel = $this->getImportMappingModelByReference($referenceData);
             $refDomainModel = $refImportMappingModel->getDomainModel();
             if (($refDomainModel instanceof ImportedModelInterface)) {
                 $refUid = $refDomainModel->getUid();
-                if ($refUid && array_key_exists($refUid, $mapExistingReferences)) {
-                    unset($mapExistingReferences[$refUid]);
-                } else {
+                $refImportKey = (string) $refDomainModel->getCeImportSource() . ':' . $refDomainModel->getCeImportId();
+                if ($refUid && array_key_exists($refUid, $mapPreviouslyImportedReferences)) {
+                    unset($mapPreviouslyImportedReferences[$refUid]);
+                    $mapExistingReferences[$refUid] = $refDomainModel;
+                // Prevent duplicate assignment of same object
+                } elseif (!$refUid || !isset($mapExistingReferences[$refImportKey])) {
                     if (null === $referencingProperty
                         && $object instanceof Event
                         && $refDomainModel instanceof BelongsToEventInterface) {
@@ -298,10 +306,11 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
                         $refDomainModel->$refSetter($object);
                     }
                     $object->$addFunction($refDomainModel);
+                    $mapExistingReferences[$refImportKey] = $refDomainModel;
                 }
             }
         }
-        foreach ($mapExistingReferences as $modelReferenceToRemove) {
+        foreach ($mapPreviouslyImportedReferences as $modelReferenceToRemove) {
             $object->$removeFunction($modelReferenceToRemove);
         }
     }
@@ -335,6 +344,11 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
      * @param ImportMappingModel $importMappingModel
      */
     abstract protected function assignTargetGroupProperties(ImportMappingModel $importMappingModel);
+
+    /**
+     * @param ImportMappingModel $importMappingModel
+     */
+    abstract protected function assignViewListProperties(ImportMappingModel $importMappingModel);
 
     /**
      * @param ImportMappingModel $importMappingModel

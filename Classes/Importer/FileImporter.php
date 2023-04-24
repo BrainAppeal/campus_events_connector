@@ -85,7 +85,7 @@ class FileImporter extends AbstractFileImporter implements \TYPO3\CMS\Core\Singl
             $fileReferenceUid = $existingReference->getOriginalResource()->getUid();
             $this->updateReferenceIds[$fileReferenceUid] = $fileReferenceUid;
         } else {
-            $tempFilenameAndPath = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('tx_campuseventsconnector_');
+            $tempFilenameAndPath = $this->getTempFilePath();
 
             try {
                 $promise = $this->client->getAsync($data['url'], ['sink' => $tempFilenameAndPath]);

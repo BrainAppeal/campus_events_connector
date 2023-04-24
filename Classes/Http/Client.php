@@ -18,6 +18,8 @@ use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 use TYPO3\CMS\Core\Http\HttpRequest;
+use TYPO3\CMS\Core\Http\RequestFactory;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class Client
 {
@@ -32,7 +34,7 @@ class Client
     /**
      * @var bool
      */
-    private static $isGuzzleAvailable = null;
+    private static $isGuzzleAvailable;
 
     /**
      * @return bool
@@ -67,7 +69,7 @@ class Client
      *   Psr7\Http\Message\ResponseInterface on success. "handler" is a
      *   constructor only option that cannot be overridden in per/request
      *   options. If no handler is provided, a default handler will be created
-     *   that enables all of the request options below by attaching all of the
+     *   that enables all the request options below by attaching all the
      *   default middleware to the handler.
      * - base_uri: (string|UriInterface) Base URI of the client that is merged
      *   into relative URIs. Can be a string or instance of UriInterface.
@@ -117,7 +119,7 @@ class Client
     /**
      * @param string|UriInterface $uri
      * @param array $options
-     * @return \HTTP_Request2_Response|ResponseInterface
+     * @return ResponseInterface
      */
     public function get($uri, $options = [])
     {
@@ -129,13 +131,18 @@ class Client
             }
         } else {
             $filteredOptions = $this->filterRequestOptions($options);
-            /** @var $request HttpRequest */
-            $request = new HttpRequest($this->getAbsUrl($uri), HttpRequest::METHOD_GET, $options);
+            $requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
+
             try {
-                if (isset($filteredOptions['sink'])) {
-                    $response = $request->download(dirname($filteredOptions['sink']), basename($filteredOptions['sink']));
-                } else {
-                    $response = $request->send();
+                $response = $requestFactory->request(
+                    $this->getAbsUrl($uri),
+                    'GET',
+                    $filteredOptions
+                );
+                if ($response->getStatusCode() !== 200) {
+                    throw new \RuntimeException(
+                        'Returned status code is ' . $response->getStatusCode()
+                    );
                 }
             } catch (\Throwable $e) {
                 throw new HttpException($e->getMessage(), $e->getCode(), $e);

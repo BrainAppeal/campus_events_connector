@@ -78,7 +78,7 @@ class ImportFieldNamesUpdateWizard implements UpgradeWizardInterface
     }
 
     /**
-     * Marks some wizard as being "seen" so that it not shown again.
+     * Marks some wizard as being "seen" so that it is not shown again.
      *
      * Writes the info in LocalConfiguration.php
      *

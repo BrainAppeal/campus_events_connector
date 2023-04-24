@@ -24,14 +24,14 @@ class EventSession extends AbstractImportedEntity implements BelongsToEventInter
     /**
      * @var \BrainAppeal\CampusEventsConnector\Domain\Model\Event
      */
-    protected $event = null;
+    protected $event;
 
     /**
      * session time periods
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange>
      */
-    protected $sessionTimePeriods = null;
+    protected $sessionTimePeriods;
 
     /**
      * __construct

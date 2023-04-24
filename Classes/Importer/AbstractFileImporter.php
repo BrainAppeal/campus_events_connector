@@ -25,6 +25,10 @@ use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 abstract class AbstractFileImporter
 {
     /**
+     * File name prefix for temporary files
+     */
+    protected const TEMP_FILE_NAME_PREFIX = 'tx_campuseventsconnector_';
+    /**
      * @var array
      */
     protected $newReferenceQueue;
@@ -53,6 +57,11 @@ abstract class AbstractFileImporter
      * @var string
      */
     protected $storageFolder;
+
+    /**
+     * @var array
+     */
+    protected $tempFiles = [];
 
     public function __construct()
     {
@@ -93,6 +102,18 @@ abstract class AbstractFileImporter
         }
 
         return $this->storage;
+    }
+
+    /**
+     * Returns an absolute file to a temporary file with unique file name
+     *
+     * @return string
+     */
+    final protected function getTempFilePath(): string
+    {
+        $tempFilenameAndPath = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam(self::TEMP_FILE_NAME_PREFIX);
+        $this->tempFiles[] = $tempFilenameAndPath;
+        return $tempFilenameAndPath;
     }
 
     /**
@@ -185,6 +206,9 @@ abstract class AbstractFileImporter
                 $activeFileNames[$queueEntry['target_file_name']] = $offset;
             }
             foreach ($existingFiles as $file) {
+                $fileDeleteStates[$file->getName()] = -1;
+            }
+            foreach ($existingFiles as $file) {
                 // Delete all files, that are not used anymore
                 if (!isset($activeFileNames[$file->getName()])) {
                     try {
@@ -210,8 +234,21 @@ abstract class AbstractFileImporter
                 }
             }
         }
-        self::cleanupTemporaryFiles();
         return $fileDeleteStates;
+    }
+
+    /**
+     * Delete all temporary files, that are not used anymore
+     */
+    private function cleanupTemporaryFilesAfterFinish(): void
+    {
+        // Delete all temporary files that were created during the current import process
+        foreach ($this->tempFiles as $file) {
+            if (file_exists($file) && is_writable($file)) {
+                unlink($file);
+            }
+        }
+        self::cleanupTemporaryFiles();
     }
 
     /**
@@ -224,7 +261,7 @@ abstract class AbstractFileImporter
     {
         $temporaryPath = Environment::getVarPath() . '/transient/';
         if (is_dir($temporaryPath)) {
-            $filePrefix = 'tx_campuseventsconnector_';
+            $filePrefix = self::TEMP_FILE_NAME_PREFIX;
             $files = glob($temporaryPath . '/' . $filePrefix . '*');
             $threshold = strtotime('-1 week');
             foreach ($files as $file) {
@@ -256,24 +293,37 @@ abstract class AbstractFileImporter
      */
     public function runQueue()
     {
-        $this->cleanupFiles();
-        foreach ($this->newReferenceQueue as $queueEntry) {
-            /** @var ImportedModelInterface $object */
-            $object = $queueEntry['object'];
-            $importId = (int)$queueEntry['import_id'];
-            if (!empty($queueEntry['file_exists'])) {
-                $existingReference = $this->getFileReferenceIfExists($object, $queueEntry['property'], $queueEntry['data']);
-                if (null === $existingReference && (($file = $queueEntry['file']) instanceof File)) {
-                    $this->addFileReference($object, $file, $importId, $queueEntry['property']);
-                }
-            } else {
-                $downloadFile = $this->getDownloadFromQueueEntry($queueEntry);
-                if (!empty($downloadFile)) {
-                    $filename = $queueEntry['target_file_name'];
-                    $this->createAndAttachFile($downloadFile, $filename, $importId, $object, $queueEntry['property']);
+        if (!empty($this->newReferenceQueue)) {
+            $this->cleanupFiles();
+            foreach ($this->newReferenceQueue as $queueEntry) {
+                /** @var ImportedModelInterface $object */
+                $object = $queueEntry['object'];
+                $importId = (int)$queueEntry['import_id'];
+
+                if (!empty($queueEntry['file_exists'])) {
+                    $existingReference = $this->getFileReferenceIfExists($object, $queueEntry['property'], $queueEntry['data']);
+                    if (null === $existingReference && (($file = $queueEntry['file']) instanceof File)) {
+                        $this->addFileReference($object, $file, $importId, $queueEntry['property']);
+                    }
+                } else {
+                    $downloadFile = $this->getDownloadFromQueueEntry($queueEntry);
+                    if (!empty($downloadFile)) {
+                        $filename = $queueEntry['target_file_name'];
+                        $this->createAndAttachFile($downloadFile, $filename, $importId, $object, $queueEntry['property']);
+                    }
                 }
             }
         }
+        $this->cleanupTemporaryFilesAfterFinish();
+    }
+
+    /**
+     * Returns true, if the importer has updated data
+     * @return bool
+     */
+    public function hasUpdates(): bool
+    {
+        return !empty($this->newReferenceQueue);
     }
 
     /**

@@ -20,6 +20,7 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\Organizer;
 use BrainAppeal\CampusEventsConnector\Domain\Model\Speaker;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
+use BrainAppeal\CampusEventsConnector\Domain\Model\ViewList;
 use BrainAppeal\CampusEventsConnector\Importer\FileImporter;
 
 class SpecifiedImportObjectGenerator extends ImportObjectGenerator
@@ -88,6 +89,12 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
             $object->addFilterCategory($filterCategory);
         }
 
+        /** @var ViewList[] $viewLists */
+        $viewLists = $this->generateMultiple(ViewList::class, $data['view_lists']);
+        foreach ($viewLists as $viewList) {
+            $object->addViewList($viewList);
+        }
+
         /** @var Category[] $categories */
         $categories = $this->generateMultiple(Category::class, $data['categories']);
         foreach ($categories as $category) {
@@ -153,6 +160,14 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
      * @inheritdoc
      */
     protected function assignTargetGroupProperties($class, $object, $data)
+    {
+        $object->setName($data['name']);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function assignViewListProperties($class, $object, $data)
     {
         $object->setName($data['name']);
     }

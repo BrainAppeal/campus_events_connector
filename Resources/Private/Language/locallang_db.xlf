@@ -75,6 +75,9 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.target_groups">
 				<source>Target Groups</source>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.view_lists">
+				<source>View lists</source>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.filter_categories">
 				<source>Filter Categories</source>
 			</trans-unit>
@@ -321,6 +324,12 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_targetgroup.name">
 				<source>Name</source>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_viewlist">
+				<source>Event list</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_viewlist.name">
+				<source>Name</source>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_referent">
 				<source>Referent</source>
 			</trans-unit>
@@ -407,6 +416,9 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_groups">
 				<source>Target Groups</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.view_lists">
+				<source>View lists</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.ce_import_source">
 				<source>Import Source</source>

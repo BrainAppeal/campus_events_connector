@@ -28,11 +28,13 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\Referent;
 use BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
+use BrainAppeal\CampusEventsConnector\Domain\Model\ViewList;
 use BrainAppeal\CampusEventsConnector\Http\Client;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
 
 class ExtendedApiConnector
 {
@@ -89,16 +91,25 @@ class ExtendedApiConnector
         'SessionTimePeriod' => 'session_time_periods',
         'Sponsor' => 'sponsors',
         'TargetGroup' => 'target_groups',
+        'ViewList' => 'view_lists',
     ];
 
     /**
-     * @param string $data
+     * @param string $relativeUrl
      * @param array $additionalParams
      * @return string
      */
-    private function generateUri($data, $additionalParams)
+    private function generateUri(string $relativeUrl, array $additionalParams)
     {
-        return self::BASE_PATH . $data;
+        $url = self::BASE_PATH . $relativeUrl;
+        if (!empty($additionalParams)) {
+            $paramStr = strpos($url, '?') === false ? '?' : '&';
+            foreach ($additionalParams as $key => $value) {
+                $url .= $paramStr . $key . '=' . urlencode($value);
+                $paramStr = '&';
+            }
+        }
+        return $url;
     }
 
     /** @noinspection PhpDocRedundantThrowsInspection */
@@ -201,10 +212,10 @@ class ExtendedApiConnector
      * @return bool
      * @throws \BrainAppeal\CampusEventsConnector\Http\HttpException
      */
-    public function checkApiVersion()
+    public function checkApiVersion(): bool
     {
-        $response = $this->getApiResponse('api-check');
-        return !empty($response['status']['version']) && $response['status']['version'] == $this->getApiVersion();
+        $response = $this->getApiResponse('events');
+        return !empty($response) && !empty($response['@id']);
     }
 
     /**
@@ -212,7 +223,7 @@ class ExtendedApiConnector
      * @return array
      * @throws \BrainAppeal\CampusEventsConnector\Http\HttpException
      */
-    public function fetchItemListForType($itemType)
+    public function fetchItemListForType(string $itemType): array
     {
         $typeMapping = $this->getMappingForType($itemType);
         if (empty($typeMapping)) {
@@ -227,14 +238,27 @@ class ExtendedApiConnector
             }
             if (!empty($apiResponse['hydra:view']['hydra:next'])) {
                 $importMore = true;
-                while ($importMore) {
-                    $pageParam = substr($apiResponse['hydra:view']['hydra:next'], strrpos($apiResponse['hydra:view']['hydra:next'], '?page='));
-                    $apiResponse = $this->getApiResponse($path.$pageParam);
-                    foreach ($apiResponse['hydra:member'] as $listItem) {
-                        $allListItems[] = $listItem;
+                $maxPageCount = 9999;
+                $page = 1;
+                $nextPage = null;
+                $pageParamPrefix = '?page=';
+                while ($importMore && $page < $maxPageCount) {
+                    $importMore = false;
+                    $nextPageUri = $apiResponse['hydra:view']['hydra:next'];
+                    preg_match('/'.preg_quote($pageParamPrefix, '/').'(\d+)/', $nextPageUri, $pageMatches);
+                    if (!empty($pageMatches[1])) {
+                        $nextPage = (int) $pageMatches[1];
                     }
-                    if (!$apiResponse['hydra:view']['hydra:next']) {
-                        $importMore = false;
+                    if ($nextPage > $page) {
+                        $apiResponse = $this->getApiResponse($path . $pageParamPrefix . $nextPage);
+                        foreach ($apiResponse['hydra:member'] as $listItem) {
+                            $allListItems[] = $listItem;
+                        }
+                        $page = $nextPage;
+                        /** @noinspection PhpConditionAlreadyCheckedInspection */
+                        if (!empty($apiResponse['hydra:view']['hydra:next'])) {
+                            $importMore = true;
+                        }
                     }
                 }
             }
@@ -287,7 +311,7 @@ class ExtendedApiConnector
      * Returns the mapping information for the given data type
      * @param string $importType
      */
-    public function getMappingForType($importType)
+    public function getMappingForType(string $importType)
     {
         if (array_key_exists($importType, $this->apiTypeMapping)) {
             return $this->apiTypeMapping[$importType];
@@ -311,6 +335,7 @@ class ExtendedApiConnector
             'SessionTimePeriod' => TimeRange::class,
             'Sponsor' => Sponsor::class,
             'TargetGroup' => TargetGroup::class,
+            'ViewList' => ViewList::class,
         ];
         $class = $importTypeClassMap[$importType];
         $dataMapper = $this->getDataMapper();
@@ -329,8 +354,12 @@ class ExtendedApiConnector
     protected function getDataMapper()
     {
         if (null === $this->dataMapper) {
-            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ObjectManager::class);
-            $this->dataMapper = $objectManager->get(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
+            if (\TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version()) >= 11000000) {
+                $this->dataMapper = GeneralUtility::makeInstance(DataMapper::class);
+            } else {
+                $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ObjectManager::class);
+                $this->dataMapper = $objectManager->get(DataMapper::class);
+            }
         }
         return $this->dataMapper;
     }

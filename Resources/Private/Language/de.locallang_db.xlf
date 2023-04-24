@@ -78,6 +78,9 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.filter_categories">
 				<target>Filterkategorien</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.view_lists">
+				<target>Veranstaltungslisten</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.alternative_events">
 				<target>Ersatztermine</target>
 			</trans-unit>
@@ -321,6 +324,12 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_targetgroup.name">
 				<target>Name</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_viewlist">
+				<target>Veranstaltungsliste</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_viewlist.name">
+				<target>Name</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_referent">
 				<target>Referent</target>
 			</trans-unit>
@@ -407,6 +416,9 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_groups">
 				<target>Zielgruppen</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.view_lists">
+				<target>Veranstaltungslisten</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.ce_import_source">
 				<target>Import-Quelle</target>

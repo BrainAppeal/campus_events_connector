@@ -23,7 +23,7 @@ class EventAttachment extends AbstractImportedEntity implements BelongsToEventIn
     /**
      * @var \BrainAppeal\CampusEventsConnector\Domain\Model\Event
      */
-    protected $event = null;
+    protected $event;
 
     /**
      * name
@@ -44,7 +44,7 @@ class EventAttachment extends AbstractImportedEntity implements BelongsToEventIn
      * @var \TYPO3\CMS\Extbase\Domain\Model\FileReference
      * @TYPO3\CMS\Extbase\Annotation\ORM\Cascade("remove")
      */
-    protected $attachmentFile = null;
+    protected $attachmentFile;
 
     /**
      * @return Event

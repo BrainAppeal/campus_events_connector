@@ -13,6 +13,14 @@
 
 namespace BrainAppeal\CampusEventsConnector\Task;
 
+use BrainAppeal\CampusEventsConnector\Http\HttpException;
+use BrainAppeal\CampusEventsConnector\Importer\ExtendedApiConnector;
+use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
+use TYPO3\CMS\Scheduler\Task\AbstractTask;
+
 /**
  * Additional BE fields for ip address anonymization task.
  */
@@ -22,11 +30,11 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
      * Add additional fields
      *
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
-     * @param \TYPO3\CMS\Scheduler\Task\AbstractTask|null $task When editing, reference to the current task. NULL when adding.
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param AbstractTask|null $task When editing, reference to the current task. NULL when adding.
+     * @param SchedulerModuleController $schedulerModule Reference to the calling object (Scheduler's BE module)
      * @return array Array containing all the information pertaining to the additional fields
      */
-    public function getAdditionalFields(array &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $schedulerModule)
     {
         $additionalFields = [];
         $additionalFields['task_eventImport_baseUri'] = $this->getBaseUriAdditionalField($taskInfo, $task);
@@ -40,15 +48,15 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 
     /**
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
-     * @param \TYPO3\CMS\Scheduler\Task\AbstractTask|EventImportTask|null $task When editing, reference to the current task. NULL when adding.
+     * @param EventImportTask|null $task When editing, reference to the current task. NULL when adding.
      * @return array Array containing all the information pertaining to the additional fields
      */
-    protected function getApiKeyAdditionalField(array &$taskInfo, $task)
+    protected function getApiKeyAdditionalField(array &$taskInfo, ?EventImportTask $task): array
     {
         $fieldId = 'campusEventsConnector_eventImport_apiKey';
         $apiKey = null !== $task ? $task->getApiKey() : null;
         if (empty($taskInfo[$fieldId])) {
-            $taskInfo[$fieldId] = !empty($apiKey) ? $apiKey : EventImportTask::API_KEY_DEFAULT;
+            $taskInfo[$fieldId] = !empty($apiKey) ? $apiKey : '';
         }
         $fieldName = 'tx_scheduler[' . $fieldId . ']';
         $fieldHtml = '<input class="form-control" type="text" ' . 'name="' . $fieldName . '" ' . 'id="' . $fieldId . '" ' . 'value="' . $taskInfo[$fieldId] . '" ' . 'size="4">';
@@ -63,10 +71,10 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 
     /**
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
-     * @param \TYPO3\CMS\Scheduler\Task\AbstractTask|EventImportTask|null $task When editing, reference to the current task. NULL when adding.
+     * @param EventImportTask|null $task When editing, reference to the current task. NULL when adding.
      * @return array Array containing all the information pertaining to the additional fields
      */
-    protected function getApiVersionAdditionalField(array &$taskInfo, $task)
+    protected function getApiVersionAdditionalField(array &$taskInfo, ?EventImportTask $task): array
     {
         $fieldId = 'campusEventsConnector_eventImport_apiVersion';
         $selectedApiVersion = null !== $task ? $task->getApiVersion() : EventImportTask::API_VERSION_ABOVE_227;
@@ -98,10 +106,10 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 
     /**
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
-     * @param \TYPO3\CMS\Scheduler\Task\AbstractTask|EventImportTask|null $task When editing, reference to the current task. NULL when adding.
+     * @param EventImportTask|null $task When editing, reference to the current task. NULL when adding.
      * @return array Array containing all the information pertaining to the additional fields
      */
-    protected function getBaseUriAdditionalField(array &$taskInfo, $task)
+    protected function getBaseUriAdditionalField(array &$taskInfo, ?EventImportTask $task): array
     {
         $fieldId = 'campusEventsConnector_eventImport_baseUri';
         $baseUri = null !== $task ? $task->getBaseUri() : EventImportTask::BASE_URI_DEFAULT;
@@ -121,10 +129,10 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 
     /**
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
-     * @param \TYPO3\CMS\Scheduler\Task\AbstractTask|EventImportTask|null $task When editing, reference to the current task. NULL when adding.
+     * @param EventImportTask|null $task When editing, reference to the current task. NULL when adding.
      * @return array Array containing all the information pertaining to the additional fields
      */
-    protected function getPidAdditionalField(array &$taskInfo, $task)
+    protected function getPidAdditionalField(array &$taskInfo, ?EventImportTask $task): array
     {
         $fieldId = 'campusEventsConnector_eventImport_pid';
         $pid = null !== $task ? $task->getPid() : null;
@@ -143,10 +151,10 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     }
 
     /**
-     * @param \TYPO3\CMS\Scheduler\Task\AbstractTask|EventImportTask|null $task When editing, reference to the current task. NULL when adding.
+     * @param EventImportTask|null $task When editing, reference to the current task. NULL when adding.
      * @return array Array containing all the information pertaining to the additional fields
      */
-    protected function getStorageIdAdditionalField($task)
+    protected function getStorageIdAdditionalField(?EventImportTask $task): array
     {
         $fieldId = 'campusEventsConnector_eventImport_storageId';
         $fieldName = 'tx_scheduler[' . $fieldId . ']';
@@ -171,10 +179,10 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 
     /**
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
-     * @param \TYPO3\CMS\Scheduler\Task\AbstractTask|EventImportTask|null $task When editing, reference to the current task. NULL when adding.
+     * @param EventImportTask|null $task When editing, reference to the current task. NULL when adding.
      * @return array Array containing all the information pertaining to the additional fields
      */
-    protected function getStorageFolderAdditionalField(array &$taskInfo, $task)
+    protected function getStorageFolderAdditionalField(array &$taskInfo, ?EventImportTask $task): array
     {
         $fieldId = 'campusEventsConnector_eventImport_storageFolder';
         $storageFolder = null !== $task ? $task->getStorageFolder() : null;
@@ -197,53 +205,52 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
      * Validate additional fields
      *
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param SchedulerModuleController $schedulerModule Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validateAdditionalFields(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function validateAdditionalFields(array &$submittedData, SchedulerModuleController $schedulerModule)
     {
         $validData = true;
-        $validData &= $this->validateBaseUriAndApiKeyAdditionalField($submittedData, $parentObject);
-        $validData &= $this->validatePidAdditionalField($submittedData, $parentObject);
-        $validData &= $this->validateStorageIdAdditionalField($submittedData, $parentObject);
-        $validData &= $this->validateStorageFolderAdditionalField($submittedData, $parentObject);
-        return $validData;
+        $validData &= $this->validateBaseUriAndApiKeyAdditionalField($submittedData, $schedulerModule);
+        $validData &= $this->validatePidAdditionalField($submittedData, $schedulerModule);
+        $validData &= $this->validateStorageIdAdditionalField($submittedData, $schedulerModule);
+        $validData &= $this->validateStorageFolderAdditionalField($submittedData, $schedulerModule);
+        return (bool) $validData;
     }
 
     /**
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validateBaseUriAndApiKeyAdditionalField(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function validateBaseUriAndApiKeyAdditionalField(array $submittedData, SchedulerModuleController $parentObject)
     {
         $validData = true;
         $baseUri = $submittedData['campusEventsConnector_eventImport_baseUri'];
         if (empty($baseUri)) {
-            self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $this->addTranslatableMessage('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri');
             $validData = false;
         }
 
+        $apiVersion = !empty($submittedData['campusEventsConnector_eventImport_baseUri'])
+            && $submittedData['campusEventsConnector_eventImport_baseUri'] === EventImportTask::API_VERSION_LEGACY
+            ? EventImportTask::API_VERSION_LEGACY : EventImportTask::API_VERSION_ABOVE_227;
+
         $apiKey = $submittedData['campusEventsConnector_eventImport_apiKey'];
         if (empty($apiKey) || preg_match('/^[\w]{8}-[\w]{16}-[\w]{8}$/', $apiKey) !== 1) {
-            self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_api_key'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $this->addTranslatableMessage('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_api_key');
             $validData = false;
         }
 
         if ($validData) {
-            /** @var \BrainAppeal\CampusEventsConnector\Importer\ApiConnector $apiConnector */
-            $apiConnector = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-                \BrainAppeal\CampusEventsConnector\Importer\ApiConnector::class
-            );
-            $apiConnector->setBaseUri($baseUri);
-            if ($baseUri !== \BrainAppeal\CampusEventsConnector\Task\EventImportTask::BASE_URI_DEFAULT) {
-
+            if ($baseUri !== EventImportTask::BASE_URI_DEFAULT) {
+                $apiConnector = $this->initializeApiConnector($baseUri, $apiKey, $apiVersion);
                 try {
                     $validData = $apiConnector->checkApiVersion();
-                } catch (\BrainAppeal\CampusEventsConnector\Http\HttpException $httpException) {
-                    self::addMessage(
+                } catch (HttpException $httpException) {
+                    $this->addMessage(
                         $httpException->getMessage(),
-                        \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
+                        FlashMessage::ERROR
                     );
                     $validData = false;
                 }
@@ -251,7 +258,7 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
                 $validData = false;
             }
             if (!$validData) {
-                self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+                $this->addTranslatableMessage('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri');
             }
         }
 
@@ -259,11 +266,34 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     }
 
     /**
+     * @param string $baseUri Tha base uri for the api
+     * @param string $apiKey The api key
+     * @param string $apiVersion The api version
+     * @return \BrainAppeal\CampusEventsConnector\Importer\ApiConnector|ExtendedApiConnector
+     */
+    private function initializeApiConnector(string $baseUri, string $apiKey, string $apiVersion)
+    {
+        if ($apiVersion === EventImportTask::API_VERSION_LEGACY) {
+            /** @var \BrainAppeal\CampusEventsConnector\Importer\ApiConnector $apiConnector */
+            $apiConnector = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+                \BrainAppeal\CampusEventsConnector\Importer\ApiConnector::class
+            );
+            $apiConnector->setBaseUri($baseUri);
+        } else {
+            /** @var ExtendedApiConnector $apiConnector */
+            $apiConnector = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ExtendedApiConnector::class);
+            $apiConnector->setBaseUri($baseUri);
+            $apiConnector->setApiKey($apiKey);
+        }
+        return $apiConnector;
+    }
+
+    /**
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validatePidAdditionalField(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function validatePidAdditionalField(array $submittedData, SchedulerModuleController $parentObject): bool
     {
         $validData = false;
         $data = $submittedData['campusEventsConnector_eventImport_pid'];
@@ -273,17 +303,29 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
         }
         if (!$validData) {
             // Issue error message
-            self::addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_pid'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $this->addTranslatableMessage('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_pid');
         }
         return $validData;
     }
 
     /**
+     * Add a translatable flash message
+     *
+     * @param string $messageKey the message key to be translated
+     * @param int $severity the flash message severity
+     */
+    protected function addTranslatableMessage(string $messageKey, int $severity = AbstractMessage::ERROR): void
+    {
+        $message = $this->getLanguageService()->sL($messageKey);
+        $this->addMessage($message, $severity);
+    }
+
+    /**
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validateStorageIdAdditionalField(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function validateStorageIdAdditionalField(array $submittedData, SchedulerModuleController $parentObject): bool
     {
         $validData = false;
         $data = $submittedData['campusEventsConnector_eventImport_storageId'];
@@ -291,17 +333,17 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
             $validData = true;
         } else {
             // Issue error message
-            $this->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_id'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $this->addTranslatableMessage('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_id');
         }
         return $validData;
     }
 
     /**
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validateStorageFolderAdditionalField(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function validateStorageFolderAdditionalField(array $submittedData, SchedulerModuleController $parentObject)
     {
         $validData = false;
         $data = $submittedData['campusEventsConnector_eventImport_storageFolder'];
@@ -309,7 +351,7 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
             $validData = true;
         } else {
             // Issue error message
-            $this->addMessage($this->getLanguageService()->sL('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_folder'), \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR);
+            $this->addTranslatableMessage('LLL:EXT:campus_events_connector/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_folder');
         }
         return $validData;
     }
@@ -318,9 +360,9 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
      * Save additional field in task
      *
      * @param array $submittedData Contains data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Task\AbstractTask|EventImportTask $task Reference to the current task object
+     * @param AbstractTask|EventImportTask $task Reference to the current task object
      */
-    public function saveAdditionalFields(array $submittedData, \TYPO3\CMS\Scheduler\Task\AbstractTask $task)
+    public function saveAdditionalFields(array $submittedData, AbstractTask $task)
     {
         $task->apiKey = $submittedData['campusEventsConnector_eventImport_apiKey'];
         $task->apiVersion = $submittedData['campusEventsConnector_eventImport_apiVersion'];
@@ -339,7 +381,7 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
      *
      * @return \TYPO3\CMS\Core\Localization\LanguageService
      */
-    protected function getLanguageService()
+    protected function getLanguageService(): LanguageService
     {
         return $GLOBALS['LANG'];
     }

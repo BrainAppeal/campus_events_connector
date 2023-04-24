@@ -21,6 +21,7 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\EventImage;
 use BrainAppeal\CampusEventsConnector\Domain\Model\EventSession;
 use BrainAppeal\CampusEventsConnector\Domain\Model\EventTicketPriceVariant;
 use BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory;
+use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Model\Location;
 use BrainAppeal\CampusEventsConnector\Domain\Model\Organizer;
 use BrainAppeal\CampusEventsConnector\Domain\Model\PriceCategory;
@@ -28,6 +29,7 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\Referent;
 use BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
+use BrainAppeal\CampusEventsConnector\Domain\Model\ViewList;
 use BrainAppeal\CampusEventsConnector\Importer\ImportMappingModel;
 
 class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerator
@@ -137,6 +139,13 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
                 $data['filterCategories'],
                 'filterCategory',
                 'filterCategories'
+            );
+        }
+        if (!empty($data['viewLists'])){
+            $this->processReferencesMultiple(
+                $object,
+                $data['viewLists'],
+                'viewList'
             );
         }
         if (!empty($data['categories'])){
@@ -299,14 +308,14 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
             return;
         }
         $object->setName($data['name']);
-        $object->setStreetName($data['street_name'] ?? '');
-        $object->setTown($data['town'] ?? '');
-        $object->setZipCode($data['zip_code'] ?? '');
-        $object->setBuilding($data['building'] ?? '');
-        $object->setLatitude($data['latitude'] ?? '');
-        $object->setListViewDisplayName($data['listViewDisplayName'] ?? '');
-        $object->setLongitude($data['longitude'] ?? '');
-        $object->setRoom($data['room'] ?? '');
+        $object->setStreetName($this->cropFieldValue($data, 'street_name', 255));
+        $object->setTown($this->cropFieldValue($data, 'town', 255));
+        $object->setZipCode($this->cropFieldValue($data, 'zip_code', 255));
+        $object->setBuilding($this->cropFieldValue($data, 'building', 255));
+        $object->setLatitude($this->cropFieldValue($data, 'latitude', 255));
+        $object->setListViewDisplayName($this->cropFieldValue($data, 'listViewDisplayName', 255));
+        $object->setLongitude($this->cropFieldValue($data, 'longitude', 255));
+        $object->setRoom($this->cropFieldValue($data, 'room', 255));
     }
 
     /**
@@ -319,7 +328,7 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if (!($object instanceof Organizer) || empty($data)) {
             return;
         }
-        $object->setName($data['name'] ?? '');
+        $object->setName($this->cropFieldValue($data, 'name', 255));
     }
 
     /**
@@ -332,20 +341,36 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if (!($object instanceof Referent) || empty($data)) {
             return;
         }
-        $object->setAcademicDegree($data['academicDegree'] ?? '');
-        $object->setBusinessAddress($data['businessAddress'] ?? '');
-        $object->setDescription($data['description'] ?? '');
-        $object->setEmail($data['email'] ?? '');
-        $object->setEventFormats($data['eventFormats'] ?? '');
-        $object->setExternalUrl($data['externalUrl'] ?? '');
-        $object->setFirstName($data['firstName'] ?? '');
-        $object->setFocusOfWork($data['focusOfWork'] ?? '');
-        $object->setInstitution($data['institution'] ?? '');
-        $object->setLastName($data['lastName'] ?? '');
-        $object->setPhone($data['phone'] ?? '');
-        $object->setPublications($data['publications'] ?? '');
-        $object->setReferences($data['references'] ?? '');
-        $object->setTitle($data['title'] ?? '');
+        $object->setAcademicDegree($this->cropFieldValue($data, 'academicDegree', 255));
+        $object->setBusinessAddress($this->cropFieldValue($data, 'businessAddress', 65535));
+        $object->setDescription($this->cropFieldValue($data, 'description', 65535));
+        $object->setEmail($this->cropFieldValue($data, 'email', 255));
+        $object->setEventFormats($this->cropFieldValue($data, 'eventFormats', 65535));
+        $object->setExternalUrl($this->cropFieldValue($data, 'externalUrl', 255));
+        $object->setFirstName($this->cropFieldValue($data, 'firstName', 255));
+        $object->setFocusOfWork($this->cropFieldValue($data, 'focusOfWork', 65535));
+        $object->setInstitution($this->cropFieldValue($data, 'institution', 255));
+        $object->setLastName($this->cropFieldValue($data, 'lastName', 255));
+        $object->setPhone($this->cropFieldValue($data, 'phone', 255));
+        $object->setPublications($this->cropFieldValue($data, 'publications', 65535));
+        $object->setReferences($this->cropFieldValue($data, 'references', 65535));
+        $object->setTitle($this->cropFieldValue($data, 'title', 255));
+    }
+
+    /**
+     * Returns the string value of the given field; if the value is longer than the allowed length, the text is cropped
+     * @param array $data
+     * @param string $field
+     * @param int $maxLength
+     * @return string
+     */
+    private function cropFieldValue(array $data, string $field, int $maxLength): string
+    {
+        $text = $data[$field] ?? '';
+        if ($maxLength > 0 && mb_strlen($text) > $maxLength) {
+            return mb_substr($text, 0, $maxLength);
+        }
+        return $text;
     }
 
     /**
@@ -358,7 +383,20 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if (!($object instanceof TargetGroup) || empty($data)) {
             return;
         }
-        $object->setName($data['name'] ?? '');
+        $object->setName($this->cropFieldValue($data, 'name', 255));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function assignViewListProperties(ImportMappingModel $importMappingModel)
+    {
+        $object = $importMappingModel->getDomainModel();
+        $data = $importMappingModel->getImportData();
+        if (!($object instanceof ViewList) || empty($data)) {
+            return;
+        }
+        $object->setName($this->cropFieldValue($data, 'name', 255));
     }
 
 
@@ -369,14 +407,14 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if (!($object instanceof ContactPerson) || empty($data)) {
             return;
         }
-        $object->setDepartment($data['department'] ?? '');
-        $object->setFirstName($data['firstName'] ?? '');
-        $object->setInstitution($data['institution'] ?? '');
-        $object->setLastName($data['lastName'] ?? '');
-        $object->setMailAddress($data['mailAddress'] ?? '');
-        $object->setPhone($data['phone'] ?? '');
-        $object->setPosition($data['position'] ?? '');
-        $object->setTitle($data['title'] ?? '');
+        $object->setDepartment($this->cropFieldValue($data, 'department', 255));
+        $object->setFirstName($this->cropFieldValue($data, 'firstName', 255));
+        $object->setInstitution($this->cropFieldValue($data, 'institution', 255));
+        $object->setLastName($this->cropFieldValue($data, 'lastName', 255));
+        $object->setMailAddress($this->cropFieldValue($data, 'mailAddress', 255));
+        $object->setPhone($this->cropFieldValue($data, 'phone', 255));
+        $object->setPosition($this->cropFieldValue($data, 'position', 255));
+        $object->setTitle($this->cropFieldValue($data, 'title', 255));
     }
 
     protected function assignEventAttachmentProperties(ImportMappingModel $importMappingModel)
@@ -386,7 +424,7 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if (!($object instanceof EventAttachment) || empty($data)) {
             return;
         }
-        $object->setName($data['name'] ?? '');
+        $object->setName($this->cropFieldValue($data, 'name', 255));
         $object->setFileHash($data['fileHash'] ?? '');
         if ($data['attachmentFile']['url']) {
             $this->fileImporter->enqueueFileMapping($object, 'attachment_file', $data['attachmentFile']);
@@ -400,7 +438,7 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if (!($object instanceof EventImage) || empty($data)) {
             return;
         }
-        $object->setName($data['name'] ?? '');
+        $object->setName($this->cropFieldValue($data, 'name', 255));
         $object->setFileHash($data['fileHash'] ?? '');
         if ($data['imageFile']['url']) {
             $this->fileImporter->enqueueFileMapping($object, 'image_file', $data['imageFile']);
@@ -452,11 +490,11 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
             $urls['directCheckoutUrl'] = $data['directCheckoutUrl'];
         }
         $object->setDirectCheckoutUrl($urls['directCheckoutUrl'] ?? '');
-        $object->setName($data['name'] ?? '');
-        $object->setPrice($data['price'] ?? '');
-        $object->setQuota($data['quota'] ?? '');
-        $object->setTax($data['tax'] ?? '');
-        $object->setTaxRate($data['taxRate'] ?? '');
+        $object->setName($this->cropFieldValue($data, 'name', 255));
+        $object->setPrice($this->cropFieldValue($data, 'price', 255));
+        $object->setQuota($this->cropFieldValue($data, 'quota', 255));
+        $object->setTax($this->cropFieldValue($data, 'tax', 255));
+        $object->setTaxRate($this->cropFieldValue($data, 'taxRate', 255));
     }
 
     protected function assignPriceCategoryProperties(ImportMappingModel $importMappingModel)
@@ -466,7 +504,7 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if (!($object instanceof PriceCategory) || empty($data)) {
             return;
         }
-        $object->setName($data['name'] ?? '');
+        $object->setName($this->cropFieldValue($data, 'name', 255));
     }
 
     protected function assignTimeRangeProperties(ImportMappingModel $importMappingModel)
@@ -497,8 +535,8 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         if (!($object instanceof Sponsor) || empty($data)) {
             return;
         }
-        $object->setName($data['name']);
-        $object->setUrl($data['url'] ?? '');
+        $object->setName($this->cropFieldValue($data, 'name', 255));
+        $object->setUrl($this->cropFieldValue($data, 'url', 255));
         $object->setImageHash($data['imageHash']);
         if ($data['imageFile']['url']) {
             $this->fileImporter->enqueueFileMapping($object, 'image_file', $data['imageFile']);
@@ -508,12 +546,12 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
     /**
      * Returns a valid unix timestamp or false
      *
-     * @param string|mixed $dateValue
+     * @param string|mixed|null $dateValue
      * @return false|int
      */
     protected function strToTime($dateValue)
     {
-        if (($tstamp = strtotime($dateValue)) && $tstamp <= self::UNIX_TIMESTAMP_MAX) {
+        if (!empty($dateValue) && ($tstamp = strtotime($dateValue)) && $tstamp <= self::UNIX_TIMESTAMP_MAX) {
             return $tstamp;
         }
         return false;

@@ -57,7 +57,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     private function getObjectRepository()
     {
         if (null === $this->objectRepository) {
-            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
             $this->objectRepository = $objectManager->get($this->getObjectRepositoryClass());
         }
 
@@ -69,7 +69,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     private function getEventRepository()
     {
         if (null === $this->eventRepository) {
-            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
             $this->eventRepository = $objectManager->get(EventRepository::class);
         }
 
@@ -132,7 +132,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
      * @param ConvertConfiguration $configuration
      * @api Use this method to individualize your object
      */
-    protected abstract function individualizeObjectByEvent(&$object, $event, $configuration);
+    protected abstract function individualizeObjectByEvent($object, $event, $configuration);
 
     /**
      * Returns true, if the event can be converted to the target object model; Override this function in custom
@@ -176,9 +176,9 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     }
 
     /**
-     * @return \TYPO3\CMS\Core\Localization\LanguageService|\TYPO3\CMS\Lang\LanguageService
+     * @return \TYPO3\CMS\Core\Localization\LanguageService
      */
-    protected function getLanguageService()
+    protected function getLanguageService(): \TYPO3\CMS\Core\Localization\LanguageService
     {
         return $GLOBALS['LANG'];
     }
@@ -206,7 +206,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
             $tcaColumns = array_keys($GLOBALS['TCA'][$importTable]['columns']);
             $dataColumns = array_keys($importData);
             foreach ($dataColumns as $column) {
-                if (!in_array($column, $tcaColumns)) {
+                if (!in_array($column, $tcaColumns, false)) {
                     unset($importData[$column]);
                 }
             }

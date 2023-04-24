@@ -38,6 +38,10 @@ abstract class ConvertConfigurationRepository extends \TYPO3\CMS\Extbase\Persist
         $this->setDefaultQuerySettings($defaultQuerySettings);
     }
 
+    /**
+     * @param int $pid
+     * @return object[]|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     */
     public function findActiveByPid($pid)
     {
         $this->setPidRestriction($pid);

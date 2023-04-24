@@ -191,25 +191,25 @@ class EventImportAdditionalLegacyFieldProvider extends AbstractAdditionalFieldPr
      * Validate additional fields
      *
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validateAdditionalFields(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function validateAdditionalFields(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule)
     {
         $validData = true;
-        $validData &= $this->validateBaseUriAndApiKeyAdditionalField($submittedData, $parentObject);
-        $validData &= $this->validatePidAdditionalField($submittedData, $parentObject);
-        $validData &= $this->validateStorageIdAdditionalField($submittedData, $parentObject);
-        $validData &= $this->validateStorageFolderAdditionalField($submittedData, $parentObject);
+        $validData &= $this->validateBaseUriAndApiKeyAdditionalField($submittedData, $schedulerModule);
+        $validData &= $this->validatePidAdditionalField($submittedData, $schedulerModule);
+        $validData &= $this->validateStorageIdAdditionalField($submittedData, $schedulerModule);
+        $validData &= $this->validateStorageFolderAdditionalField($submittedData, $schedulerModule);
         return $validData;
     }
 
     /**
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validateBaseUriAndApiKeyAdditionalField(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function validateBaseUriAndApiKeyAdditionalField(array $submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule)
     {
         $validData = true;
 
@@ -251,10 +251,10 @@ class EventImportAdditionalLegacyFieldProvider extends AbstractAdditionalFieldPr
 
     /**
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validatePidAdditionalField(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function validatePidAdditionalField(array $submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule)
     {
         $validData = false;
         $data = $submittedData['campusEventsConnector_eventImport_pid'];
@@ -271,10 +271,10 @@ class EventImportAdditionalLegacyFieldProvider extends AbstractAdditionalFieldPr
 
     /**
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validateStorageIdAdditionalField(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function validateStorageIdAdditionalField(array $submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule)
     {
         $validData = false;
         $data = $submittedData['campusEventsConnector_eventImport_storageId'];
@@ -289,10 +289,10 @@ class EventImportAdditionalLegacyFieldProvider extends AbstractAdditionalFieldPr
 
     /**
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validateStorageFolderAdditionalField(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function validateStorageFolderAdditionalField(array $submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule)
     {
         $validData = false;
         $data = $submittedData['campusEventsConnector_eventImport_storageFolder'];

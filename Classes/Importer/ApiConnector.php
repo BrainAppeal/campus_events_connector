@@ -49,7 +49,6 @@ class ApiConnector
         return $uri;
     }
 
-    /** @noinspection PhpDocRedundantThrowsInspection */
     /**
      * @param string $data
      * @param array $additionalParams

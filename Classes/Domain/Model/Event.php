@@ -184,33 +184,33 @@ class Event extends AbstractImportedEntity
      * alternativeEvents
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Event>
      */
-    protected $alternativeEvents = null;
+    protected $alternativeEvents;
 
     /**
      * images
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference>
      * @deprecated
      */
-    protected $images = null;
+    protected $images;
 
     /**
      * attachments
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference>
      * @deprecated
      */
-    protected $attachments = null;
+    protected $attachments;
 
     /**
      * eventAttachments
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment>
      */
-    protected $eventAttachments = null;
+    protected $eventAttachments;
 
     /**
      * eventImages
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventImage>
      */
-    protected $eventImages = null;
+    protected $eventImages;
 
     /**
      * registrationPossible
@@ -249,28 +249,28 @@ class Event extends AbstractImportedEntity
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker>
      * @deprecated
      */
-    protected $speakers = null;
+    protected $speakers;
 
     /**
      * referents
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Referent>
      */
-    protected $referents = null;
+    protected $referents;
 
     /**
      * sponsors
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor>
      */
-    protected $sponsors = null;
+    protected $sponsors;
 
     /**
      * contactPersons
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ContactPerson>
      */
-    protected $contactPersons = null;
+    protected $contactPersons;
 
     /**
      * timeRanges
@@ -278,7 +278,7 @@ class Event extends AbstractImportedEntity
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange>
      * @TYPO3\CMS\Extbase\Annotation\ORM\Cascade("remove")
      */
-    protected $timeRanges = null;
+    protected $timeRanges;
 
     /**
      * eventSessions
@@ -286,56 +286,63 @@ class Event extends AbstractImportedEntity
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventSession>
      * @TYPO3\CMS\Extbase\Annotation\ORM\Cascade("remove")
      */
-    protected $eventSessions = null;
+    protected $eventSessions;
 
     /**
      * location
      * @deprecated
      * @var \BrainAppeal\CampusEventsConnector\Domain\Model\Location
      */
-    protected $location = null;
+    protected $location;
 
     /**
      * categories
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Category>
      */
-    protected $categories = null;
+    protected $categories;
 
     /**
      * organizer
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer>
      */
-    protected $organizer = null;
+    protected $organizer;
 
     /**
      * targetGroups
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup>
      */
-    protected $targetGroups = null;
+    protected $targetGroups;
+
+    /**
+     * viewLists
+     *
+     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList>
+     */
+    protected $viewLists = null;
 
     /**
      * filterCategories
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory>
      */
-    protected $filterCategories = null;
+    protected $filterCategories;
 
     /**
      * eventTicketPriceVariants
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventTicketPriceVariant>
      */
-    protected $eventTicketPriceVariants = null;
+    protected $eventTicketPriceVariants;
 
     /**
      * locations
      *
      * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Location>
      */
-    protected $locations = null;
+    protected $locations;
 
     /**
      * hash
@@ -381,6 +388,7 @@ class Event extends AbstractImportedEntity
         $this->eventSessions = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $this->eventTicketPriceVariants = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
         $this->locations = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        $this->viewLists = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
     }
 
     /**
@@ -1137,7 +1145,7 @@ class Event extends AbstractImportedEntity
 
     /**
      * @param string $hash
-     * @return Event
+     * @return void
      * @deprecated
      */
     public function setHash($hash)
@@ -1146,7 +1154,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * Returns a copy from earliest date time
+     * Returns a copy from the earliest date time
      *
      * @return int
      */
@@ -1726,5 +1734,51 @@ class Event extends AbstractImportedEntity
     public function removeLocation(\BrainAppeal\CampusEventsConnector\Domain\Model\Location $locationToRemove)
     {
         $this->getLocations()->detach($locationToRemove);
+    }
+
+    /**
+     * Adds a ViewList
+     *
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ViewList $viewList
+     * @return void
+     */
+    public function addViewList(\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList $viewList)
+    {
+        $this->getViewLists()->attach($viewList);
+    }
+
+    /**
+     * Removes a ViewList
+     *
+     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ViewList $viewListToRemove The ViewList to be removed
+     * @return void
+     */
+    public function removeViewList(\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList $viewListToRemove)
+    {
+        $this->getViewLists()->detach($viewListToRemove);
+    }
+
+    /**
+     * Returns the viewLists
+     *
+     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList> viewLists
+     */
+    public function getViewLists()
+    {
+        if (null === $this->viewLists) {
+            $this->viewLists = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        }
+        return $this->viewLists;
+    }
+
+    /**
+     * Sets the viewLists
+     *
+     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList> $viewLists
+     * @return void
+     */
+    public function setViewLists(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $viewLists)
+    {
+        $this->viewLists = $viewLists;
     }
 }

@@ -12,3 +12,9 @@ services:
       - name: 'console.command'
         command: 'ce:cleanup:files'
         description: 'Apps: Cleanup for imported files'
+
+  BrainAppeal\CampusEventsConnector\Command\ImportCommand:
+    tags:
+      - name: 'console.command'
+        command: 'ce:import:events'
+        description: 'Campus Events: Import event records'

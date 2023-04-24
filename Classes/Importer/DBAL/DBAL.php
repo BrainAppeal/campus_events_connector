@@ -42,7 +42,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
             $repository = null;
             $repositoryClass = str_replace('\\Model\\', '\\Repository\\', $modelClass) . 'Repository';
             if (class_exists($repositoryClass)) {
-                $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+                $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
                 /** @var AbstractImportedRepository $repository */
                 $repository = $objectManager->get($repositoryClass);
             }

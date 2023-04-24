@@ -22,6 +22,7 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\Organizer;
 use BrainAppeal\CampusEventsConnector\Domain\Model\Speaker;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
+use BrainAppeal\CampusEventsConnector\Domain\Model\ViewList;
 use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 
@@ -187,6 +188,10 @@ abstract class ImportObjectGenerator implements SingletonInterface
             case TimeRange::class:
                 $this->assignTimeRangeProperties($class, $object, $data);
                 break;
+
+            case ViewList::class:
+                $this->assignViewListProperties($class, $object, $data);
+                break;
         }
     }
 
@@ -251,6 +256,13 @@ abstract class ImportObjectGenerator implements SingletonInterface
      * @param array $data
      */
     protected abstract function assignTargetGroupProperties($class, $object, $data);
+
+    /**
+     * @param string $class
+     * @param ImportedModelInterface|ViewList $object
+     * @param array $data
+     */
+    protected abstract function assignViewListProperties($class, $object, $data);
 
     /**
      * @param string $class

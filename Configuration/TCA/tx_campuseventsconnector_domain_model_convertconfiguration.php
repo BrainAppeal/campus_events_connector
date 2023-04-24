@@ -37,7 +37,7 @@ return [
         'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_convertconfiguration.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, type, target_pid, template_path, target_groups, filter_categories',
+        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, type, target_pid, template_path, target_groups, view_lists, filter_categories',
     ],
     'types' => [
         0 => ['showitem' => 'hidden, type, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, starttime, endtime'],
@@ -202,6 +202,26 @@ return [
                 ],
             ],
         ],
-
+        'view_lists' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_convertconfiguration.view_lists',
+            'config' => [
+                'MM' => 'tx_campuseventsconnector_convertconf_viewlist_mm',
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'foreign_table' => 'tx_campuseventsconnector_domain_model_viewlist',
+                'minitems' => 0,
+                'maxitems' => 9999,
+                'size' => 10,
+                'fieldControl' => [
+                    'editPopup' => [
+                        'disabled' => false
+                    ],
+                    'addRecord' => [
+                        'disabled' => false,
+                    ]
+                ],
+            ],
+        ],
     ],
 ];

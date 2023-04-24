@@ -14,13 +14,13 @@
 namespace BrainAppeal\CampusEventsConnector\Task;
 
 use BrainAppeal\CampusEventsConnector\Importer\PostImportHookInterface;
+use BrainAppeal\CampusEventsConnector\Utility\CacheUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
 {
     public const API_VERSION_LEGACY = 'below-2-27-0';
     public const API_VERSION_ABOVE_227 = 'above-2-27-0';
-
-    public const API_KEY_DEFAULT = '00000000-0000000000000000-00000000';
 
     public const BASE_URI_DEFAULT = 'https://campusevents.example.com/';
 
@@ -77,23 +77,11 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
     }
 
     /**
-     * @return \TYPO3\CMS\Core\DataHandling\DataHandler
-     */
-    private function getCacheService()
-    {
-        /** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
-        $dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\DataHandling\DataHandler::class);
-        $dataHandler->start([], []);
-
-        return $dataHandler;
-    }
-
-    /**
      * @inheritdoc
      */
     public function execute()
     {
-        if ($this->apiVersion == 'above-2-27-0') {
+        if ($this->apiVersion === self::API_VERSION_ABOVE_227) {
             $importer = $this->getExtendedImporter();
             $success = $importer->import($this->baseUri, $this->apiKey, $this->pid, (int) $this->storageId, $this->storageFolder);
             if (!$success) {
@@ -111,35 +99,12 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
         $this->callHooks();
 
         if ($importer->hasChangedData()) {
-            $this->clearPageCache($this->pid);
+            /** @var CacheUtility $cacheUtility */
+            $cacheUtility = GeneralUtility::makeInstance(CacheUtility::class);
+            $cacheUtility->clearCacheForPage($this->pid);
         }
 
         return $success;
-    }
-
-    /**
-     * Clear the cache for the given page id and the cache tag "tx_campus_events"
-     * @param int $pid
-     */
-    private function clearPageCache($pid)
-    {
-        $pageIdsToClear[$pid] = $pid;
-
-        $pageTS = \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig($pid);
-        if (isset($pageTS['TCEMAIN.']['clearCacheCmd'])) {
-            $clearCacheCommands = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', strtolower($pageTS['TCEMAIN.']['clearCacheCmd']), true);
-            $clearCacheCommands = array_unique($clearCacheCommands);
-            foreach ($clearCacheCommands as $clearCacheCommand) {
-                if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($clearCacheCommand)) {
-                    $pageIdsToClear[$clearCacheCommand] = $clearCacheCommand;
-                }
-            }
-        }
-        $cacheService = $this->getCacheService();
-        $cacheService->clear_cacheCmd('cacheTag:tx_campus_events');
-        foreach ($pageIdsToClear as $ccPid) {
-            $cacheService->clear_cacheCmd($ccPid);
-        }
     }
 
     private function callHooks()
@@ -159,9 +124,9 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
     /**
      * @return string
      */
-    public function getApiKey(): string
+    public function getApiKey(): ?string
     {
-        return $this->apiKey ?: self::API_KEY_DEFAULT;
+        return $this->apiKey;
     }
 
     /**

@@ -32,7 +32,7 @@ class FilterCategory extends AbstractImportedEntity
      *
      * @var \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory
      */
-    protected $parent = null;
+    protected $parent;
 
     /**
      * __construct

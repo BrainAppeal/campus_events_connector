@@ -14,7 +14,7 @@
 
 namespace BrainAppeal\CampusEventsConnector\Http;
 
-use TYPO3\CMS\Core\Http\HttpRequest;
+use Psr\Http\Message\ResponseInterface;
 
 class Promise implements PromiseInterface
 {
@@ -38,7 +38,7 @@ class Promise implements PromiseInterface
     private $options;
 
     /**
-     * @var \HTTP_Request2_Response
+     * @var ResponseInterface
      */
     private $response;
 
@@ -68,7 +68,7 @@ class Promise implements PromiseInterface
         if (null === $this->response) {
             return self::PENDING;
         }
-        if ($this->response->getStatus() == 200) {
+        if ($this->response->getStatusCode() == 200) {
             return self::FULFILLED;
         }
         return self::REJECTED;

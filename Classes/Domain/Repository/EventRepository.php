@@ -49,6 +49,14 @@ class EventRepository extends AbstractImportedRepository
         if ($targetGroupConstraints) {
             $query->matching($query->logicalAnd($targetGroupConstraints));
         }
+        $viewLists = $configuration->getViewLists();
+        $viewListConstraints = [];
+        foreach ($viewLists as $viewList) {
+            $viewListConstraints[] = $query->contains('viewLists', $viewList);
+        }
+        if ($viewListConstraints) {
+            $query->matching($query->logicalAnd($viewListConstraints));
+        }
         return $query->execute();
     }
 }
