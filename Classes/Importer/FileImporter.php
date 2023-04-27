@@ -14,7 +14,6 @@
 namespace BrainAppeal\CampusEventsConnector\Importer;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
-use BrainAppeal\CampusEventsConnector\Http\Promise;
 use BrainAppeal\CampusEventsConnector\Http\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 

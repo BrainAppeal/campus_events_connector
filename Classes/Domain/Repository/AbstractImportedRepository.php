@@ -14,6 +14,8 @@
 namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 
 /**
  * Class AbstractImportedRepository
@@ -36,8 +38,8 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
      */
     protected function setPidRestriction($pid)
     {
-        /** @var \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings $defaultQuerySettings */
-        $defaultQuerySettings = $this->objectManager->get(\TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings::class);
+        /** @var Typo3QuerySettings $defaultQuerySettings */
+        $defaultQuerySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
         if (null === $pid) {
             $defaultQuerySettings->setRespectStoragePage(false);
         } else {
@@ -73,7 +75,7 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
         $this->setPidRestriction($pid);
         $query = $this->createQuery();
         if (!empty($constraints)) {
-            $query->matching($query->logicalAnd($constraints));
+            $query->matching($query->logicalAnd(...$constraints));
         }
         if ($limit > 0) {
             $query->setLimit($limit);
@@ -87,16 +89,15 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
      * @param null|int|int[] $pid
      * @return ImportedModelInterface|null
      */
-    public function findByImport($importSource, $importId, $pid = null)
+    public function findByImport(string $importSource, int $importId, $pid = null)
     {
         $this->setPidRestriction($pid);
 
         $query = $this->createQuery();
-        $constraints = [
+        $query->matching($query->logicalAnd(
             $query->like('ceImportSource', $importSource),
-            $query->equals('ceImportId', $importId),
-        ];
-        $query->matching($query->logicalAnd($constraints));
+            $query->equals('ceImportId', $importId)
+        ));
         $query->setOrderings([
             "ceImportedAt" => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
         ]);
@@ -112,7 +113,7 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
      * @param null|int|int[] $pid
      * @return ImportedModelInterface|null
      */
-    public function findByImportId($importId, $pid = null)
+    public function findByImportId(int $importId, $pid = null)
     {
         $this->setPidRestriction($pid);
 
@@ -120,7 +121,7 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
         $constraints = [
             $query->equals('ceImportId', $importId),
         ];
-        $query->matching($query->logicalAnd($constraints));
+        $query->matching($query->logicalAnd(...$constraints));
         $query->setOrderings([
             "ceImportedAt" => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
         ]);
@@ -137,13 +138,13 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
      * @param int $pid
      * @return ImportedModelInterface
      */
-    public function createNewModelInstance($importSource, $importId, $pid)
+    public function createNewModelInstance(string $importSource, int $importId, int $pid)
     {
         /** @var ImportedModelInterface $object */
-        $object = $this->objectManager->get($this->objectType);
+        $object = GeneralUtility::makeInstance($this->objectType);
         $object->setCeImportId($importId);
         $object->setCeImportSource($importSource);
-        $object->setPid((int)$pid);
+        $object->setPid($pid);
 
         return $object;
     }
@@ -174,11 +175,10 @@ abstract class AbstractImportedRepository extends \TYPO3\CMS\Extbase\Persistence
         $this->setPidRestriction($pid);
 
         $query = $this->createQuery();
-        $constraints = [
+        $query->matching($query->logicalAnd(
             $query->like('ceImportSource', $importSource),
-            $query->lessThan('ceImportedAt', $timestamp),
-        ];
-        $query->matching($query->logicalAnd($constraints));
+            $query->lessThan('ceImportedAt', $timestamp)
+        ));
 
         $result = $query->execute();
 

@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "typo3/cms-core": "~10.4.0|~11.5.0",
+        "typo3/cms-core": ">=11.5.26,<=12.4.99",
         "guzzlehttp/guzzle": "^6.3.0|^7.4.0"
     },
     "autoload": {

@@ -22,14 +22,14 @@ use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedReposito
 use BrainAppeal\CampusEventsConnector\Domain\Repository\EventRepository;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
 
 abstract class AbstractEventToObjectConverter implements EventConverterInterface
 {
     /**
      * @var AbstractImportedRepository
      */
-    private $objectRepository;
+    protected $objectRepository;
 
     /**
      * @var EventRepository
@@ -47,9 +47,17 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     private $configuration;
 
     /**
-     * @return string
+     * @var DataMapper
      */
-    protected abstract function getObjectRepositoryClass();
+    protected $dataMapper;
+
+    public function __construct(
+        DataMapper      $dataMapper,
+        EventRepository $eventRepository)
+    {
+        $this->dataMapper = $dataMapper;
+        $this->eventRepository = $eventRepository;
+    }
 
     /**
      * @return AbstractImportedRepository
@@ -57,8 +65,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     private function getObjectRepository()
     {
         if (null === $this->objectRepository) {
-            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
-            $this->objectRepository = $objectManager->get($this->getObjectRepositoryClass());
+            throw new \InvalidArgumentException('Inject objectRepository in service constructor!');
         }
 
         return $this->objectRepository;
@@ -69,8 +76,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     private function getEventRepository()
     {
         if (null === $this->eventRepository) {
-            $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
-            $this->eventRepository = $objectManager->get(EventRepository::class);
+            throw new \InvalidArgumentException('Inject eventRepository in service constructor!');
         }
 
         return $this->eventRepository;
@@ -82,16 +88,14 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
      * @param ConvertConfiguration $configuration
      * @return Event[]
      */
-    protected abstract function getMatchingEventsByConfiguration($eventRepository, $configuration);
+    protected abstract function getMatchingEventsByConfiguration(EventRepository $eventRepository, ConvertConfiguration $configuration);
 
     /**
      * @param ConvertConfiguration $configuration
      */
     private function setUp($configuration)
     {
-        //$dataMapper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ObjectManager::class);
-        $dataMapper = $objectManager->get(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
+        $dataMapper = GeneralUtility::makeInstance(DataMapper::class);
         $this->importSource = $dataMapper->getDataMap(get_class($configuration))->getTableName() . ':' . $configuration->getUid();
         $this->configuration = $configuration;
         // Set current language to "de" so news description translations are german

@@ -25,17 +25,25 @@ class Importer
     /**
      * @var ImportObjectGenerator
      */
-    private $importObjectGenerator;
+    private ImportObjectGenerator $importObjectGenerator;
+    /**
+     * @var ApiConnector
+     */
+    private ApiConnector $apiConnector;
+
+    public function __construct(ApiConnector $apiConnector)
+    {
+        $this->apiConnector = $apiConnector;
+    }
 
     /**
      * @param string $baseUri
      * @param string $apiKey
      * @return ApiConnector
      */
-    private function getApiConnector($baseUri, $apiKey)
+    private function getApiConnector(string $baseUri, string $apiKey)
     {
-        /** @var ApiConnector $apiConnector */
-        $apiConnector = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ApiConnector::class);
+        $apiConnector = $this->apiConnector;
         $apiConnector->setBaseUri($baseUri);
         $apiConnector->setApiKey($apiKey);
 

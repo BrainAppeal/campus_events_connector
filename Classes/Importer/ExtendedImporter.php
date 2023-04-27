@@ -22,6 +22,11 @@ use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 class ExtendedImporter
 {
     /**
+     * @var ExtendedApiConnector $apiConnector
+     */
+    protected $apiConnector;
+
+    /**
      * @var ImportScheduleUtility
      */
     protected $importScheduleUtility;
@@ -44,6 +49,11 @@ class ExtendedImporter
      */
     protected $exceptions = [];
 
+    public function __construct(ExtendedApiConnector $apiConnector)
+    {
+        $this->apiConnector = $apiConnector;
+    }
+
     /**
      * Run the import task
      *
@@ -63,8 +73,7 @@ class ExtendedImporter
             $this->getImportScheduleUtility()->cleanUp();
         }
         $importStartTimestamp = time();
-        /** @var ExtendedApiConnector $apiConnector */
-        $apiConnector = GeneralUtility::makeInstance(ExtendedApiConnector::class);
+        $apiConnector = $this->apiConnector;
         $apiConnector->setBaseUri($baseUri);
         $apiConnector->setApiKey($apiKey);
         // If we have a lot of data some day, the number of processed items can be limited and instead of fetching the

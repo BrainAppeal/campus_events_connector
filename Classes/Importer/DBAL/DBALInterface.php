@@ -15,11 +15,18 @@ namespace BrainAppeal\CampusEventsConnector\Importer\DBAL;
 
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
 interface DBALInterface
 {
-
-    public function findByImport($modelClass, $importSource, $importId, $pid);
+    /**
+     * @param string $modelClass
+     * @param string $importSource
+     * @param int $importId
+     * @param null|int|int[] $pid
+     * @return ImportedModelInterface|null
+     */
+    public function findByImport(string $modelClass, string $importSource, int $importId, $pid): ?ImportedModelInterface;
 
     public function updateObjects($objects);
 
@@ -46,7 +53,7 @@ interface DBALInterface
      */
     public function addSysFileReference($sysFile, $target, $property, $attribs = []);
 
-    public function updateSysFileReference($sysFileReference, $attribs = []);
+    public function updateSysFileReference(FileReference $sysFileReference, $attribs = []);
 
     public function checkIfPidIsValid($pid);
 

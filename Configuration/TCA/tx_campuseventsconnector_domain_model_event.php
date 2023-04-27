@@ -33,9 +33,6 @@ return [
         'searchFields' => 'status,canceled,url,name,subtitle,description,short_description,show_in_news,news_text,learning_objective,images,attachments,registration_possible,min_participants,max_participants,participants,speakers,time_ranges,location,categories,organizer,target_groups,view_lists,filter_categories',
         'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_event.gif'
     ],
-    'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, status, canceled, url, name, subtitle, description, short_description, show_in_news, news_text, learning_objective, images, attachments, registration_possible, min_participants, max_participants, participants, hash, speakers, time_ranges, location, categories, organizer, target_groups, view_lists, filter_categories, disturber_message, start_tstamp, end_tstamp, event_attendance_mode, event_number, external_order_email_address, external_order_url, direct_registration_url, modified_at_recursive, order_type, referents_title, seo_description, seo_title, sponsors_title, alternative_events, contact_persons, event_attachments, event_images, event_sessions, event_ticket_price_variants, locations, referents, sponsors',
-    ],
     'types' => [
         '1' => ['showitem' => 'name, subtitle, url, 
         disturber_message,
@@ -89,18 +86,8 @@ return [
             'exclude' => true,
             'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
             'config' => [
-                'type' => 'select',
-                'renderType' => 'selectSingle',
-                'special' => 'languages',
-                'items' => [
-                    [
-                        'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.allLanguages',
-                        -1,
-                        'flags-multiple'
-                    ],
-                ],
-                'default' => 0,
-            ]
+                'type' => 'language',
+            ],
         ],
         'l10n_parent' => [
             'displayCond' => 'FIELD:sys_language_uid:>:0',
@@ -410,7 +397,6 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'enableMultiSelectFilterTextfield' => true,
                 'fieldControl' => [
                     'editPopup' => [
                         'disabled' => false
@@ -468,7 +454,6 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'enableMultiSelectFilterTextfield' => true,
                 'fieldControl' => [
                     'editPopup' => [
                         'disabled' => false
@@ -492,7 +477,6 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'enableMultiSelectFilterTextfield' => true,
                 'fieldControl' => [
                     'editPopup' => [
                         'disabled' => false
@@ -516,7 +500,6 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'enableMultiSelectFilterTextfield' => true,
                 'fieldControl' => [
                     'editPopup' => [
                         'disabled' => false
@@ -540,7 +523,6 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'enableMultiSelectFilterTextfield' => true,
                 'fieldControl' => [
                     'editPopup' => [
                         'disabled' => false
@@ -563,7 +545,6 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'enableMultiSelectFilterTextfield' => true,
                 'fieldControl' => [
                     'editPopup' => [
                         'disabled' => false
@@ -587,7 +568,6 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'enableMultiSelectFilterTextfield' => true,
                 'fieldControl' => [
                     'editPopup' => [
                         'disabled' => false
@@ -611,7 +591,6 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'enableMultiSelectFilterTextfield' => true,
                 'fieldControl' => [
                     'editPopup' => [
                         'disabled' => false
@@ -737,7 +716,6 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'enableMultiSelectFilterTextfield' => true,
                 'fieldControl' => [
                     'editPopup' => [
                         'disabled' => false
@@ -788,7 +766,6 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'enableMultiSelectFilterTextfield' => true,
                 'fieldControl' => [
                     'editPopup' => [
                         'disabled' => false
@@ -828,7 +805,6 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'enableMultiSelectFilterTextfield' => true,
                 'fieldControl' => [
                     'editPopup' => [
                         'disabled' => false
@@ -889,7 +865,6 @@ return [
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
                 'multiple' => 0,
-                'enableMultiSelectFilterTextfield' => true,
                 'fieldControl' => [
                     'editPopup' => [
                         'disabled' => false

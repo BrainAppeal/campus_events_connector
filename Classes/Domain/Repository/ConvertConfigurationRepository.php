@@ -13,6 +13,9 @@
 
 namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+
 /**
  * The repository for ConverterConfigurations
  */
@@ -24,9 +27,7 @@ abstract class ConvertConfigurationRepository extends \TYPO3\CMS\Extbase\Persist
     protected function setPidRestriction($pid)
     {
         /** @var \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings $defaultQuerySettings */
-        $defaultQuerySettings = $this->objectManager->get(
-            \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings::class
-        );
+        $defaultQuerySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
         if (null === $pid) {
             $defaultQuerySettings->setRespectStoragePage(false);
         } else {
