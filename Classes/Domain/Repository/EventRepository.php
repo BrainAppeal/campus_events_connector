@@ -13,17 +13,19 @@
 
 namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
 
+use BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration;
+
 /**
  * The repository for Events
  */
 class EventRepository extends AbstractImportedRepository
 {
     /**
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration $configuration
+     * @param ConvertConfiguration $configuration
      * @param int|bool|null $restrictToPid Restrict results to page UID; NULL := $configuration->getPid(); false := no restriction
      * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      */
-    public function findAllByConvertConfiguration($configuration, $restrictToPid = null)
+    public function findAllByConvertConfiguration(ConvertConfiguration $configuration, $restrictToPid = null)
     {
         if (false !== $restrictToPid) {
             $pid = $restrictToPid ?? $configuration->getPid();
@@ -44,10 +46,10 @@ class EventRepository extends AbstractImportedRepository
             $targetGroupConstraints[] = $query->contains('targetGroups', $targetGroup);
         }
         if ($filterCategoryConstraints) {
-            $query->matching($query->logicalAnd($filterCategoryConstraints));
+            $query->matching($query->logicalAnd(...$filterCategoryConstraints));
         }
         if ($targetGroupConstraints) {
-            $query->matching($query->logicalAnd($targetGroupConstraints));
+            $query->matching($query->logicalAnd(...$targetGroupConstraints));
         }
         $viewLists = $configuration->getViewLists();
         $viewListConstraints = [];
@@ -55,7 +57,7 @@ class EventRepository extends AbstractImportedRepository
             $viewListConstraints[] = $query->contains('viewLists', $viewList);
         }
         if ($viewListConstraints) {
-            $query->matching($query->logicalAnd($viewListConstraints));
+            $query->matching($query->logicalAnd(...$viewListConstraints));
         }
         return $query->execute();
     }

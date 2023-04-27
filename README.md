@@ -2,8 +2,8 @@
 
 [![Latest Stable Version](https://poser.pugx.org/brainappeal/campus_events_connector/v/stable)](https://packagist.org/packages/brainappeal/campus_events_connector)
 [![License](https://poser.pugx.org/brainappeal/campus_events_connector/license)](https://packagist.org/packages/brainappeal/campus_events_connector)
-[![TYPO3 10](https://img.shields.io/badge/TYPO3-10-green.svg)](https://get.typo3.org/version/10)
 [![TYPO3 11](https://img.shields.io/badge/TYPO3-11-green.svg)](https://get.typo3.org/version/11)
+[![TYPO3 12](https://img.shields.io/badge/TYPO3-12-green.svg)](https://get.typo3.org/version/12)
 
 ## Campus Events
 Campus Events ist ein Veranstaltungstool, das für den Einsatz bei Hochschulen und Universitäten bzw. für den Bildungssektor optimiert ist. 
@@ -28,7 +28,7 @@ Die Extension verwendet die Campus Events API (Schnittstelle), um alle Veranstal
 Aus diesen Objekten lassen sich durch die unten aufgeführten Erweiterungen z.B. news Objekte erzeugen. Hierdurch kann Campus Events schnell in laufende System integriert werden, da die Veranstaltungen in TYPO3 aus Campus Events befüllt werden.
 
 ### Kompatibilität
-TYPO3 10.4 LTS - 11.5 LTS
+TYPO3 11.5 LTS - 12.4 LTS
 
 ### Erweiterbarkeit / Kombinationen
 

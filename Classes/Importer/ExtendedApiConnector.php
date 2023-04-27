@@ -33,7 +33,6 @@ use BrainAppeal\CampusEventsConnector\Http\Client;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
 
 class ExtendedApiConnector
@@ -93,6 +92,11 @@ class ExtendedApiConnector
         'TargetGroup' => 'target_groups',
         'ViewList' => 'view_lists',
     ];
+
+    public function __construct(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper $dataMapper)
+    {
+        $this->dataMapper = $dataMapper;
+    }
 
     /**
      * @param string $relativeUrl
@@ -354,12 +358,7 @@ class ExtendedApiConnector
     protected function getDataMapper()
     {
         if (null === $this->dataMapper) {
-            if (\TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version()) >= 11000000) {
-                $this->dataMapper = GeneralUtility::makeInstance(DataMapper::class);
-            } else {
-                $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ObjectManager::class);
-                $this->dataMapper = $objectManager->get(DataMapper::class);
-            }
+            $this->dataMapper = GeneralUtility::makeInstance(DataMapper::class);
         }
         return $this->dataMapper;
     }

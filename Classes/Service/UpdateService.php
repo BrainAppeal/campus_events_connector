@@ -35,12 +35,15 @@ class UpdateService
     public function checkIfUpdateIsNeeded()
     {
         $updateNeeded = false;
-        /** @var QueryBuilder $queryBuilder */
-
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         foreach ($this->tables as $table) {
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+            $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
             $queryBuilder->getRestrictions()->removeAll();
-            $tableContents = $queryBuilder->select('*')->from($table)->execute()->fetch(0);
+            $tableContents = $queryBuilder->select('*')->from($table)
+                ->setMaxResults(1)
+                ->executeQuery()
+                ->fetchAssociative();
             if (!empty($tableContents)
                 && ((array_key_exists('zzz_deleted_import_source',$tableContents)
                 || array_key_exists('import_source',$tableContents))
@@ -60,13 +63,13 @@ class UpdateService
             $connection = GeneralUtility::makeInstance(ConnectionPool::class);
             $queryBuilder = $connection->getQueryBuilderForTable($table);
             $queryBuilder->getRestrictions()->removeAll();
-            $tableContents = $queryBuilder->select('*')->from($table)->execute()->fetch(0);
+            $tableContents = $queryBuilder->select('*')->from($table)->executeQuery()->fetch(0);
             if (!empty($tableContents)) {
                 foreach ($this->fields as $field) {
                     $fieldPrefixes = ['zzz_deleted_', ''];
                     foreach ($fieldPrefixes as $fieldPrefix) {
                         if (array_key_exists($fieldPrefix.$field, $tableContents)
-                            && ($tableContents['ce_'.$field] == '' ||  $tableContents['ce_'.$field] === NULL)) {
+                            && ($tableContents['ce_'.$field] === '' ||  $tableContents['ce_'.$field] === NULL)) {
                             $queryBuilder = $connection->getQueryBuilderForTable($table);
                             $queryBuilder->update($table)
                                 ->where(
@@ -76,7 +79,7 @@ class UpdateService
                                     )
                                 )
                                 ->set('ce_'.$field, $tableContents[$fieldPrefix.$field]);
-                            $queryBuilder->execute();
+                            $queryBuilder->executeStatement();
                             break;
                         }
                     }

@@ -15,6 +15,7 @@ namespace BrainAppeal\CampusEventsConnector\Task;
 
 use BrainAppeal\CampusEventsConnector\Importer\PostImportHookInterface;
 use BrainAppeal\CampusEventsConnector\Utility\CacheUtility;
+use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
@@ -87,7 +88,13 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
             if (!$success) {
                 $exceptions = $importer->getExceptions();
                 if (!empty($exceptions)) {
-                    $this->logException($exceptions[0]);
+                    if ($exceptions[0] instanceof \Exception) {
+                        $this->logException($exceptions[0]);
+                    } elseif ($exceptions[0] instanceof \Throwable) {
+                        $logException = new Exception('Wrapped throwable: ' . $exceptions[0]->getMessage(), $exceptions[0]->getCode(), $exceptions[0]);
+                        $this->logException($logException);
+                    }
+
                 }
             }
         } else {
@@ -122,7 +129,7 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
     }
 
     /**
-     * @return string
+     * @return ?string
      */
     public function getApiKey(): ?string
     {

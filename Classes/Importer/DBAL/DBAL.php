@@ -16,6 +16,7 @@ namespace BrainAppeal\CampusEventsConnector\Importer\DBAL;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
 class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface, \TYPO3\CMS\Core\SingletonInterface
@@ -33,18 +34,17 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
 
     /**
      * @param string $modelClass
-     * @return AbstractImportedRepository
+     * @return AbstractImportedRepository|null
      */
-    private function getRepository($modelClass)
+    private function getRepository(string $modelClass): ?AbstractImportedRepository
     {
         if (!isset($this->repositories[$modelClass])) {
 
             $repository = null;
             $repositoryClass = str_replace('\\Model\\', '\\Repository\\', $modelClass) . 'Repository';
             if (class_exists($repositoryClass)) {
-                $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
                 /** @var AbstractImportedRepository $repository */
-                $repository = $objectManager->get($repositoryClass);
+                $repository = GeneralUtility::makeInstance($repositoryClass);
             }
             $this->repositories[$modelClass] = $repository;
         }
@@ -52,7 +52,14 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
         return $this->repositories[$modelClass];
     }
 
-    public function findByImport($modelClass, $importSource, $importId, $pid)
+    /**
+     * @param string $modelClass
+     * @param string $importSource
+     * @param int $importId
+     * @param null|int|int[] $pid
+     * @return ImportedModelInterface|null
+     */
+    public function findByImport(string $modelClass, string $importSource, int $importId, $pid): ?ImportedModelInterface
     {
         $repository = $this->getRepository($modelClass);
         if (null === $repository) {
@@ -69,11 +76,13 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
     {
         foreach ($objects as $object) {
             $repository = $this->getRepository(get_class($object));
-            $object->setCeImportedAt(time());
-            if ($object->getUid() > 0) {
-                $repository->update($object);
-            } else {
-                $repository->add($object);
+            if ($object instanceof ImportedModelInterface && null !== $repository) {
+                $object->setCeImportedAt(time());
+                if ($object->getUid() > 0) {
+                    $repository->update($object);
+                } else {
+                    $repository->add($object);
+                }
             }
         }
         if (isset($repository)) {
@@ -83,15 +92,15 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
 
     private function deleteRawFromTable($tableName, $importSource, $pid, $importTimestamp, $excludeUids)
     {
-        $pid = intval($pid);
+        $pid = (int)$pid;
         $importSource = preg_replace("/['\"]/", "", $importSource);
-        $importTimestamp = intval($importTimestamp);
+        $importTimestamp = (int)$importTimestamp;
 
         /** @noinspection SqlResolve */
         $deleteSql = "DELETE FROM $tableName WHERE pid = ? AND ce_import_source = ? AND ce_imported_at < ?";
 
         $excludeUidsList = implode(',', array_filter($excludeUids,  'is_numeric'));
-        if (strlen($excludeUidsList) > 0) {
+        if ($excludeUidsList !== '') {
             $deleteSql .= " AND uid NOT IN ($excludeUidsList)";
         }
 
@@ -99,7 +108,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
         $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ConnectionPool::class);
         $connection = $connectionPool->getConnectionForTable($tableName);
         $statement = $connection->prepare($deleteSql);
-        $statement->execute([$pid, $importSource, $importTimestamp]);
+        $statement->executeStatement([$pid, $importSource, $importTimestamp]);
     }
 
     /**
@@ -114,7 +123,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
             $sql = "UPDATE $tableName SET ce_imported_at = ?, deleted = 0 WHERE ce_import_source = ? AND ce_import_id IN ($uidListCsv)";
 
             $statement = $connection->prepare($sql);
-            $statement->execute([$tstamp, $importSource]);
+            $statement->executeStatement([$tstamp, $importSource]);
         }
         // Mark all items as deleted that were not included in the api list result
         $sql = "UPDATE $tableName SET tstamp = ?, deleted = 1 WHERE ce_import_source = ?";
@@ -122,7 +131,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
             $sql .= " AND ce_import_id NOT IN ($uidListCsv)";
         }
         $statement = $connection->prepare($sql);
-        $statement->execute([$tstamp, $importSource]);
+        $statement->executeStatement([$tstamp, $importSource]);
     }
 
     protected function getConnectionForTable($tableName)
@@ -134,7 +143,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
 
     public function removeNotUpdatedObjects($modelClass, $importSource, $pid, $importTimestamp, $excludeUids = [])
     {
-        if ($modelClass == FileReference::class) {
+        if (is_a($modelClass, FileReference::class, true)) {
             $this->deleteRawFromTable('sys_file_reference', $importSource, $pid, $importTimestamp, $excludeUids);
         } else {
             $repository = $this->getRepository($modelClass);
@@ -164,7 +173,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
      * @param FileReference $fileReference
      * @param array $attribs
      */
-    public function updateSysFileReference($fileReference, $attribs = [])
+    public function updateSysFileReference(FileReference $fileReference, $attribs = [])
     {
         $data['sys_file_reference'][$fileReference->getUid()] = $attribs;
 
@@ -226,15 +235,15 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
         /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
         $queryBuilder = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class)->getQueryBuilderForTable('pages');
         $queryBuilder->resetRestrictions();
-        $statement = $queryBuilder
+        $pageRowOrNull = $queryBuilder
             ->select('uid')
             ->from('pages')
-            ->where($queryBuilder->expr()->eq('uid', intval($pid)))
-            ->execute();
-        while ($checkPid = $statement->fetchColumn(0)) {
-            if ($checkPid == $pid) {
-                return true;
-            }
+            ->where($queryBuilder->expr()->eq('uid', (int) $pid))
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchAssociative();
+        if (!empty($pageRowOrNull) && (int) $pageRowOrNull['uid'] == $pid) {
+            return true;
         }
         return false;
     }

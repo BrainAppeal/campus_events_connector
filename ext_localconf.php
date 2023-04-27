@@ -11,7 +11,7 @@
  * @link      https://www.campus-events.com/
  */
 
-defined('TYPO3_MODE') or die();
+defined('TYPO3') or die();
 
 
 call_user_func(
@@ -26,13 +26,6 @@ call_user_func(
             'additionalFields' => \BrainAppeal\CampusEventsConnector\Task\EventImportAdditionalFieldProvider::class
         ];
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['campusEventsConnector'] = \BrainAppeal\CampusEventsConnector\Updates\ImportFieldNamesUpdateWizard::class;
-
-        $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
-        $iconRegistry->registerIcon(
-            'ext-convertconfiguration-type-default',
-            \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
-            ['source' => 'EXT:'.$extKey.'/Resources/Public/Icons/tx_campuseventsconnector_domain_model_convertconfiguration.svg']
-        );
 
         // Page TSConfig
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(

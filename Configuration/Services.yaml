@@ -6,6 +6,9 @@ services:
 
   BrainAppeal\CampusEventsConnector\:
     resource: '../Classes/*'
+    exclude:
+      - '../Classes/Domain/Model/*'
+      - '../Classes/**/Exception.php'
 
   BrainAppeal\CampusEventsConnector\Command\CleanupFilesCommand:
     tags:
@@ -18,3 +21,73 @@ services:
       - name: 'console.command'
         command: 'ce:import:events'
         description: 'Campus Events: Import event records'
+
+  BrainAppeal\CampusEventsConnector\Importer\Importer:
+    public: true
+    #shared: true
+
+  BrainAppeal\CampusEventsConnector\Importer\ExtendedImporter:
+    public: true
+    #shared: true
+
+  BrainAppeal\CampusEventsConnector\Importer\ApiConnector:
+    public: true
+    #shared: true
+
+  BrainAppeal\CampusEventsConnector\Importer\ExtendedApiConnector:
+    public: true
+    #shared: true
+    
+  BrainAppeal\CampusEventsConnector\Domain\Repository\CategoryRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\ContactPersonRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\ConvertConfigurationRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\EventAttachmentRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\EventImageRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\EventRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\EventSessionRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\EventTicketPriceVariantRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\FilterCategoryRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\LocationRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\OrganizerRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\PriceCategoryRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\ReferentRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\SpeakerRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\SponsorRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\TargetGroupRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\TimeRangeRepository:
+    public: true
+
+  BrainAppeal\CampusEventsConnector\Domain\Repository\ViewListRepository:
+    public: true

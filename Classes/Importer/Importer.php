@@ -23,39 +23,33 @@ use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 class Importer
 {
     /**
-     * @var ImportObjectGenerator
+     * @var ?ImportObjectGenerator
      */
-    private $importObjectGenerator;
+    private ?ImportObjectGenerator $importObjectGenerator;
+    /**
+     * @var ApiConnector
+     */
+    private ApiConnector $apiConnector;
+
+    public function __construct(ApiConnector $apiConnector)
+    {
+        $this->apiConnector = $apiConnector;
+        /** @var ImportObjectGenerator $importObjectGenerator */
+        $this->importObjectGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(SpecifiedImportObjectGenerator::class);
+    }
 
     /**
      * @param string $baseUri
      * @param string $apiKey
      * @return ApiConnector
      */
-    private function getApiConnector($baseUri, $apiKey)
+    private function getApiConnector(string $baseUri, string $apiKey)
     {
-        /** @var ApiConnector $apiConnector */
-        $apiConnector = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ApiConnector::class);
+        $apiConnector = $this->apiConnector;
         $apiConnector->setBaseUri($baseUri);
         $apiConnector->setApiKey($apiKey);
 
         return $apiConnector;
-    }
-
-    /**
-     * @param string $baseUri
-     * @param int $pid
-     * @return ImportObjectGenerator
-     */
-    private function getImportObjectGenerator($baseUri, $pid)
-    {
-        if (null === $this->importObjectGenerator) {
-            /** @var ImportObjectGenerator $importObjectGenerator */
-            $this->importObjectGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(SpecifiedImportObjectGenerator::class);
-            $this->importObjectGenerator->init($baseUri, $pid);
-        }
-
-        return $this->importObjectGenerator;
     }
 
     /**
@@ -95,7 +89,7 @@ class Importer
         $importStartTimestamp = time();
 
         $apiConnector = $this->getApiConnector($baseUri, $apiKey);
-        $importObjectGenerator = $this->getImportObjectGenerator($baseUri, $pid);
+        $this->importObjectGenerator->init($baseUri, $pid);
         $dbal = $this->getDBAL();
         $fileImporter = $this->getFileImporter($storageId, $storageFolder);
 
@@ -106,11 +100,11 @@ class Importer
 
         foreach ($imports as $alias => $modelClass) {
             $apiResponse = $apiConnector->getApiResponse($alias);
-            $objects = $importObjectGenerator->generateMultiple($modelClass,$apiResponse['data'][$alias]);
+            $objects = $this->importObjectGenerator->generateMultiple($modelClass,$apiResponse['data'][$alias]);
             $dbal->updateObjects($objects);
         }
 
-        foreach ($importObjectGenerator->getModifiedObjectClasses() as $modelClass) {
+        foreach ($this->importObjectGenerator->getModifiedObjectClasses() as $modelClass) {
             $dbal->removeNotUpdatedObjects($modelClass, $baseUri, $pid, $importStartTimestamp);
         }
 
@@ -127,10 +121,6 @@ class Importer
      */
     public function hasChangedData()
     {
-        if (null !== $this->importObjectGenerator) {
-            return $this->importObjectGenerator->getDataChanged();
-        }
-
-        return false;
+        return $this->importObjectGenerator->getDataChanged();
     }
 }
