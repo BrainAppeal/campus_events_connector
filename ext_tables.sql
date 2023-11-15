@@ -907,7 +907,7 @@ CREATE TABLE tx_campuseventsconnector_import_schedule (
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,
     import_uid int(11) DEFAULT '0' NOT NULL,
 	import_type varchar(255) DEFAULT '' NOT NULL,
-    import_data text,
+    import_data mediumtext,
 	last_modified_tstamp int(11) unsigned DEFAULT '0' NOT NULL,
     data_processed tinyint(4) DEFAULT '0' NOT NULL,
 	import_method tinyint(4) DEFAULT '0' NOT NULL,

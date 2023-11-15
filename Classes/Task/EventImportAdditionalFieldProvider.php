@@ -232,8 +232,8 @@ class EventImportAdditionalFieldProvider extends AbstractAdditionalFieldProvider
             $validData = false;
         }
 
-        $apiVersion = !empty($submittedData['campusEventsConnector_eventImport_baseUri'])
-            && $submittedData['campusEventsConnector_eventImport_baseUri'] === EventImportTask::API_VERSION_LEGACY
+        $apiVersion = !empty($submittedData['campusEventsConnector_eventImport_apiVersion'])
+            && $submittedData['campusEventsConnector_eventImport_apiVersion'] === EventImportTask::API_VERSION_LEGACY
             ? EventImportTask::API_VERSION_LEGACY : EventImportTask::API_VERSION_ABOVE_227;
 
         $apiKey = $submittedData['campusEventsConnector_eventImport_apiKey'];

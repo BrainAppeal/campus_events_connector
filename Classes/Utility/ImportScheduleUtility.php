@@ -56,7 +56,31 @@ class ImportScheduleUtility implements SingletonInterface
 
 
     /**
-     * Loads the
+     * Returns the number of unprocessed schedule entries
+     *
+     * @param string|null $importType Optional data type
+     *
+     * @return array[]
+     */
+    public function countUnprocessedScheduleEntries($importType = null)
+    {
+        $queryBuilder = $this->getScheduleQueryBuilder();
+        $conditions = [];
+        $conditions[] = 'data_processed = 0';
+        if (null !== $importType) {
+            $conditions[] = $queryBuilder->expr()->eq('import_type', $queryBuilder->createNamedParameter($importType));
+        }
+        $queryBuilder->count('*')
+            ->from(self::TABLE_IMPORT_ROW);
+        if (!empty($conditions)) {
+            $queryBuilder->where(...$conditions);
+        }
+        return $queryBuilder->execute()->fetchOne();
+    }
+
+
+    /**
+     * Loads the schedule entries
      * @param string|null $importType Optional data type
      * @param bool $onlyUnprocessed Only load unprocessed items
      * @return array[]

@@ -1,5 +1,13 @@
 # CHANGELOG.md
 
+## 4.0.1 (2023-11-15)
+
+### Fixed:
+- limit allowed maximum length of event description to 65KB to prevent import errors
+- increase allowed size for JSON encoded import data in import schedule table
+- always execute file importer update, as long as unprocessed import entries exist
+- fix switching from new to old API in scheduler task
+
 ## 4.0.0 (2023-04-27)
 
 ### Added

@@ -31,6 +31,8 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ViewList;
 use BrainAppeal\CampusEventsConnector\Importer\ImportMappingModel;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerator
 {
@@ -71,7 +73,7 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
             $object->setSubtitle($data['subtitle']);
         }
         if ($data['description']) {
-            $object->setDescription($this->cleanupHtmlForRTE($data['description']));
+            $object->setDescription($this->cleanupHtmlForRTE((string)$data['description']));
         }
         if ($data['shortDescription']) {
             $object->setShortDescription($data['shortDescription']);
@@ -243,7 +245,7 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
      * @param string $html
      * @return string
      */
-    private function cleanupHtmlForRTE($html)
+    private function cleanupHtmlForRTE(string $html)
     {
         $replaceHtmlWith = [
             '<br>' => ['<br />', '<br/>'],
@@ -255,26 +257,32 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
             'Ü' => '&Uuml;',
             'ß' => '&szlig;',
         ];
-        $cleanedHtml = $html;
+        $cleanedHtml = preg_replace("/<img[^>]+>/i", '', $html);
+        if (mb_strlen($cleanedHtml) > 65535) {
+            $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+            $append = '...';
+            $cleanedHtml = $contentObject->cropHTML($cleanedHtml, 65530 . '|' . $append . '|1');
+        }
         foreach ($replaceHtmlWith as $replaceWith => $searchFor) {
             $cleanedHtml = str_replace($searchFor, $replaceWith, $cleanedHtml);
         }
+        $cleanedHtmlRte = $cleanedHtml;
         $removeLineBreaksBeforeAndAfterTags = ['br', 'p', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'h5', 'div', 'table'];
         try {
             foreach ($removeLineBreaksBeforeAndAfterTags as $tag) {
                 $tagStart = '<' . $tag . '>';
                 $tagEnd = '</' . $tag . '>';
-                if (stripos($cleanedHtml, $tagStart) !== false) {
-                    $cleanedHtml = preg_replace('/\s*(<' . $tag . '[^>]*>)\s*/i', '$1', $cleanedHtml);
+                if (stripos($cleanedHtmlRte, $tagStart) !== false) {
+                    $cleanedHtmlRte = preg_replace('/\s*(<' . $tag . '[^>]*>)\s*/i', '$1', $cleanedHtmlRte);
                 }
-                if (stripos($cleanedHtml, $tagEnd) !== false) {
-                    $cleanedHtml = preg_replace('/\s*(<\/' . $tag . '>)\s*/i', '$1', $cleanedHtml);
+                if (stripos($cleanedHtmlRte, $tagEnd) !== false) {
+                    $cleanedHtmlRte = preg_replace('/\s*(<\/' . $tag . '>)\s*/i', '$1', $cleanedHtmlRte);
                 }
             }
         } catch (\Exception $e) {
-            return $html;
+            return $cleanedHtml;
         }
-        return $cleanedHtml;
+        return $cleanedHtmlRte;
     }
 
     /**

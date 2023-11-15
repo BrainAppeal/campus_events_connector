@@ -79,7 +79,9 @@ class ExtendedImporter
         // If we have a lot of data some day, the number of processed items can be limited and instead of fetching the
         // api data, we can process the stored data in the unprocessed queue items
         $this->fetchDataFromApi($apiConnector, $importStartTimestamp);
-        if ($this->hasChangedData) {
+        /** @var ImportScheduleUtility $importScheduleUtility */
+        $importScheduleUtility = GeneralUtility::makeInstance(ImportScheduleUtility::class);
+        if ($this->hasChangedData || 0 < (int) $importScheduleUtility->countUnprocessedScheduleEntries()) {
             $dataMap = $apiConnector->getDataMap();
             try {
                 /** @var ExtendedFileImporter $fileImporter */
