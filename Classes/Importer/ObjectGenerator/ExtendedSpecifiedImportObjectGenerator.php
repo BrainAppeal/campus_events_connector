@@ -77,9 +77,6 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         $object->setEventNumber($data['eventNumber'] ?? '');
         $object->setExternalOrderEmailAddress($data['externalOrderEmailAddress'] ?? '');
         $object->setExternalOrderUrl($data['externalOrderUrl'] ?? '');
-        if (array_key_exists('externalOrderUrl', $data)) {
-
-        }
         $object->setDirectRegistrationUrl($urls['directRegistrationUrl'] ?? '');
         if ($tstamp = $this->strToTime($data['modifiedAtRecursive'] ?? null)) {
             $object->setModifiedAtRecursive($tstamp);
@@ -293,9 +290,9 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
             return;
         }
         $object->setName($data['name']);
-        $object->setStreetName($this->cropFieldValue($data, 'street_name', 255));
+        $object->setStreetName($this->cropFieldValue($data, 'streetName', 255));
         $object->setTown($this->cropFieldValue($data, 'town', 255));
-        $object->setZipCode($this->cropFieldValue($data, 'zip_code', 255));
+        $object->setZipCode($this->cropFieldValue($data, 'zipCode', 255));
         $object->setBuilding($this->cropFieldValue($data, 'building', 255));
         $object->setLatitude($this->cropFieldValue($data, 'latitude', 255));
         $object->setListViewDisplayName($this->cropFieldValue($data, 'listViewDisplayName', 255));

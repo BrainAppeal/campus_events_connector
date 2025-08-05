@@ -16,10 +16,13 @@ namespace BrainAppeal\CampusEventsConnector\Importer\DBAL;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
+use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
 
-class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface, \TYPO3\CMS\Core\SingletonInterface
+class DBAL implements DBALInterface, SingletonInterface
 {
 
     /**
@@ -105,7 +108,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
         }
 
         /** @var ConnectionPool $connectionPool */
-        $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ConnectionPool::class);
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         $connection = $connectionPool->getConnectionForTable($tableName);
         $connection->executeStatement($deleteSql, [$pid, $importSource, $importTimestamp]);
     }
@@ -133,7 +136,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
     protected function getConnectionForTable($tableName)
     {
         /** @var ConnectionPool $connectionPool */
-        $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ConnectionPool::class);
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         return $connectionPool->getConnectionForTable($tableName);
     }
 
@@ -158,7 +161,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
     private function getTableForModelClass($modelClass)
     {
         if (!isset($this->classTableMapping[$modelClass])) {
-            $dataMapper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory::class);
+            $dataMapper = GeneralUtility::makeInstance(DataMapFactory::class);
             $this->classTableMapping[$modelClass] = $dataMapper->buildDataMap($modelClass)->getTableName();
         }
 
@@ -169,13 +172,13 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
      * @param FileReference $sysFileReference
      * @param array $attribs
      */
-    public function updateSysFileReference(FileReference $sysFileReference, $attribs = [])
+    public function updateSysFileReference(FileReference $sysFileReference, $attribs = []): void
     {
         $data['sys_file_reference'][$sysFileReference->getUid()] = $attribs;
 
         // Get an instance of the DataHandler and process the data
-        /** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
-        $dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\DataHandling\DataHandler::class);
+        /** @var DataHandler $dataHandler */
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->start($data, []);
         $dataHandler->process_datamap();
     }
@@ -211,8 +214,8 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
         ];
 
         // Get an instance of the DataHandler and process the data
-        /** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
-        $dataHandler = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\DataHandling\DataHandler::class);
+        /** @var DataHandler $dataHandler */
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->start($data, []);
         $dataHandler->process_datamap();
         if (!empty($dataHandler->substNEWwithIDs[$newId])) {
@@ -226,10 +229,10 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
      * @param int $pid
      * @return bool
      */
-    public function checkIfPidIsValid($pid)
+    public function checkIfPidIsValid($pid): bool
     {
         /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
-        $queryBuilder = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class)->getQueryBuilderForTable('pages');
+        $queryBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class)->getQueryBuilderForTable('pages');
         $queryBuilder->resetRestrictions();
         $pageRowOrNull = $queryBuilder
             ->select('uid')
@@ -238,10 +241,7 @@ class DBAL implements \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInter
             ->setMaxResults(1)
             ->executeQuery()
             ->fetchAssociative();
-        if (!empty($pageRowOrNull) && (int) $pageRowOrNull['uid'] == $pid) {
-            return true;
-        }
-        return false;
+        return !empty($pageRowOrNull) && (int)$pageRowOrNull['uid'] == $pid;
     }
 
 

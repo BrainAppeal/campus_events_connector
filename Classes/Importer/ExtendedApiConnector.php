@@ -30,6 +30,7 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ViewList;
 use BrainAppeal\CampusEventsConnector\Http\Client;
+use BrainAppeal\CampusEventsConnector\Http\HttpException;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -62,12 +63,17 @@ class ExtendedApiConnector
     /**
      * @var array
      */
-    protected $apiTypeMapping = [];
+    protected array $apiTypeMapping = [];
 
     /**
      * @var array
      */
-    protected $exceptions = [];
+    protected array $exceptions = [];
+
+    /**
+     * @var int
+     */
+    protected int $successfulResponseCount = 0;
 
     /**
      * Entry points for api data types
@@ -116,17 +122,14 @@ class ExtendedApiConnector
         return $url;
     }
 
-    /** @noinspection PhpDocRedundantThrowsInspection */
     /**
      * @param string $data
      * @param array $additionalParams
      * @return array
-     * @throws \BrainAppeal\CampusEventsConnector\Http\HttpException
      */
-    public function getApiResponse($data, $additionalParams = [])
+    public function getApiResponse(string $data, array $additionalParams = []): array
     {
         $uri = $this->generateUri($data, $additionalParams);
-        /** @var \GuzzleHttp\Client $client */
         $client = new Client(
             [
                 'base_uri' => rtrim($this->baseUri, '/'),
@@ -137,12 +140,21 @@ class ExtendedApiConnector
         try {
             $response = $client->get($uri);
             $response = json_decode($response->getBody(), true);
-        } catch (\Exception $e) {
-            $this->exceptions[] = $e;
-            // maybe the file does not exist or the video is private now!
+            ++$this->successfulResponseCount;
+        } catch (HttpException $e) {
+            // Don't add an exception for Bad request or Not found errors
+            if (!in_array($e->getCode(), [400, 404])) {
+                $this->exceptions[] = $e;
+            }
             $logger = self::getLogger();
             $logger->error($e->getMessage(), [
-                'apiKey' => $this->apiKey,
+                'apiUrl' => $uri,
+            ]);
+            $response = [];
+        } catch (\Exception $e) {
+            $this->exceptions[] = $e;
+            $logger = self::getLogger();
+            $logger->error($e->getMessage(), [
                 'apiUrl' => $uri,
             ]);
             $response = [];
@@ -259,7 +271,6 @@ class ExtendedApiConnector
                             $allListItems[] = $listItem;
                         }
                         $page = $nextPage;
-                        /** @noinspection PhpConditionAlreadyCheckedInspection */
                         if (!empty($apiResponse['hydra:view']['hydra:next'])) {
                             $importMore = true;
                         }
@@ -385,6 +396,11 @@ class ExtendedApiConnector
     public function getExceptions(): array
     {
         return $this->exceptions;
+    }
+
+    public function getSuccessfulResponseCount(): int
+    {
+        return $this->successfulResponseCount;
     }
 
     /**

@@ -11,7 +11,14 @@
  * @link      https://www.campus-events.com/
  */
 
-$importColumns = \BrainAppeal\CampusEventsConnector\Utility\TCAUtility::getImportFieldConfiguration();
+use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+$importColumns = TCAUtility::getImportFieldConfiguration();
+$defaultColumnsColumns = TCAUtility::getDefaultFieldConfiguration(TCAUtility::TABLE_EVENTS);
+$extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(TCAUtility::EXT_NAME);
+$importFieldsReadOnly = $extConf['tca_fields_read_only'] ?? false;
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event',
@@ -30,13 +37,19 @@ return [
             'endtime' => 'endtime',
         ],
         'searchFields' => 'status,canceled,url,name,subtitle,description,short_description,show_in_news,news_text,learning_objective,images,attachments,registration_possible,min_participants,max_participants,participants,speakers,time_ranges,location,categories,organizer,target_groups,view_lists,filter_categories',
-        'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_event.gif'
+        'typeicon_classes' => [
+            'default' => 'campus-events-event',
+        ],
+        'security' => [
+            'ignoreRootLevelRestriction' => true,
+        ]
     ],
     'types' => [
         '1' => ['showitem' => 'name, subtitle, url, 
         disturber_message,
         short_description, 
         description, 
+        slug,
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.meta_data,
             seo_title, seo_description,
             show_in_news, news_text,
@@ -84,68 +97,16 @@ return [
             'showitem' => 'hidden, starttime, endtime',
         ],
     ],
-    'columns' => [
-        'sys_language_uid' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
-            'config' => [
-                'type' => 'language',
-            ],
-        ],
-        'l10n_parent' => [
-            'displayCond' => 'FIELD:sys_language_uid:>:0',
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
-            'config' => [
-                'type' => 'group',
-                'allowed' => 'tx_campuseventsconnector_domain_model_event',
-                'size' => 1,
-                'maxitems' => 1,
-                'minitems' => 0,
-                'default' => 0,
-            ],
-        ],
-        'l10n_diffsource' => [
-            'config' => [
-                'type' => 'passthrough',
-            ],
-        ],
-        'hidden' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
-            'config' => [
-                'type' => 'check',
-                'renderType' => 'checkboxToggle',
-            ],
-        ],
-        'starttime' => [
-            'exclude' => true,
-            'l10n_mode' => 'exclude',
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.starttime',
-            'config' => [
-                'type' => 'datetime',
-                'default' => 0,
-            ],
-        ],
-        'endtime' => [
-            'exclude' => true,
-            'l10n_mode' => 'exclude',
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.endtime',
-            'config' => [
-                'type' => 'datetime',
-                'default' => 0,
-                'range' => [
-                    'upper' => mktime(0, 0, 0, 1, 1, 2038)
-                ],
-            ],
-        ],
+    'columns' => array_merge($defaultColumnsColumns, [
 
         'status' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.status',
             'config' => [
                 'type' => 'number',
-                'size' => 4
-            ]
+                'size' => 4,
+                'readOnly' => $importFieldsReadOnly,
+            ],
         ],
         'canceled' => [
             'exclude' => true,
@@ -154,7 +115,11 @@ return [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
                 'default' => 0,
-            ]
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'canceled',
+            ],
         ],
         'url' => [
             'exclude' => true,
@@ -162,7 +127,11 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'eventUrl',
             ],
         ],
         'name' => [
@@ -171,7 +140,11 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'name',
             ],
         ],
         'subtitle' => [
@@ -180,7 +153,11 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'subtitle',
             ],
         ],
         'description' => [
@@ -192,6 +169,10 @@ return [
                 'rows' => 15,
                 'eval' => 'trim',
                 'enableRichtext' => true,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'description',
             ],
         ],
         'short_description' => [
@@ -201,6 +182,10 @@ return [
                 'type' => 'text',
                 'cols' => 60,
                 'rows' => 3,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'shortDescription',
             ],
         ],
         'show_in_news' => [
@@ -210,7 +195,8 @@ return [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
                 'default' => 0,
-            ]
+                'readOnly' => $importFieldsReadOnly,
+            ],
         ],
         'news_text' => [
             'exclude' => true,
@@ -219,7 +205,8 @@ return [
                 'type' => 'text',
                 'cols' => 40,
                 'rows' => 15,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
             ]
         ],
         'learning_objective' => [
@@ -231,6 +218,7 @@ return [
                 'rows' => 15,
                 'eval' => 'trim',
                 'enableRichtext' => true,
+                'readOnly' => $importFieldsReadOnly,
             ],
             // 'defaultExtras' => 'richtext:rte_transform' // Deprecated
         ],
@@ -279,6 +267,7 @@ return [
                     ],
                 ],
                 'maxitems' => 9999,
+                'readOnly' => $importFieldsReadOnly,
             ],
         ],
         'attachments' => [
@@ -325,6 +314,7 @@ return [
                     ],
                 ],
                 'maxitems' => 9999,
+                'readOnly' => $importFieldsReadOnly,
             ],
         ],
         'registration_possible' => [
@@ -334,6 +324,7 @@ return [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
                 'default' => 0,
+                'readOnly' => $importFieldsReadOnly,
             ]
         ],
         'min_participants' => [
@@ -341,7 +332,8 @@ return [
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.min_participants',
             'config' => [
                 'type' => 'number',
-                'size' => 4
+                'size' => 4,
+                'readOnly' => $importFieldsReadOnly,//Deprecated field
             ]
         ],
         'max_participants' => [
@@ -349,7 +341,8 @@ return [
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.max_participants',
             'config' => [
                 'type' => 'number',
-                'size' => 4
+                'size' => 4,
+                'readOnly' => $importFieldsReadOnly,//Deprecated field
             ]
         ],
         'participants' => [
@@ -357,7 +350,8 @@ return [
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.participants',
             'config' => [
                 'type' => 'number',
-                'size' => 4
+                'size' => 4,
+                'readOnly' => $importFieldsReadOnly,//Deprecated field
             ]
         ],
         'speakers' => [
@@ -380,6 +374,7 @@ return [
                         'disabled' => false,
                     ]
                 ],
+                'readOnly' => $importFieldsReadOnly,//Deprecated field
             ],
 
         ],
@@ -398,6 +393,7 @@ return [
                     'showPossibleLocalizationRecords' => 1,
                     'showAllLocalizationLink' => 1
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
         ],
         'location' => [
@@ -415,6 +411,7 @@ return [
                     'showPossibleLocalizationRecords' => 1,
                     'showAllLocalizationLink' => 1
                 ],
+                'readOnly' => $importFieldsReadOnly,//Deprecated field
             ],
         ],
         'categories' => [
@@ -437,6 +434,7 @@ return [
                         'disabled' => false,
                     ]
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
 
         ],
@@ -460,6 +458,7 @@ return [
                         'disabled' => false,
                     ]
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
 
         ],
@@ -483,6 +482,7 @@ return [
                         'disabled' => false,
                     ]
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
 
         ],
@@ -506,6 +506,7 @@ return [
                         'disabled' => false,
                     ]
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
         ],
         'view_lists' => [
@@ -528,6 +529,7 @@ return [
                         'disabled' => false,
                     ]
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
 
         ],
@@ -551,6 +553,7 @@ return [
                         'disabled' => false,
                     ]
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
 
         ],
@@ -574,6 +577,7 @@ return [
                         'disabled' => false,
                     ]
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
 
         ],
@@ -583,7 +587,11 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'disturberMessage',
             ],
         ],
         'start_tstamp' => [
@@ -593,6 +601,11 @@ return [
                 'type' => 'datetime',
                 'size' => 12,
                 'default' => 0,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'startDate',
+                'type' => 'datetime_to_tstamp',
             ],
         ],
         'end_tstamp' => [
@@ -602,6 +615,11 @@ return [
                 'type' => 'datetime',
                 'size' => 12,
                 'default' => 0,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'endDate',
+                'type' => 'datetime_to_tstamp',
             ],
         ],
         'event_sessions' => [
@@ -620,6 +638,7 @@ return [
                     'showPossibleLocalizationRecords' => 1,
                     'showAllLocalizationLink' => 1
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
         ],
         'event_attachments' => [
@@ -637,6 +656,7 @@ return [
                     'showPossibleLocalizationRecords' => 1,
                     'showAllLocalizationLink' => 1
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
         ],
         'event_images' => [
@@ -654,6 +674,7 @@ return [
                     'showPossibleLocalizationRecords' => 1,
                     'showAllLocalizationLink' => 1
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
         ],
 
@@ -663,7 +684,11 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'eventAttendanceMode',
             ],
         ],
         'event_number' => [
@@ -672,7 +697,11 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'eventNumber',
             ],
         ],
         'event_ticket_price_variants' => [
@@ -695,6 +724,7 @@ return [
                         'disabled' => false,
                     ]
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
 
         ],
@@ -704,7 +734,11 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'externalOrderEmailAddress',
             ],
         ],
         'external_order_url' => [
@@ -713,7 +747,11 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'externalOrderUrl',
             ],
         ],
         'direct_registration_url' => [
@@ -722,7 +760,11 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'directRegistrationUrl',
             ],
         ],
         'locations' => [
@@ -745,6 +787,7 @@ return [
                         'disabled' => false,
                     ]
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
 
         ],
@@ -752,7 +795,10 @@ return [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.modified_at_recursive',
             'config' => [
-                'type' => 'passthrough'
+                'type' => 'passthrough',
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'modifiedAtRecursive',
             ],
         ],
         'order_type' => [
@@ -760,8 +806,12 @@ return [
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.order_type',
             'config' => [
                 'type' => 'number',
-                'size' => 4
-            ]
+                'size' => 4,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'orderType',
+            ],
         ],
         'referents' => [
             'exclude' => true,
@@ -783,6 +833,7 @@ return [
                         'disabled' => false,
                     ]
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
 
         ],
@@ -792,7 +843,11 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'referentsTitle',
             ],
         ],
         'seo_description' => [
@@ -802,8 +857,12 @@ return [
                 'type' => 'text',
                 'cols' => 40,
                 'rows' => 15,
-                'eval' => 'trim'
-            ]
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'seoTitle',
+            ],
         ],
         'seo_title' => [
             'exclude' => true,
@@ -811,7 +870,11 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'seoDescription',
             ],
         ],
         'sponsors_title' => [
@@ -820,7 +883,11 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'sponsorsTitle',
             ],
         ],
         'sponsors' => [
@@ -843,21 +910,42 @@ return [
                         'disabled' => false,
                     ]
                 ],
+                'readOnly' => $importFieldsReadOnly,
             ],
 
         ],
-        'ce_import_source' => $importColumns['ce_import_source'],
-        'ce_import_id' => $importColumns['ce_import_id'],
-        'ce_imported_at' => $importColumns['ce_imported_at'],
+
+        'slug' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:pages.slug',
+            'config' => [
+                'type' => 'slug',
+                'size' => 50,
+                'generatorOptions' => [
+                    'fields' => [
+                        'name',
+                    ],
+                    'fieldSeparator' => '-',
+                    'replacements' => [
+                        '/' => '-',
+                        chr(10) => '-',
+                    ],
+                ],
+                'fallbackCharacter' => '-',
+                'eval' => 'uniqueInSite',
+                'default' => '',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+        ],
         'hash' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.hash',
             'config' => [
                 'type' => 'none',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
             ],
         ],
-
-    ],
+    ], $importColumns),
 ];

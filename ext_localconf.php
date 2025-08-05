@@ -25,6 +25,7 @@ call_user_func(
             'description' => 'LLL:EXT:' . $extKey . '/Resources/Private/Language/locallang.xlf:tx_campuseventsconnector_task_eventimporttask.description',
             'additionalFields' => \BrainAppeal\CampusEventsConnector\Task\EventImportAdditionalFieldProvider::class
         ];
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport']['campus_events_connector_slugs'] = \BrainAppeal\CampusEventsConnector\Utility\SlugGenerator::class;
     },
     'campus_events_connector'
 );

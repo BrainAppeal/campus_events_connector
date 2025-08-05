@@ -414,8 +414,14 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.filter_categories">
 				<source>Filter Categories</source>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.filter_categories.description">
+				<source>Only convert events to news that match ALL selected filter categories</source>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_groups">
 				<source>Target Groups</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_groups.description">
+				<source>Only convert events to news that match ALL selected target groups</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.view_lists">
 				<source>View lists</source>

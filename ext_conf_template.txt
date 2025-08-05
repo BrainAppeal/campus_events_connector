@@ -1,0 +1,2 @@
+# cat=basic/enable/100; type=boolean; label=Make table fields read only
+tca_fields_read_only = 0

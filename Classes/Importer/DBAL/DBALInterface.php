@@ -53,8 +53,8 @@ interface DBALInterface
      */
     public function addSysFileReference($sysFile, $target, $property, $attribs = []);
 
-    public function updateSysFileReference(FileReference $sysSysFileReference, $attribs = []);
+    public function updateSysFileReference(FileReference $sysFileReference, $attribs = []): void;
 
-    public function checkIfPidIsValid($pid);
+    public function checkIfPidIsValid($pid): bool;
 
 }

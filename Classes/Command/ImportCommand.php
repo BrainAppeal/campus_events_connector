@@ -74,15 +74,13 @@ class ImportCommand extends Command
         if ($apiVersion === self::API_VERSION_ABOVE_227) {
             $importer = $this->getExtendedImporter();
             $success = $importer->import($baseUri, $apiKey, $targetPid, $storageId, $storageFolder);
-            if (!$success) {
-                $exceptions = $importer->getExceptions();
-                /** @var \Exception[] $exceptions */
-                if (!empty($exceptions)) {
-                    $output->writeln(sprintf(
-                        '<info>Exception occurred: "%s"</info>',
-                        $exceptions[0]->getMessage()
-                    ));
-                }
+            $exceptions = $importer->getExceptions();
+            /** @var \Exception[] $exceptions */
+            if (!empty($exceptions)) {
+                $output->writeln(sprintf(
+                    '<info>Exception occurred: "%s"</info>',
+                    $exceptions[0]->getMessage()
+                ));
             }
         } else {
             $importer = $this->getImporter();

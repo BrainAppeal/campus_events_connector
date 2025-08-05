@@ -84,12 +84,12 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     /**
      * @param ConvertConfiguration $configuration
      */
-    private function setUp($configuration)
+    private function setUp(ConvertConfiguration $configuration): void
     {
         $dataMapper = GeneralUtility::makeInstance(DataMapper::class);
         $this->importSource = $dataMapper->getDataMap($configuration::class)->getTableName() . ':' . $configuration->getUid();
         $this->configuration = $configuration;
-        // Set current language to "de" so news description translations are german
+        // Set the current language to "de" so news description translations are german
         if (null !== $languageService = $this->getLanguageService()) {
             $languageService->lang = 'de';
         }
@@ -132,7 +132,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     /**
      * Returns true, if the event can be converted to the target object model; Override this function in custom
      * converter to support skipping import of single events
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Event $event
+     * @param Event $event
      * @return bool
      */
     protected function isConversionPossible($event)
@@ -141,10 +141,10 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     }
 
     /**
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Event $event
+     * @param Event $event
      * @return void
      */
-    private function convertEvent($event)
+    private function convertEvent(Event $event): void
     {
         $configuration = $this->configuration;
 
@@ -158,32 +158,30 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
             $object = $this->createNewModelInstance($event, $configuration->getTargetPid());
         }
 
-        if ($object instanceof ImportedModelInterface) {
-            $this->individualizeObjectByEvent($object, $event, $configuration);
+        $this->individualizeObjectByEvent($object, $event, $configuration);
 
-            $object->setCeImportedAt(time());
-            if ($object->getUid() > 0) {
-                $objectRepository->update($object);
-            } else {
-                $objectRepository->add($object);
-            }
+        $object->setCeImportedAt(time());
+        if ($object->getUid() > 0) {
+            $objectRepository->update($object);
+        } else {
+            $objectRepository->add($object);
         }
     }
 
     /**
-     * @return \TYPO3\CMS\Core\Localization\LanguageService
+     * @return ?\TYPO3\CMS\Core\Localization\LanguageService
      */
-    protected function getLanguageService(): \TYPO3\CMS\Core\Localization\LanguageService
+    protected function getLanguageService(): ?\TYPO3\CMS\Core\Localization\LanguageService
     {
-        return $GLOBALS['LANG'];
+        return $GLOBALS['LANG'] ?? null;
     }
 
     /**
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Event $event
+     * @param Event $event
      * @param int $pid The target page id for storing the records
      * @return ImportedModelInterface
      */
-    protected function createNewModelInstance($event, $pid)
+    protected function createNewModelInstance(Event $event, int $pid): ImportedModelInterface
     {
         $object = null;
         $objectRepository = $this->getObjectRepository();
@@ -211,7 +209,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
                     $saveId => $importData,
                 ],
             ];
-            /** @var \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler */
+            /** @var DataHandler $dataHandler */
             $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
             $dataHandler->start($data, []);
             $dataHandler->enableLogging = false;
@@ -225,12 +223,11 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     }
 
     /**
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Event $event
+     * @param Event $event
      * @return array
      */
     protected function getAdditionDataHandlerValues($event)
     {
-        $data = [];
-        return $data;
+        return [];
     }
 }

@@ -15,6 +15,87 @@ namespace BrainAppeal\CampusEventsConnector\Utility;
 
 class TCAUtility
 {
+    public const EXT_NAME = 'campus_events_connector';
+    public const TCA_IMPORT_KEY = 'ce';
+    public const TABLE_EVENTS = 'tx_campuseventsconnector_domain_model_event';
+
+    public static function getDefaultFieldConfiguration(string $table): array
+    {
+        return [
+            'sys_language_uid' => [
+                'exclude' => true,
+                'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
+                'config' => [
+                    'type' => 'language',
+                ],
+            ],
+            'l10n_parent' => [
+                'displayCond' => 'FIELD:sys_language_uid:>:0',
+                'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
+                'config' => [
+                    'type' => 'group',
+                    'allowed' => $table,
+                    'size' => 1,
+                    'maxitems' => 1,
+                    'minitems' => 0,
+                    'default' => 0,
+                ],
+            ],
+            'l10n_source' => [
+                'config' => [
+                    'type' => 'passthrough',
+                ],
+            ],
+            'l10n_diffsource' => [
+                'config' => [
+                    'type' => 'passthrough',
+                ],
+            ],
+            'pid' => [
+                'label' => 'pid',
+                'config' => [
+                    'type' => 'passthrough',
+                ],
+            ],
+            'crdate' => [
+                'label' => 'crdate',
+                'config' => [
+                    'type' => 'datetime',
+                ],
+            ],
+            'tstamp' => [
+                'label' => 'tstamp',
+                'config' => [
+                    'type' => 'datetime',
+                ],
+            ],
+            'hidden' => [
+                'exclude' => true,
+                'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
+                'config' => [
+                    'type' => 'check',
+                    'renderType' => 'checkboxToggle',
+                ],
+            ],
+            'starttime' => [
+                'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.starttime',
+                'config' => [
+                    'type' => 'datetime',
+                ],
+            ],
+            'endtime' => [
+                'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.endtime',
+                'config' => [
+                    'type' => 'datetime',
+                ],
+            ],
+        ];
+    }
+
     /**
      * @return array<string, array<string, mixed>>
      */

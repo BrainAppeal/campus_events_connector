@@ -13,6 +13,7 @@
 
 namespace BrainAppeal\CampusEventsConnector\Importer;
 
+use BrainAppeal\CampusEventsConnector\Http\HttpException;
 use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory;
 use BrainAppeal\CampusEventsConnector\Importer\ObjectGenerator\ExtendedSpecifiedImportObjectGenerator;
 use BrainAppeal\CampusEventsConnector\Utility\ImportScheduleUtility;
@@ -68,6 +69,7 @@ class ExtendedImporter
      * @param int $storageId The storage id
      * @param string $storageFolder The storage folder
      * @return bool Returns true if execution was successful, false otherwise
+     * @throws HttpException
      */
     public function import(string $baseUri, string $apiKey, int $pid, int $storageId, string $storageFolder): bool
     {
@@ -82,17 +84,17 @@ class ExtendedImporter
         $apiConnector = $this->apiConnector;
         $apiConnector->setBaseUri($baseUri);
         $apiConnector->setApiKey($apiKey);
-        // If we have a lot of data some day, the number of processed items can be limited and instead of fetching the
+        // If we have a lot of data some day, the number of processed items can be limited, and instead of fetching the
         // api data, we can process the stored data in the unprocessed queue items
         $this->fetchDataFromApi($apiConnector, $importStartTimestamp);
         /** @var ImportScheduleUtility $importScheduleUtility */
         $importScheduleUtility = GeneralUtility::makeInstance(ImportScheduleUtility::class);
         if ($this->hasChangedData || (int)$importScheduleUtility->countUnprocessedScheduleEntries() > 0) {
             $dataMap = $apiConnector->getDataMap();
+            /** @var ExtendedFileImporter $fileImporter */
+            $fileImporter = GeneralUtility::makeInstance(ExtendedFileImporter::class);
+            $fileImporter->initialize($storageId, $storageFolder, $baseUri);
             try {
-                /** @var ExtendedFileImporter $fileImporter */
-                $fileImporter = GeneralUtility::makeInstance(ExtendedFileImporter::class);
-                $fileImporter->initialize($storageId, $storageFolder, $baseUri);
                 /** @var ExtendedSpecifiedImportObjectGenerator $importObjectGenerator */
                 $importObjectGenerator = GeneralUtility::makeInstance(ExtendedSpecifiedImportObjectGenerator::class);
                 $updatedDomainModels = $importObjectGenerator->processQueue($dataMap, $baseUri, $pid, $fileImporter, $this->debug !== false);
@@ -104,7 +106,7 @@ class ExtendedImporter
                     $dbal->removeNotUpdatedObjects(FileReference::class, $baseUri, $pid, $importStartTimestamp, $excludeFileReferenceUidList);
                 }
             } catch (\Throwable $e) {
-                // Store exception, so that it can be saved to database
+                // Store exception so that it can be saved to the database
                 $this->exceptions[] = $e;
             }
         }
@@ -118,7 +120,7 @@ class ExtendedImporter
                 echo $exception->getMessage() . ' [' . $exception->getFile() . '::' . $exception->getLine() . ']' . "\n";
             }
         }
-        return empty($this->exceptions);
+        return $apiConnector->getSuccessfulResponseCount() > 0 || empty($this->exceptions);
     }
 
     /**
@@ -152,19 +154,19 @@ class ExtendedImporter
      *
      * @param ExtendedApiConnector $apiConnector The API connector
      * @param int $importStartTimestamp The timestamp when the import was started
-     * @return bool Returns true, if new or updated data were retrieved
+     * @return bool Returns true if new or updated data were retrieved
      * @throws \BrainAppeal\CampusEventsConnector\Http\HttpException
      */
-    protected function fetchDataFromApi($apiConnector, $importStartTimestamp)
+    protected function fetchDataFromApi(ExtendedApiConnector $apiConnector, int $importStartTimestamp)
     {
         $importSource = $apiConnector->getBaseUri();
-        // First check, if any event has changed. If not, we can stop the import
-        // this is because each event contains the field "modifiedAtRecursive" which also changes, if any related data
+        // First, check if any event has changed. If not, we can stop the import
+        // this is because each event contains the field "modifiedAtRecursive", which also changes if any related data
         // have been changed
         $mainImportType = 'Event';
         $itemListImportTypes = $this->enqueueItemsForType($apiConnector, $mainImportType, $importSource, $importStartTimestamp);
         // If any of the main items has been updated, we have to check for changes in all other entry types
-        // This prevents deletion of items that may currently not be referenced, but are still active
+        // This prevents deletion of items that may currently not be referenced but are still active
         if (!empty($itemListImportTypes) && array_sum($itemListImportTypes) > 0) {
             $allImportTypes = $apiConnector->getApiImportTypes();
             foreach ($allImportTypes as $importType) {
@@ -173,7 +175,7 @@ class ExtendedImporter
                 }
             }
         } else {
-            // No import necessary, if no event has been changed
+            // No import necessary if no event has been changed
             return false;
         }
         $this->hasChangedData = true;
@@ -216,7 +218,7 @@ class ExtendedImporter
      * @param array $listItem
      * @return int The import type
      */
-    protected function addApiListItemToQueue($apiConnector, $importId, $importModelType, array $listItem)
+    protected function addApiListItemToQueue(ExtendedApiConnector $apiConnector, int $importId, string $importModelType, array $listItem): int
     {
         $dataHash = md5(json_encode($listItem));
         $prevQueueItem = $this->getImportScheduleUtility()->fetchPreviousEntry($importId, $importModelType);
@@ -228,7 +230,7 @@ class ExtendedImporter
         } else {
             $modified = null;
         }
-        // If no previous queue item exist, the item will be imported
+        // If no previous queue item exists, the item will be imported
         if (!empty($prevQueueItem)) {
             if ($modified !== null) {
                 $hasChangedSinceLastImport = $modified > $prevQueueItem['last_modified_tstamp'];

@@ -11,7 +11,15 @@
  * @link      https://www.campus-events.com/
  */
 
-$importColumns = \BrainAppeal\CampusEventsConnector\Utility\TCAUtility::getImportFieldConfiguration();
+use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+$tableName = 'tx_campuseventsconnector_domain_model_eventsession';
+$defaultColumnsColumns = TCAUtility::getDefaultFieldConfiguration($tableName);
+$importColumns = TCAUtility::getImportFieldConfiguration();
+$extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(TCAUtility::EXT_NAME);
+$importFieldsReadOnly = $extConf['tca_fields_read_only'] ?? false;
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventsession',
@@ -31,7 +39,12 @@ return [
             'endtime' => 'endtime',
         ],
         'searchFields' => 'start_tstamp,end_tstamp',
-        'iconfile' => 'EXT:campus_events_connector/Resources/Public/Icons/tx_campuseventsconnector_domain_model_category.gif'
+        'typeicon_classes' => [
+            'default' => 'campus-events-eventsession',
+        ],
+        'security' => [
+            'ignoreRootLevelRestriction' => true,
+        ]
     ],
     'types' => [
         '1' => ['showitem' => '--palette--;;paletteTimespan,
@@ -53,103 +66,61 @@ return [
             'showitem' => 'hidden, starttime, endtime',
         ],
     ],
-    'columns' => [
-        'sys_language_uid' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
-            'config' => [
-                'type' => 'language',
-            ],
-        ],
-        'l10n_parent' => [
-            'displayCond' => 'FIELD:sys_language_uid:>:0',
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
-            'config' => [
-                'type' => 'group',
-                'allowed' => 'tx_campuseventsconnector_domain_model_eventsession',
-                'size' => 1,
-                'maxitems' => 1,
-                'minitems' => 0,
-                'default' => 0,
-            ],
-        ],
-        'l10n_diffsource' => [
-            'config' => [
-                'type' => 'passthrough',
-            ],
-        ],
-        'hidden' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
-            'config' => [
-                'type' => 'check',
-                'renderType' => 'checkboxToggle',
-            ],
-        ],
-        'starttime' => [
-            'exclude' => true,
-            'l10n_mode' => 'exclude',
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.starttime',
-            'config' => [
-                'type' => 'datetime',
-                'default' => 0,
-            ],
-        ],
-        'endtime' => [
-            'exclude' => true,
-            'l10n_mode' => 'exclude',
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.endtime',
-            'config' => [
-                'type' => 'datetime',
-                'default' => 0,
-                'range' => [
-                    'upper' => mktime(0, 0, 0, 1, 1, 2038)
+    'columns' => array_merge(
+        $defaultColumnsColumns,
+        $importColumns,
+        [
+            'start_tstamp' => [
+                'exclude' => true,
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventsession.start_tstamp',
+                'config' => [
+                    'type' => 'datetime',
+                    'size' => 12,
+                    'default' => 0,
+                    'readOnly' => $importFieldsReadOnly,
+                ],
+                TCAUtility::TCA_IMPORT_KEY => [
+                    'field' => 'startDate',
+                    'type' => 'datetime_to_tstamp',
                 ],
             ],
-        ],
-
-        'start_tstamp' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventsession.start_tstamp',
-            'config' => [
-                'type' => 'datetime',
-                'size' => 12,
-                'default' => 0,
-            ],
-        ],
-        'end_tstamp' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventsession.end_tstamp',
-            'config' => [
-                'type' => 'datetime',
-                'size' => 12,
-                'default' => 0,
-            ],
-        ],
-        'session_time_periods' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_sessions',
-            'config' => [
-                'type' => 'inline',
-                'foreign_table' => 'tx_campuseventsconnector_domain_model_timerange',
-                'foreign_field' => 'event_session',
-                'maxitems' => 9999,
-                'appearance' => [
-                    'collapseAll' => true,
-                    'levelLinksPosition' => 'top',
-                    'showSynchronizationLink' => 1,
-                    'showPossibleLocalizationRecords' => 1,
-                    'showAllLocalizationLink' => 1
+            'end_tstamp' => [
+                'exclude' => true,
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventsession.end_tstamp',
+                'config' => [
+                    'type' => 'datetime',
+                    'size' => 12,
+                    'default' => 0,
+                    'readOnly' => $importFieldsReadOnly,
+                ],
+                TCAUtility::TCA_IMPORT_KEY => [
+                    'field' => 'endDate',
+                    'type' => 'datetime_to_tstamp',
                 ],
             ],
-        ],
-        'event' => [
-            'config' => [
-                'type' => 'passthrough',
+            'session_time_periods' => [
+                'exclude' => true,
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_sessions',
+                'config' => [
+                    'type' => 'inline',
+                    'foreign_table' => 'tx_campuseventsconnector_domain_model_timerange',
+                    'foreign_field' => 'event_session',
+                    'maxitems' => 9999,
+                    'appearance' => [
+                        'collapseAll' => true,
+                        'levelLinksPosition' => 'top',
+                        'showSynchronizationLink' => 1,
+                        'showPossibleLocalizationRecords' => 1,
+                        'showAllLocalizationLink' => 1
+                    ],
+                    'readOnly' => $importFieldsReadOnly,
+                ],
             ],
-        ],
-        'ce_import_source' => $importColumns['ce_import_source'],
-        'ce_import_id' => $importColumns['ce_import_id'],
-        'ce_imported_at' => $importColumns['ce_imported_at'],
-    ],
+            'event' => [
+                'config' => [
+                    'type' => 'passthrough',
+                ],
+            ],
+        ]
+    ),
 ];

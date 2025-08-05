@@ -2,10 +2,6 @@
 # Table structure for table 'tx_campuseventsconnector_domain_model_event'
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_event (
-
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
 	status int(11) DEFAULT '0' NOT NULL,
 	canceled smallint(5) unsigned DEFAULT '0' NOT NULL,
 	url varchar(255) DEFAULT '' NOT NULL,
@@ -54,38 +50,14 @@ CREATE TABLE tx_campuseventsconnector_domain_model_event (
     seo_title varchar(255) DEFAULT '' NOT NULL,
     sponsors int(11) unsigned DEFAULT '0' NOT NULL,
     sponsors_title varchar(255) DEFAULT '' NOT NULL,
+	slug varchar(2048),
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY path_segment (slug(185), uid),
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -93,9 +65,6 @@ CREATE TABLE tx_campuseventsconnector_domain_model_event (
 # Table structure for table 'tx_campuseventsconnector_domain_model_location'
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_location (
-
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
 
 	name text,
 	street_name varchar(255) DEFAULT '' NOT NULL,
@@ -109,35 +78,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_location (
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -146,44 +89,15 @@ CREATE TABLE tx_campuseventsconnector_domain_model_location (
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_speaker (
 
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
 	title varchar(255) DEFAULT '' NOT NULL,
 	first_name varchar(255) DEFAULT '' NOT NULL,
 	last_name varchar(255) DEFAULT '' NOT NULL,
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -192,42 +106,13 @@ CREATE TABLE tx_campuseventsconnector_domain_model_speaker (
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_organizer (
 
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
 	name varchar(255) DEFAULT '' NULL,
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -235,9 +120,6 @@ CREATE TABLE tx_campuseventsconnector_domain_model_organizer (
 # Table structure for table 'tx_campuseventsconnector_domain_model_timerange'
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_timerange (
-
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
 
 	event int(11) unsigned DEFAULT '0' NOT NULL,
 	event_session int(11) unsigned DEFAULT '0' NOT NULL,
@@ -249,35 +131,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_timerange (
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -286,42 +142,13 @@ CREATE TABLE tx_campuseventsconnector_domain_model_timerange (
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_category (
 
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
 	name varchar(255) DEFAULT '' NOT NULL,
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -330,42 +157,13 @@ CREATE TABLE tx_campuseventsconnector_domain_model_category (
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_targetgroup (
 
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
 	name varchar(255) DEFAULT '' NOT NULL,
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -374,42 +172,13 @@ CREATE TABLE tx_campuseventsconnector_domain_model_targetgroup (
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_viewlist (
 
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
 	name varchar(255) DEFAULT '' NOT NULL,
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -418,43 +187,14 @@ CREATE TABLE tx_campuseventsconnector_domain_model_viewlist (
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_filtercategory (
 
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
 	name varchar(255) DEFAULT '' NOT NULL,
 	parent int(11) unsigned DEFAULT '0',
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -462,9 +202,6 @@ CREATE TABLE tx_campuseventsconnector_domain_model_filtercategory (
 # Table structure for table 'tx_campuseventsconnector_domain_model_contactperson'
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_contactperson (
-
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
 
 	title varchar(255) DEFAULT '' NOT NULL,
 	first_name varchar(255) DEFAULT '' NOT NULL,
@@ -477,35 +214,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_contactperson (
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -513,10 +224,6 @@ CREATE TABLE tx_campuseventsconnector_domain_model_contactperson (
 # Table structure for table 'tx_campuseventsconnector_domain_model_event_attachment'
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_eventattachment (
-
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
 	name varchar(255) DEFAULT '' NOT NULL,
 	file_hash text,
 	attachment_file int(11) unsigned DEFAULT '0',
@@ -525,35 +232,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventattachment (
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -561,9 +242,6 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventattachment (
 # Table structure for table 'tx_campuseventsconnector_domain_model_eventimage'
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_eventimage (
-
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
 
 	name varchar(255) DEFAULT '' NOT NULL,
 	file_hash text,
@@ -573,35 +251,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventimage (
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -609,9 +261,6 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventimage (
 # Table structure for table 'tx_campuseventsconnector_domain_model_eventsession'
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_eventsession (
-
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
 
 	start_tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	end_tstamp int(11) unsigned DEFAULT '0' NOT NULL,
@@ -621,44 +270,15 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventsession (
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 );
 
 #
 # Table structure for table 'tx_campuseventsconnector_domain_model_eventticketpricevariant'
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_eventticketpricevariant (
-
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
 
 	bookable_from datetime DEFAULT '1900-01-01 00:00:00',
 	bookable_till datetime DEFAULT '1900-01-01 00:00:00',
@@ -672,35 +292,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventticketpricevariant (
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -709,42 +303,13 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventticketpricevariant (
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_pricecategory (
 
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
 	name varchar(255) DEFAULT '' NOT NULL,
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -752,9 +317,6 @@ CREATE TABLE tx_campuseventsconnector_domain_model_pricecategory (
 # Table structure for table 'tx_campuseventsconnector_domain_model_referent'
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_referent (
-
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
 
 	title varchar(255) DEFAULT '' NOT NULL,
 	first_name varchar(255) DEFAULT '' NOT NULL,
@@ -773,35 +335,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_referent (
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -810,9 +346,6 @@ CREATE TABLE tx_campuseventsconnector_domain_model_referent (
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_sponsor (
 
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
 	name varchar(255) DEFAULT '' NOT NULL,
 	url varchar(255) DEFAULT '' NOT NULL,
 	image_hash text,
@@ -820,35 +353,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_sponsor (
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
+	ce_imported_at int(11) unsigned DEFAULT NULL,
 
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
+    KEY import (ce_import_id,ce_import_source)
 
 );
 
@@ -857,9 +364,6 @@ CREATE TABLE tx_campuseventsconnector_domain_model_sponsor (
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_convertconfiguration (
 
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-
 	target_pid int(11) DEFAULT '0' NOT NULL,
 	template_path varchar(255) DEFAULT '' NOT NULL,
 	target_groups int(11) unsigned DEFAULT '0' NOT NULL,
@@ -867,34 +371,6 @@ CREATE TABLE tx_campuseventsconnector_domain_model_convertconfiguration (
 	view_lists int(11) unsigned DEFAULT '0' NOT NULL,
 
 	type varchar(100) NOT NULL DEFAULT '0',
-
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-	cruser_id int(11) unsigned DEFAULT '0' NOT NULL,
-	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
-	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
-	starttime int(11) unsigned DEFAULT '0' NOT NULL,
-	endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
-	t3ver_oid int(11) DEFAULT '0' NOT NULL,
-	t3ver_id int(11) DEFAULT '0' NOT NULL,
-	t3ver_wsid int(11) DEFAULT '0' NOT NULL,
-	t3ver_label varchar(255) DEFAULT '' NOT NULL,
-	t3ver_state smallint(6) DEFAULT '0' NOT NULL,
-	t3ver_stage int(11) DEFAULT '0' NOT NULL,
-	t3ver_count int(11) DEFAULT '0' NOT NULL,
-	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
-	t3ver_move_id int(11) DEFAULT '0' NOT NULL,
-
-	sys_language_uid int(11) DEFAULT '0' NOT NULL,
-	l10n_parent int(11) DEFAULT '0' NOT NULL,
-	l10n_diffsource mediumblob,
-	l10n_state text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid),
-	KEY t3ver_oid (t3ver_oid,t3ver_wsid),
-	KEY language (l10n_parent,sys_language_uid)
 
 );
 

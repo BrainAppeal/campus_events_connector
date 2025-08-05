@@ -30,9 +30,9 @@ class FilterCategory extends AbstractImportedEntity
     /**
      * parent
      *
-     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory
+     * @var ?\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory
      */
-    protected $parent;
+    protected $parent = null;
 
     /**
      * __construct
@@ -72,7 +72,7 @@ class FilterCategory extends AbstractImportedEntity
      * @param string $name
      * @return void
      */
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -80,9 +80,9 @@ class FilterCategory extends AbstractImportedEntity
     /**
      * Returns the parent
      *
-     * @return \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $parent
+     * @return ?\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $parent
      */
-    public function getParent()
+    public function getParent(): ?FilterCategory
     {
         return $this->parent;
     }
@@ -90,10 +90,10 @@ class FilterCategory extends AbstractImportedEntity
     /**
      * Sets the parent
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory|null $parent
+     * @param ?\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $parent
      * @return void
      */
-    public function setParent(\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $parent = null)
+    public function setParent(?\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $parent = null): void
     {
         $this->parent = $parent;
     }

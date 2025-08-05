@@ -414,8 +414,14 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.filter_categories">
 				<target>Filterkategorien</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.filter_categories.description">
+				<target>Nur Events zu News konvertieren, die mit ALLEN ausgewählten Filterkategorien übereinstimmen</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.target_groups">
 				<target>Zielgruppen</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.filter_categories.description">
+				<target>Nur Events zu News konvertieren, die mit ALLEN ausgewählten Zielgruppen übereinstimmen</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.view_lists">
 				<target>Veranstaltungslisten</target>

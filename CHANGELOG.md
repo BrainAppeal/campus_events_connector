@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## 5.0.1 (2025-08-05)
+
+### Added:
+- fix PHP 8.4 compatibility
+- clean up TCA end ext_tables.sql
+
 ## 5.0.0 (2024-12-09)
 
 ### Added:
