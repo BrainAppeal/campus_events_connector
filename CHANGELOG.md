@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## 5.0.2 (2025-08-25)
+
+### Fixed:
+- support extended domain modals in import process
+
 ## 5.0.1 (2025-08-05)
 
 ### Added:

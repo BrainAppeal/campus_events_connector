@@ -188,13 +188,9 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
                 $locations,
                 'location'
             );
-            if ((null !== $objectLocations = $object->getLocations()) && $objectLocations->count() > 0) {
-                foreach ($objectLocations as $location) {
-                    if ($location instanceof Location) {
-                        $object->setLocation($location);
-                        break;
-                    }
-                }
+            $objectLocations = $object->getLocations();
+            if ($objectLocations->count() > 0) {
+                $object->setLocation($objectLocations->current());
             }
 
         }

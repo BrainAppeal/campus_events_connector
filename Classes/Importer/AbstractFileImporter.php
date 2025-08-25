@@ -408,8 +408,10 @@ abstract class AbstractFileImporter
         } catch (ResourceDoesNotExistException) {
             return false;
         }
-        return !$originalFile->isMissing() && (null !== $storage = $originalFile->getStorage())
-            && $storage->hasFile($originalFile->getIdentifier());
+        if ($originalFile->isMissing()) {
+            return false;
+        }
+        return $originalFile->getStorage()->hasFile($originalFile->getIdentifier());
     }
 
 

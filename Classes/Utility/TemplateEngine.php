@@ -14,6 +14,8 @@
 namespace BrainAppeal\CampusEventsConnector\Utility;
 
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\InaccessibleFolder;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TemplateEngine
@@ -46,18 +48,18 @@ class TemplateEngine
      * @param string $path
      * @return string
      */
-    private function resolvePath($path)
+    private function resolvePath(string $path): string
     {
         if (preg_match('/^\d+:/', $path)) {
-            /** @var \TYPO3\CMS\Core\Resource\ResourceFactory $resourceFactory */
-            $resourceFactory = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\ResourceFactory::class);
+            /** @var ResourceFactory $resourceFactory */
+            $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
             $folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($path);
-            if ($folder instanceof Folder) {
+            if (!($folder instanceof InaccessibleFolder)) {
                 $path = $folder->getPublicUrl();
             }
         }
 
-        return \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($path);
+        return GeneralUtility::getFileAbsFileName($path);
     }
 
     /**
@@ -86,7 +88,7 @@ class TemplateEngine
             $templateRootPaths = $this->getResolvedTemplateRootPaths($configuration, $templateName);
 
             /** @var \TYPO3\CMS\Fluid\View\StandaloneView $view */
-            $view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Fluid\View\StandaloneView::class);
+            $view = GeneralUtility::makeInstance(\TYPO3\CMS\Fluid\View\StandaloneView::class);
             $view->setTemplateRootPaths($templateRootPaths);
             $view->setTemplate($templateName . '.html');
 

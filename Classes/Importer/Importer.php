@@ -28,14 +28,11 @@ use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
 class Importer
 {
-    /**
-     * @var ?ImportObjectGenerator
-     */
-    private readonly ?ImportObjectGenerator $importObjectGenerator;
+    private readonly ImportObjectGenerator $importObjectGenerator;
 
     public function __construct(private readonly ApiConnector $apiConnector)
     {
-        $this->importObjectGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(SpecifiedImportObjectGenerator::class);
+        $this->importObjectGenerator = GeneralUtility::makeInstance(SpecifiedImportObjectGenerator::class);
     }
 
     /**
@@ -70,7 +67,7 @@ class Importer
     private function getFileImporter(int $storageId, string $storageFolder): FileImporter
     {
         /** @var FileImporter $fileImporter */
-        $fileImporter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(FileImporter::class);
+        $fileImporter = GeneralUtility::makeInstance(FileImporter::class);
         $fileImporter->initialize($storageId, $storageFolder);
 
         return $fileImporter;

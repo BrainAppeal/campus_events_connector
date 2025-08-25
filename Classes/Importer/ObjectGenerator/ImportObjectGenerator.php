@@ -25,6 +25,7 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ViewList;
 use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 abstract class ImportObjectGenerator implements SingletonInterface
 {
@@ -131,7 +132,7 @@ abstract class ImportObjectGenerator implements SingletonInterface
 
             if (null === $object) {
                 /** @var ImportedModelInterface $object */
-                $object = new $class;
+                $object = GeneralUtility::makeInstance($class);
                 $object->setCeImportId($importId);
                 $object->setCeImportSource($importSource);
                 $object->setPid($pid);

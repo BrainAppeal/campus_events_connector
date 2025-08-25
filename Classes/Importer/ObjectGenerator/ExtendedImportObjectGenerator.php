@@ -82,10 +82,10 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
      * @param array $dataMap
      * @param string $importSource
      * @param int $pid
-     * @param false $debug
+     * @param bool|string $debug
      * @return array|ImportedModelInterface[]
      */
-    public function processQueue(array $dataMap, string $importSource, int $pid, ExtendedFileImporter $fileImporter, false $debug = false): array
+    public function processQueue(array $dataMap, string $importSource, int $pid, ExtendedFileImporter $fileImporter, bool|string $debug = false): array
     {
         $this->fileImporter = $fileImporter;
         $this->dataMap = $dataMap;
@@ -112,7 +112,7 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
                     $importScheduleUtility->finishScheduleEntryAsImported(
                         $queueItemId,
                         (int)$importMappingModel->getTargetModelUid(),
-                        $debug
+                        (bool)$debug
                     );
                 }
             }
@@ -152,7 +152,7 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
             $domainModel = $this->getDBAL()->findByImport($class, $this->baseUri, $importId, $this->pid);
             if (null === $domainModel) {
                 /** @var ImportedModelInterface $domainModel */
-                $domainModel = new $class;
+                $domainModel = GeneralUtility::makeInstance($class);
                 $domainModel->setCeImportId($importId);
                 $domainModel->setCeImportSource($this->baseUri);
                 $domainModel->setPid($this->pid);

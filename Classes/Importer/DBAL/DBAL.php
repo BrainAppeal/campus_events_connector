@@ -13,6 +13,7 @@
 
 namespace BrainAppeal\CampusEventsConnector\Importer\DBAL;
 
+use BrainAppeal\CampusEventsConnector\Domain\Model\AbstractImportedEntity;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -79,7 +80,8 @@ class DBAL implements DBALInterface, SingletonInterface
     {
         foreach ($objects as $object) {
             $repository = $this->getRepository($object::class);
-            if ($object instanceof ImportedModelInterface && null !== $repository) {
+            if ($repository instanceof AbstractImportedRepository) {
+                /** @var AbstractImportedEntity $object */
                 $object->setCeImportedAt(time());
                 if ($object->getUid() > 0) {
                     $repository->update($object);
@@ -93,7 +95,7 @@ class DBAL implements DBALInterface, SingletonInterface
         }
     }
 
-    private function deleteRawFromTable($tableName, $importSource, $pid, $importTimestamp, $excludeUids)
+    private function deleteRawFromTable(string $tableName, $importSource, $pid, $importTimestamp, $excludeUids)
     {
         $pid = (int)$pid;
         $importSource = preg_replace("/['\"]/", "", (string) $importSource);
