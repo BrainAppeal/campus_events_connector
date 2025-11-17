@@ -235,6 +235,22 @@ class ExtendedApiConnector
     }
 
     /**
+     * Checks if the list item contains all required data based on the given import model type.
+     *
+     * @param string $importModelType The import model type to evaluate.
+     * @return bool True if the list item contains all required data, false otherwise.
+     */
+    public function listItemContainsAllData(string $importModelType): bool
+    {
+        return in_array($importModelType, [
+            'EventAttachment', 'EventImage', 'EventSession',
+            'FilterCategory', 'Category', 'Organizer', 'PriceCategory',
+            'TargetGroup', 'ViewList', 'Sponsor', 'SessionTimePeriod',
+            ]
+        );
+    }
+
+    /**
      * @param string $itemType The api model data type, e.g. Event, ContactPerson, etc.
      * @return array
      * @throws \BrainAppeal\CampusEventsConnector\Http\HttpException

@@ -24,6 +24,7 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ViewList;
 use BrainAppeal\CampusEventsConnector\Importer\FileImporter;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 class SpecifiedImportObjectGenerator extends ImportObjectGenerator
@@ -35,7 +36,7 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
     protected function assignCategoryProperties(string $class, ImportedModelInterface $object, array $data): void
     {
         /** @var Category $object */
-        $object->setName($data['name']);
+        $object->setName($data['name'] ?? '');
     }
 
     /**
@@ -48,32 +49,34 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
             $this->setDataChanged();
         }
 
-        $object->setName($data['name']);
+        $object->setName((string)$data['name']);
         $object->setCanceled($data['canceled']);
         $object->setUrl($data['url'] ?? '');
-        $object->setSubtitle($data['subtitle']);
-        $object->setDescription($data['description']);
-        $object->setShortDescription($data['short_description']);
+        $object->setSubtitle((string)$data['subtitle']);
+        $object->setDescription((string)$data['description']);
+        $object->setShortDescription((string)$data['short_description']);
         $object->setShowInNews($data['show_in_news']);
-        $object->setNewsText($data['news_text']);
+        $object->setNewsText((string)$data['news_text']);
         $object->setStatus($data['status']['id']);
         $object->setLearningObjective($data['learning_objective']);
         $object->setRegistrationPossible($data['registration_possible']);
         $object->setMinParticipants($data['min_participants']);
         $object->setMaxParticipants($data['max_participants']);
         $object->setParticipants($data['participants']);
-        $object->setHash($data['hash']);
+        $object->setHash((string)$data['hash']);
 
         /** @var TimeRange[] $timeRanges */
-        $timeRanges = $this->generateMultiple(TimeRange::class, $data['timeranges']);
+        $timeRanges = $this->generateMultiple(TimeRange::class, $data['timeranges']??[]);
         foreach ($timeRanges as $timeRange) {
             $object->addTimeRange($timeRange);
         }
 
-        /** @var Speaker[] $speakers */
-        $speakers = $this->generateMultiple(Speaker::class, $data['referents']);
-        foreach ($speakers as $speaker) {
-            $object->addSpeaker($speaker);
+        if (!empty($data['referents'])) {
+            /** @var Speaker[] $speakers */
+            $speakers = $this->generateMultiple(Speaker::class, $data['referents']);
+            foreach ($speakers as $speaker) {
+                $object->addSpeaker($speaker);
+            }
         }
 
         $dataOrganizers = [];
@@ -89,13 +92,13 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
         }
 
         /** @var TargetGroup[] $targetGroups */
-        $targetGroups = $this->generateMultiple(TargetGroup::class, $data['target_groups']);
+        $targetGroups = $this->generateMultiple(TargetGroup::class, $data['target_groups']??[]);
         foreach ($targetGroups as $targetGroup) {
             $object->addTargetGroup($targetGroup);
         }
 
         /** @var FilterCategory[] $filterCategories */
-        $filterCategories = $this->generateMultiple(FilterCategory::class, $data['filter_categories']);
+        $filterCategories = $this->generateMultiple(FilterCategory::class, $data['filter_categories']??[]);
         foreach ($filterCategories as $filterCategory) {
             $object->addFilterCategory($filterCategory);
         }
@@ -111,7 +114,7 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
         }
 
         /** @var Category[] $categories */
-        $categories = $this->generateMultiple(Category::class, $data['categories']);
+        $categories = $this->generateMultiple(Category::class, $data['categories']??[]);
         foreach ($categories as $category) {
             $object->addCategory($category);
         }
@@ -124,14 +127,14 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
         $object->setLocation($location);
 
         /** @var FileImporter $fileImporter */
-        $fileImporter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(FileImporter::class);
-        foreach ($data['images'] as $attachmentData) {
+        $fileImporter = GeneralUtility::makeInstance(FileImporter::class);
+        foreach (($data['images']??[]) as $attachmentData) {
             $fileImporter->enqueueFileMapping($object, 'images', $attachmentData);
         }
 
         /** @var FileImporter $fileImporter */
-        $fileImporter = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(FileImporter::class);
-        foreach ($data['attachments'] as $attachmentData) {
+        $fileImporter = GeneralUtility::makeInstance(FileImporter::class);
+        foreach (($data['attachments']??[]) as $attachmentData) {
             $fileImporter->enqueueFileMapping($object, 'attachments', $attachmentData);
         }
     }
@@ -164,7 +167,7 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
     protected function assignOrganizerProperties(string $class, ImportedModelInterface $object, array $data): void
     {
         /** @var Organizer $object */
-        $object->setName($data['name']);
+        $object->setName($data['name'] ?? '');
     }
 
     /**
@@ -184,7 +187,7 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
     protected function assignTargetGroupProperties(string $class, ImportedModelInterface $object, array $data): void
     {
         /** @var TargetGroup $object */
-        $object->setName($data['name']);
+        $object->setName($data['name'] ?? '');
     }
 
     /**
@@ -193,7 +196,7 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
     protected function assignViewListProperties(string $class, ImportedModelInterface $object, array $data): void
     {
         /** @var ViewList $object */
-        $object->setName($data['name']);
+        $object->setName($data['name'] ?? '');
     }
 
     /**

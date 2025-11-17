@@ -16,14 +16,13 @@ namespace BrainAppeal\CampusEventsConnector\Importer;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Resource\Exception\ExistingTargetFolderException;
-use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderReadPermissionsException;
-use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderWritePermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
-use TYPO3\CMS\Core\Resource\InaccessibleFolder;
+use TYPO3\CMS\Core\Resource\Index\Indexer;
+use TYPO3\CMS\Core\Resource\ResourceStorage;
+use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
@@ -224,7 +223,7 @@ abstract class AbstractFileImporter
                 $fileDeleteStates[$file->getName()] = -1;
             }
             foreach ($existingFiles as $file) {
-                // Delete all files, that are not used anymore
+                // Delete all the files, that are not used anymore
                 if (!in_array($file->getName(), $allUsedFileNames, false)) {
                     try {
                         $file->delete();
@@ -240,7 +239,9 @@ abstract class AbstractFileImporter
                     // Add randomness to update time, so files will not be updated at the same time
                     $minTstamp = time() - (7 + random_int(1, 5)) * 86400 + random_int(1, 86400);
                     $queueEntry['_modification_date'] = $file->getModificationTime();
-                    if (!empty($queueEntry['data']['size'])) {
+                    if ($file->isMissing()) {
+                        $queueEntry['file_exists'] = false;
+                    } elseif (!empty($queueEntry['data']['size'])) {
                         $queueEntry['file_exists'] = (int)$file->getSize() === (int)$queueEntry['data']['size'];
                     } else {
                         $queueEntry['file_exists'] = $file->getModificationTime() > $minTstamp;
@@ -349,6 +350,27 @@ abstract class AbstractFileImporter
     public function hasUpdates(): bool
     {
         return !empty($this->newReferenceQueue);
+    }
+
+    public function runStorageIndexing(): void
+    {
+        if ($this->storageId > 0 && $storage = GeneralUtility::makeInstance(StorageRepository::class)->findByUid($this->storageId)) {
+            $currentEvaluatePermissionsValue = $storage->getEvaluatePermissions();
+            $storage->setEvaluatePermissions(false);
+            $indexer = $this->getIndexer($storage);
+            $indexer->processChangesInStorages();
+            $storage->setEvaluatePermissions($currentEvaluatePermissionsValue);
+        }
+    }
+
+    /**
+     * Gets the indexer
+     *
+     * @return \TYPO3\CMS\Core\Resource\Index\Indexer
+     */
+    protected function getIndexer(ResourceStorage $storage)
+    {
+        return GeneralUtility::makeInstance(Indexer::class, $storage);
     }
 
     /**

@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## 5.0.3 (2025-11-17)
+
+### Changed:
+- prevent unnecessary API calls
+- run file indexer if new files have been imported
+
 ## 5.0.2 (2025-08-25)
 
 ### Fixed:

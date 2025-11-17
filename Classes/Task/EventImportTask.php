@@ -80,7 +80,7 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
     /**
      * @inheritdoc
      */
-    public function execute()
+    public function execute(): bool
     {
         if ($this->apiVersion === self::API_VERSION_ABOVE_227) {
             $importer = $this->getExtendedImporter();
@@ -88,13 +88,16 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
             if (!$success) {
                 $exceptions = $importer->getExceptions();
                 if (!empty($exceptions)) {
+                    $logException = null;
                     if ($exceptions[0] instanceof \Exception) {
-                        $this->logException($exceptions[0]);
+                        $logException = $exceptions[0];
                     } elseif ($exceptions[0] instanceof \Throwable) {
                         $logException = new Exception('Wrapped throwable: ' . $exceptions[0]->getMessage(), $exceptions[0]->getCode(), $exceptions[0]);
-                        $this->logException($logException);
                     }
-
+                    if ($logException) {
+                        $this->logException($logException);
+                        throw $logException;
+                    }
                 }
             }
         } else {

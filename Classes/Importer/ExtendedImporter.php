@@ -105,6 +105,7 @@ class ExtendedImporter
                     $excludeFileReferenceUidList = $fileImporter->getExcludeFileReferenceUids();
                     $dbal->removeNotUpdatedObjects(FileReference::class, $baseUri, $pid, $importStartTimestamp, $excludeFileReferenceUidList);
                 }
+                $fileImporter->runStorageIndexing();
             } catch (\Throwable $e) {
                 // Store exception so that it can be saved to the database
                 $this->exceptions[] = $e;
@@ -191,7 +192,7 @@ class ExtendedImporter
      * @return array
      * @throws \BrainAppeal\CampusEventsConnector\Http\HttpException
      */
-    protected function enqueueItemsForType($apiConnector, $importType, $importSource, $importStartTimestamp)
+    protected function enqueueItemsForType($apiConnector, $importType, $importSource, $importStartTimestamp): array
     {
         $allListItems = $apiConnector->fetchItemListForType($importType);
         $itemListImportTypes = [];
@@ -230,8 +231,8 @@ class ExtendedImporter
         } else {
             $modified = null;
         }
-        // If no previous queue item exists, the item will be imported
-        if (!empty($prevQueueItem)) {
+        // If no previous queue item exists, the item will be imported; Always import if the item has images or attachments
+        if (!empty($prevQueueItem) && !in_array($importModelType, ['EventAttachment', 'EventImage', 'Sponsor'])) {
             if ($modified !== null) {
                 $hasChangedSinceLastImport = $modified > $prevQueueItem['last_modified_tstamp'];
             } else {
@@ -246,15 +247,20 @@ class ExtendedImporter
         }
         $itemImportType = ImportScheduleUtility::IMPORT_TYPE_NO_CHANGE;
         if ($doImport || $this->debug) {
-            // Debug mode: Reuse the api data from the previous entry, instead of making the api call
-            // but only if the data is not marked as changed anyway
-            if (!$this->debug || $this->debug === 'forceUpdate' || empty($prevQueueItem['import_data'])) {
+            if ($apiConnector->listItemContainsAllData($importModelType)) {
+                $apiResponse = $listItem;
+            } elseif (!$this->debug || $this->debug === 'forceUpdate' || empty($prevQueueItem['import_data'])) {
+                // Debug mode: Reuse the api data from the previous entry, instead of making the api call
+                // but only if the data is not marked as changed anyway
                 $apiResponse = $apiConnector->fetchRecordData($importId, $importModelType);
             } else {
                 $apiResponse = json_decode((string)$prevQueueItem['import_data'], true);
                 if (empty($apiResponse) || !is_array($apiResponse) || empty($apiResponse['@type'])) {
                     $apiResponse = $apiConnector->fetchRecordData($importId, $importModelType);
                 }
+            }
+            if (empty($apiResponse)) {
+                return $itemImportType;
             }
             if ($this->debug || empty($modified)) {
                 $modified = time();
