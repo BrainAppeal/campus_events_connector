@@ -14,6 +14,8 @@
 
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
+
 /**
  * EventImage
  */
@@ -21,33 +23,33 @@ class EventImage extends AbstractImportedEntity implements BelongsToEventInterfa
 {
 
     /**
-     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\Event
+     * @var ?\BrainAppeal\CampusEventsConnector\Domain\Model\Event
      */
     protected $event;
 
     /**
      * name
      *
-     * @var string
+     * @var ?string
      */
     protected $name = '';
 
     /**
      * fileHash
      *
-     * @var string
+     * @var ?string
      */
     protected $fileHash = '';
 
     /**
-     * Image
-     * @var \TYPO3\CMS\Extbase\Domain\Model\FileReference
+     * ?Image
+     * @var ?FileReference
      */
     #[\TYPO3\CMS\Extbase\Annotation\ORM\Cascade(['value' => 'remove'])]
     protected $imageFile;
 
     /**
-     * @return Event
+     * @return ?Event
      */
     public function getEvent(): ?Event
     {
@@ -55,7 +57,7 @@ class EventImage extends AbstractImportedEntity implements BelongsToEventInterfa
     }
 
     /**
-     * @param Event $event
+     * @param ?Event $event
      */
     public function setEvent(?Event $event): void
     {
@@ -65,9 +67,9 @@ class EventImage extends AbstractImportedEntity implements BelongsToEventInterfa
     /**
      * Returns the name
      *
-     * @return string $name
+     * @return ?string $name
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -75,42 +77,42 @@ class EventImage extends AbstractImportedEntity implements BelongsToEventInterfa
     /**
      * Sets the name
      *
-     * @param string $name
+     * @param ?string $name
      * @return void
      */
-    public function setName($name)
+    public function setName(?string $name): void
     {
         $this->name = $name;
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getFileHash()
+    public function getFileHash(): ?string
     {
         return $this->fileHash;
     }
 
     /**
-     * @param string $fileHash
+     * @param ?string $fileHash
      */
-    public function setFileHash($fileHash)
+    public function setFileHash(?string $fileHash): void
     {
         $this->fileHash = $fileHash;
     }
 
     /**
-     * @return \TYPO3\CMS\Extbase\Domain\Model\FileReference
+     * @return ?FileReference
      */
-    public function getImageFile()
+    public function getImageFile(): ?FileReference
     {
         return $this->imageFile;
     }
 
     /**
-     * @param \TYPO3\CMS\Extbase\Domain\Model\FileReference $imageFile
+     * @param ?FileReference $imageFile
      */
-    public function setImageFile($imageFile)
+    public function setImageFile(?FileReference $imageFile): void
     {
         $this->imageFile = $imageFile;
     }

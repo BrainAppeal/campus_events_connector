@@ -15,6 +15,7 @@ namespace BrainAppeal\CampusEventsConnector\Importer\DBAL;
 
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
 interface DBALInterface
@@ -30,7 +31,7 @@ interface DBALInterface
 
     public function updateObjects($objects);
 
-    public function removeNotUpdatedObjects(string $modelClass, string $importSource, int $pid, int $importTimestamp, array $excludeUids = []);
+    public function removeNotUpdatedObjects(string $modelClass, string $importSource, int $pid, int $importTimestamp, array $excludeUids = []): void;
 
     /**
      * Update the import fields of all records that were found in the api list call;
@@ -56,5 +57,13 @@ interface DBALInterface
     public function updateSysFileReference(FileReference $sysFileReference, $attribs = []): void;
 
     public function checkIfPidIsValid($pid): bool;
+
+    /**
+     * Deletes all file references in the database for a given file.
+     *
+     * @param File $file The file for which all references should be deleted.
+     * @return void
+     */
+    public function deleteAllFileReferencesForFile(File $file): void;
 
 }

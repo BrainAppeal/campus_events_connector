@@ -45,7 +45,7 @@ class ExtendedFileImporter extends AbstractFileImporter implements \TYPO3\CMS\Co
      */
     private function addToQueue(ImportedModelInterface $object, string $property, array $data, string $tempFilenameAndPath, string $url, string $targetFileName): void
     {
-        $importId = (int) (!empty($data['id']) ? $data['id'] : $object->getUid());
+        $importId = (int) (!empty($data['id']) ? $data['id'] : ($object->getCeImportId() ?: $object->getUid()));
         $this->newReferenceQueue[] = [
             'object' => $object,
             'property' => $property,
@@ -71,8 +71,7 @@ class ExtendedFileImporter extends AbstractFileImporter implements \TYPO3\CMS\Co
         if (empty($data['url']) || empty($this->baseUri)) {
             return;
         }
-
-        $importId = (int) (!empty($data['id']) ? $data['id'] : $object->getUid());
+        $importId = (int) (!empty($data['id']) ? $data['id'] : ($object->getCeImportId() ?: $object->getUid()));
         $fileBaseName = basename((string) $data['url']);
         $targetFileName = $this->getImportFileName($importId, $fileBaseName);
         if (!$targetFileName) {
@@ -80,11 +79,16 @@ class ExtendedFileImporter extends AbstractFileImporter implements \TYPO3\CMS\Co
         }
         $existingReference = $this->getFileReferenceIfExists($object, $property, $targetFileName);
 
-        if (null !== $existingReference && $this->originalResourceIsValid($existingReference)) {
+        $fileExists = null !== $existingReference && $this->originalResourceIsValid($existingReference)
+            && $existingReference->getOriginalResource()->getName() === $targetFileName;
+        if ($fileExists) {
             $fileReferenceUid = $existingReference->getOriginalResource()->getUid();
             $this->updateReferenceIds[$fileReferenceUid] = $fileReferenceUid;
             $this->mappingOfUsedFileNamesToReferenceUid[$targetFileName] = $fileReferenceUid;
         } else {
+            if ($existingReference) {
+                $this->deleteObsoleteFileReferenceOnImport($existingReference);
+            }
             $tempFilenameAndPath = $this->getTempFilePath();
             $downloadUrl = rtrim($this->baseUri, '/') . '/' . ltrim((string) $data['url'], '/');
             $this->addToQueue($object, $property, $data, $tempFilenameAndPath, $downloadUrl, $targetFileName);

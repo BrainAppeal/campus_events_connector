@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## 5.0.4 (2025-11-21)
+
+### Changed:
+- improve file import
+
 ## 5.0.3 (2025-11-17)
 
 ### Changed:

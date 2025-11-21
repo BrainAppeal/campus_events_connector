@@ -1,4 +1,5 @@
 <?php
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
@@ -18,6 +19,7 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
@@ -25,7 +27,6 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
 
 class DBAL implements DBALInterface, SingletonInterface
 {
-
     /**
      * @var AbstractImportedRepository[]
      */
@@ -60,13 +61,13 @@ class DBAL implements DBALInterface, SingletonInterface
      * @param string $modelClass
      * @param string $importSource
      * @param int $importId
-     * @param null|int|int[] $pid
+     * @param int|int[]|null $pid
      * @return ImportedModelInterface|null
      */
     public function findByImport(string $modelClass, string $importSource, int $importId, $pid): ?ImportedModelInterface
     {
         $repository = $this->getRepository($modelClass);
-        if (null === $repository) {
+        if ($repository === null) {
             return null;
         }
 
@@ -98,13 +99,13 @@ class DBAL implements DBALInterface, SingletonInterface
     private function deleteRawFromTable(string $tableName, $importSource, $pid, $importTimestamp, $excludeUids)
     {
         $pid = (int)$pid;
-        $importSource = preg_replace("/['\"]/", "", (string) $importSource);
+        $importSource = preg_replace("/['\"]/", '', (string)$importSource);
         $importTimestamp = (int)$importTimestamp;
 
         /** @noinspection SqlResolve */
         $deleteSql = "DELETE FROM $tableName WHERE pid = ? AND ce_import_source = ? AND ce_imported_at < ?";
 
-        $excludeUidsList = implode(',', array_filter($excludeUids,  'is_numeric'));
+        $excludeUidsList = implode(',', array_filter($excludeUids, 'is_numeric'));
         if ($excludeUidsList !== '') {
             $deleteSql .= " AND uid NOT IN ($excludeUidsList)";
         }
@@ -120,7 +121,7 @@ class DBAL implements DBALInterface, SingletonInterface
      */
     public function processImportedItems($tableName, $importIdList, $importSource, $tstamp)
     {
-        $uidListCsv = implode(',', array_filter($importIdList,  'is_numeric'));
+        $uidListCsv = implode(',', array_filter($importIdList, 'is_numeric'));
         $connection = $this->getConnectionForTable($tableName);
         if (!empty($uidListCsv)) {
             // Update timestamp for all items from the api list result + mark as not deleted
@@ -142,14 +143,14 @@ class DBAL implements DBALInterface, SingletonInterface
         return $connectionPool->getConnectionForTable($tableName);
     }
 
-    public function removeNotUpdatedObjects(string $modelClass, string $importSource, int $pid, int $importTimestamp, array $excludeUids = [])
+    public function removeNotUpdatedObjects(string $modelClass, string $importSource, int $pid, int $importTimestamp, array $excludeUids = []): void
     {
         if (is_a($modelClass, FileReference::class, true)) {
             $this->deleteRawFromTable('sys_file_reference', $importSource, $pid, $importTimestamp, $excludeUids);
         } else {
             $repository = $this->getRepository($modelClass);
 
-            if (null !== $repository) {
+            if ($repository !== null) {
                 $results = $repository->findByNotImportedSince($importTimestamp, $importSource, $pid);
                 foreach ($results as $result) {
                     $repository->remove($result);
@@ -186,7 +187,7 @@ class DBAL implements DBALInterface, SingletonInterface
     }
 
     /**
-     * @param \TYPO3\CMS\Core\Resource\File $sysFile
+     * @param File $sysFile
      * @param ImportedModelInterface $target
      * @param string $property
      * @param array $attribs
@@ -199,20 +200,19 @@ class DBAL implements DBALInterface, SingletonInterface
         $table = $this->getTableForModelClass($target::class);
         $storagePid = $target->getPid();
 
+        $newId = 'NEW' . $uidForeign . '-' . $uidLocal;
 
-        $newId = 'NEW'.$uidForeign.'-'.$uidLocal;
-
-        $attribs = array_replace($attribs,[
-            'uid_local'   => $uidLocal,
+        $attribs = array_replace($attribs, [
+            'uid_local' => $uidLocal,
             'table_local' => 'sys_file',
             'uid_foreign' => $uidForeign,
-            'tablenames'  => $table,
-            'fieldname'   => $property,
-            'pid'         => $storagePid,
+            'tablenames' => $table,
+            'fieldname' => $property,
+            'pid' => $storagePid,
         ]);
         $data = [
             'sys_file_reference' => [$newId => $attribs],
-            $table               => [$uidForeign => [$property => $newId]],
+            $table => [$uidForeign => [$property => $newId]],
         ];
 
         // Get an instance of the DataHandler and process the data
@@ -226,6 +226,46 @@ class DBAL implements DBALInterface, SingletonInterface
         return null;
     }
 
+    /**
+     * Deletes all file references in the database for a given file.
+     *
+     * @param File $file The file for which all references should be deleted.
+     * @return void
+     */
+    public function deleteAllFileReferencesForFile(File $file): void
+    {
+        // First, fetch all sys_file_reference UIDs that reference the given file
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('sys_file_reference');
+
+        $referenceUids = $queryBuilder
+            ->select('uid')
+            ->from('sys_file_reference')
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'uid_local',
+                    $queryBuilder->createNamedParameter($file->getUid(), \PDO::PARAM_INT)
+                )
+            )
+            ->executeQuery()
+            ->fetchFirstColumn();
+
+        if (empty($referenceUids)) {
+            return;
+        }
+
+        // Build a cmdmap for DataHandler to properly delete each reference record
+        $cmd = ['sys_file_reference' => []];
+        foreach ($referenceUids as $referenceUid) {
+            $cmd['sys_file_reference'][(int)$referenceUid] = ['delete' => 1];
+        }
+
+        /** @var DataHandler $dataHandler */
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        // No datamap changes, only command map (deletions)
+        $dataHandler->start([], $cmd);
+        $dataHandler->process_cmdmap();
+    }
 
     /**
      * @param int $pid
@@ -234,17 +274,16 @@ class DBAL implements DBALInterface, SingletonInterface
     public function checkIfPidIsValid($pid): bool
     {
         /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
-        $queryBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class)->getQueryBuilderForTable('pages');
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('pages');
         $queryBuilder->resetRestrictions();
         $pageRowOrNull = $queryBuilder
             ->select('uid')
             ->from('pages')
-            ->where($queryBuilder->expr()->eq('uid', (int) $pid))
+            ->where($queryBuilder->expr()->eq('uid', (int)$pid))
             ->setMaxResults(1)
             ->executeQuery()
             ->fetchAssociative();
         return !empty($pageRowOrNull) && (int)$pageRowOrNull['uid'] == $pid;
     }
-
 
 }

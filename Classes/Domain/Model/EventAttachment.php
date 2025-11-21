@@ -14,6 +14,8 @@
 
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
+
 /**
  * EventAttachment
  */
@@ -41,13 +43,13 @@ class EventAttachment extends AbstractImportedEntity implements BelongsToEventIn
 
     /**
      * Image
-     * @var ?\TYPO3\CMS\Extbase\Domain\Model\FileReference
+     * @var ?FileReference
      */
     #[\TYPO3\CMS\Extbase\Annotation\ORM\Cascade(['value' => 'remove'])]
     protected $attachmentFile;
 
     /**
-     * @return Event
+     * @return ?Event
      */
     public function getEvent(): ?Event
     {
@@ -55,7 +57,7 @@ class EventAttachment extends AbstractImportedEntity implements BelongsToEventIn
     }
 
     /**
-     * @param Event $event
+     * @param ?Event $event
      */
     public function setEvent(?Event $event): void
     {
@@ -100,17 +102,17 @@ class EventAttachment extends AbstractImportedEntity implements BelongsToEventIn
     }
 
     /**
-     * @return ?\TYPO3\CMS\Extbase\Domain\Model\FileReference
+     * @return ?FileReference
      */
-    public function getAttachmentFile(): ?\TYPO3\CMS\Extbase\Domain\Model\FileReference
+    public function getAttachmentFile(): ?FileReference
     {
         return $this->attachmentFile;
     }
 
     /**
-     * @param ?\TYPO3\CMS\Extbase\Domain\Model\FileReference $attachmentFile
+     * @param ?FileReference $attachmentFile
      */
-    public function setAttachmentFile(?\TYPO3\CMS\Extbase\Domain\Model\FileReference $attachmentFile): void
+    public function setAttachmentFile(?FileReference $attachmentFile): void
     {
         $this->attachmentFile = $attachmentFile;
     }

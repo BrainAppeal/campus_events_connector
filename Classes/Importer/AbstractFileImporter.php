@@ -14,6 +14,7 @@
 namespace BrainAppeal\CampusEventsConnector\Importer;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory;
 use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderReadPermissionsException;
@@ -222,10 +223,12 @@ abstract class AbstractFileImporter
             foreach ($existingFiles as $file) {
                 $fileDeleteStates[$file->getName()] = -1;
             }
+            $dbal = DBALFactory::getInstance();
             foreach ($existingFiles as $file) {
                 // Delete all the files, that are not used anymore
                 if (!in_array($file->getName(), $allUsedFileNames, false)) {
                     try {
+                        $dbal->deleteAllFileReferencesForFile($file);
                         $file->delete();
                         $fileDeleteStates[$file->getName()] = 1;
                     } catch (InsufficientFolderReadPermissionsException) {
@@ -251,6 +254,19 @@ abstract class AbstractFileImporter
             }
         }
         return $fileDeleteStates;
+    }
+
+    public function deleteObsoleteFileReferenceOnImport(FileReferenceModel $fileReference): bool
+    {
+        try {
+            $originalFile = $fileReference->getOriginalResource()->getOriginalFile();
+            $dbal = DBALFactory::getInstance();
+            $dbal->deleteAllFileReferencesForFile($originalFile);
+            $originalFile->delete();
+        } catch (\Throwable $e) {
+            return false;
+        }
+        return true;
     }
 
     /**

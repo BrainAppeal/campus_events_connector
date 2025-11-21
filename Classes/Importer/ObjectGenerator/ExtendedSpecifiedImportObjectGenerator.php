@@ -21,7 +21,6 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\EventImage;
 use BrainAppeal\CampusEventsConnector\Domain\Model\EventSession;
 use BrainAppeal\CampusEventsConnector\Domain\Model\EventTicketPriceVariant;
 use BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory;
-use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Model\Location;
 use BrainAppeal\CampusEventsConnector\Domain\Model\Organizer;
 use BrainAppeal\CampusEventsConnector\Domain\Model\PriceCategory;
@@ -32,6 +31,7 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ViewList;
 use BrainAppeal\CampusEventsConnector\Importer\ImportMappingModel;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerator
@@ -395,7 +395,7 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         $object->setTitle($this->cropFieldValue($data, 'title', 255));
     }
 
-    protected function assignEventAttachmentProperties(ImportMappingModel $importMappingModel)
+    protected function assignEventAttachmentProperties(ImportMappingModel $importMappingModel): void
     {
         $object = $importMappingModel->getDomainModel();
         $data = $importMappingModel->getImportData();
@@ -406,10 +406,13 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         $object->setFileHash($data['fileHash'] ?? '');
         if ($data['attachmentFile']['url'] ?? null) {
             $this->fileImporter->enqueueFileMapping($object, 'attachment_file', $data['attachmentFile']);
+        } elseif ($object->getAttachmentFile()) {
+            $this->fileImporter->deleteObsoleteFileReferenceOnImport($object->getAttachmentFile());
+            $object->setAttachmentFile(null);
         }
     }
 
-    protected function assignEventImageProperties(ImportMappingModel $importMappingModel)
+    protected function assignEventImageProperties(ImportMappingModel $importMappingModel): void
     {
         $object = $importMappingModel->getDomainModel();
         $data = $importMappingModel->getImportData();
@@ -420,6 +423,9 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         $object->setFileHash($data['fileHash'] ?? '');
         if ($data['imageFile']['url'] ?? null) {
             $this->fileImporter->enqueueFileMapping($object, 'image_file', $data['imageFile']);
+        } elseif ($object->getImageFile()) {
+            $this->fileImporter->deleteObsoleteFileReferenceOnImport($object->getImageFile());
+            $object->setImageFile(null);
         }
     }
 
@@ -506,7 +512,7 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         }
     }
 
-    protected function assignSponsorProperties(ImportMappingModel $importMappingModel)
+    protected function assignSponsorProperties(ImportMappingModel $importMappingModel): void
     {
         $object = $importMappingModel->getDomainModel();
         $data = $importMappingModel->getImportData();
@@ -518,6 +524,11 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         $object->setImageHash($data['imageHash'] ?? '');
         if (!empty($data['imageFile']['url'])) {
             $this->fileImporter->enqueueFileMapping($object, 'image_file', $data['imageFile']);
+        } elseif ($object->getImageFile()) {
+            foreach ($object->getImageFile() as $fileReference) {
+                $this->fileImporter->deleteObsoleteFileReferenceOnImport($fileReference);
+            }
+            $object->setImageFile(new ObjectStorage());
         }
     }
 

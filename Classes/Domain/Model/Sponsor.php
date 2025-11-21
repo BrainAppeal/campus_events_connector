@@ -47,6 +47,11 @@ class Sponsor extends AbstractImportedEntity
      */
     protected $imageFile = null;
 
+    public function __construct()
+    {
+        $this->imageFile = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+    }
+
     /**
      * Returns the name
      *

@@ -358,12 +358,12 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
     /**
      * @param ImportMappingModel $importMappingModel
      */
-    abstract protected function assignEventAttachmentProperties(ImportMappingModel $importMappingModel);
+    abstract protected function assignEventAttachmentProperties(ImportMappingModel $importMappingModel): void;
 
     /**
      * @param ImportMappingModel $importMappingModel
      */
-    abstract protected function assignEventImageProperties(ImportMappingModel $importMappingModel);
+    abstract protected function assignEventImageProperties(ImportMappingModel $importMappingModel): void;
 
     /**
      * @param ImportMappingModel $importMappingModel
@@ -393,6 +393,6 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
     /**
      * @param ImportMappingModel $importMappingModel
      */
-    abstract protected function assignSponsorProperties(ImportMappingModel $importMappingModel);
+    abstract protected function assignSponsorProperties(ImportMappingModel $importMappingModel): void;
 
 }
