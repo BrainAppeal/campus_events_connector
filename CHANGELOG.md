@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## 5.1.0 (2025-11-30)
+
+### Changed:
+- import English translations from Campus Events, if storage page is translated
+
 ## 5.0.4 (2025-11-21)
 
 ### Changed:

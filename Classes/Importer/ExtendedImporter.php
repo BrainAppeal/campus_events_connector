@@ -76,7 +76,7 @@ class ExtendedImporter
         $this->initializeExtbaseEnvironment($pid);
         // Enable debug mode to keep queue item data (prevent repeated API access for the same data)
         // + force update of all found items
-        $this->debug = true;//'forceUpdate'
+        //$this->debug = true;//'forceUpdate'
         if (!$this->debug || $this->debug === 'forceUpdate') {
             $this->getImportScheduleUtility()?->cleanUp();
         }
