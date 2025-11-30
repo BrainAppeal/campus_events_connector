@@ -22,9 +22,9 @@ class EventSession extends AbstractImportedEntity implements BelongsToEventInter
     use DatePeriodTrait;
 
     /**
-     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\Event
+     * @var ?\BrainAppeal\CampusEventsConnector\Domain\Model\Event
      */
-    protected $event;
+    protected $event = null;
 
     /**
      * session time periods

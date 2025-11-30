@@ -41,17 +41,36 @@ class Event extends AbstractImportedEntity
     /**
      * canceled
      *
-     * @var bool
-     * @deprecated
+     * @var ?bool
      */
-    protected $canceled = false;
+    protected ?bool $canceled = false;
 
+    /**
+     * canceled
+     *
+     * @var bool
+     */
+    protected ?bool $published = false;
+
+    /**
+     * canceled
+     *
+     * @var bool
+     */
+    protected ?bool $completed = false;
+
+    /**
+     * canceled
+     *
+     * @var bool
+     */
+    protected ?bool $archived = false;
     /**
      * url
      *
      * @var ?string
      */
-    protected $url = '';
+    protected ?string $url = '';
 
     /**
      * External order url
@@ -145,6 +164,20 @@ class Event extends AbstractImportedEntity
     protected $seoDescription = '';
 
     /**
+     * seoRobotsIndex
+     *
+     * @var bool
+     */
+    protected ?bool $seoRobotsIndex = false;
+
+    /**
+     * seoRobotsFollow
+     *
+     * @var bool
+     */
+    protected ?bool $seoRobotsFollow = false;
+
+    /**
      * eventAttendanceMode
      *
      * @var ?string
@@ -178,7 +211,6 @@ class Event extends AbstractImportedEntity
      * learningObjective
      *
      * @var ?string
-     * @deprecated
      */
     protected $learningObjective = '';
 
@@ -225,17 +257,15 @@ class Event extends AbstractImportedEntity
      * minParticipants
      *
      * @var int
-     * @deprecated
      */
-    protected $minParticipants = 0;
+    protected ?int $minParticipants = 0;
 
     /**
      * maxParticipants
      *
      * @var int
-     * @deprecated
      */
-    protected $maxParticipants = 0;
+    protected ?int $maxParticipants = 0;
 
     /**
      * participants
@@ -470,34 +500,61 @@ class Event extends AbstractImportedEntity
      * Returns the canceled
      *
      * @return bool $canceled
-     * @deprecated
      */
-    public function getCanceled()
+    public function getCanceled(): bool
     {
-        return $this->canceled;
+        return (bool)$this->canceled;
     }
 
     /**
      * Sets the canceled
      *
-     * @param bool $canceled
+     * @param ?bool $canceled
      * @return void
-     * @deprecated
      */
-    public function setCanceled($canceled)
+    public function setCanceled(?bool $canceled): void
     {
-        $this->canceled = $canceled;
+        $this->canceled = (bool)$canceled;
     }
 
     /**
      * Returns the boolean state of canceled
      *
      * @return bool
-     * @deprecated
      */
-    public function isCanceled()
+    public function isCanceled(): bool
     {
-        return $this->canceled;
+        return $this->getCanceled();
+    }
+
+    public function getPublished(): ?bool
+    {
+        return $this->published;
+    }
+
+    public function setPublished(?bool $published): void
+    {
+        $this->published = $published;
+    }
+
+    public function getCompleted(): ?bool
+    {
+        return $this->completed;
+    }
+
+    public function setCompleted(?bool $completed): void
+    {
+        $this->completed = $completed;
+    }
+
+    public function getArchived(): ?bool
+    {
+        return $this->archived;
+    }
+
+    public function setArchived(?bool $archived): void
+    {
+        $this->archived = $archived;
     }
 
     /**
@@ -666,7 +723,6 @@ class Event extends AbstractImportedEntity
      * Returns the learningObjective
      *
      * @return string $learningObjective
-     * @deprecated
      */
     public function getLearningObjective()
     {
@@ -678,7 +734,6 @@ class Event extends AbstractImportedEntity
      *
      * @param string $learningObjective
      * @return void
-     * @deprecated
      */
     public function setLearningObjective($learningObjective)
     {
@@ -816,10 +871,9 @@ class Event extends AbstractImportedEntity
     /**
      * Returns the minParticipants
      *
-     * @return int $minParticipants
-     * @deprecated
+     * @return ?int $minParticipants
      */
-    public function getMinParticipants()
+    public function getMinParticipants(): ?int
     {
         return $this->minParticipants;
     }
@@ -827,22 +881,20 @@ class Event extends AbstractImportedEntity
     /**
      * Sets the minParticipants
      *
-     * @param int $minParticipants
+     * @param ?int $minParticipants
      * @return void
-     * @deprecated
      */
-    public function setMinParticipants($minParticipants)
+    public function setMinParticipants(?int $minParticipants): void
     {
-        $this->minParticipants = $minParticipants;
+        $this->minParticipants = (int)$minParticipants;
     }
 
     /**
      * Returns the maxParticipants
      *
-     * @return int $maxParticipants
-     * @deprecated
+     * @return ?int $maxParticipants
      */
-    public function getMaxParticipants()
+    public function getMaxParticipants(): ?int
     {
         return $this->maxParticipants;
     }
@@ -850,13 +902,12 @@ class Event extends AbstractImportedEntity
     /**
      * Sets the maxParticipants
      *
-     * @param int $maxParticipants
+     * @param ?int $maxParticipants
      * @return void
-     * @deprecated
      */
-    public function setMaxParticipants($maxParticipants)
+    public function setMaxParticipants(?int $maxParticipants): void
     {
-        $this->maxParticipants = $maxParticipants;
+        $this->maxParticipants = (int)$maxParticipants;
     }
 
     /**
@@ -1359,6 +1410,26 @@ class Event extends AbstractImportedEntity
     public function setSeoDescription($seoDescription)
     {
         $this->seoDescription = $seoDescription;
+    }
+
+    public function getSeoRobotsIndex(): ?bool
+    {
+        return $this->seoRobotsIndex;
+    }
+
+    public function setSeoRobotsIndex(?bool $seoRobotsIndex): void
+    {
+        $this->seoRobotsIndex = $seoRobotsIndex;
+    }
+
+    public function getSeoRobotsFollow(): ?bool
+    {
+        return $this->seoRobotsFollow;
+    }
+
+    public function setSeoRobotsFollow(?bool $seoRobotsFollow): void
+    {
+        $this->seoRobotsFollow = $seoRobotsFollow;
     }
 
     /**

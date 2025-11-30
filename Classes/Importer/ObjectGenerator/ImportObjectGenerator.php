@@ -29,8 +29,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 abstract class ImportObjectGenerator implements SingletonInterface
 {
-    const UNIX_TIMESTAMP_MAX = 2147483647;
-
     /**
      * @var string
      */

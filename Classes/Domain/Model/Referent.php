@@ -119,6 +119,13 @@ class Referent extends AbstractImportedEntity
     protected $description = '';
 
     /**
+     * type (internal/external)
+     *
+     * @var ?int
+     */
+    protected ?int $type = null;
+
+    /**
      * Returns the title
      *
      * @return string $title
@@ -356,4 +363,15 @@ class Referent extends AbstractImportedEntity
     {
         $this->description = $description;
     }
+
+    public function getType(): ?int
+    {
+        return $this->type;
+    }
+
+    public function setType(?int $type): void
+    {
+        $this->type = (int)$type;
+    }
+
 }

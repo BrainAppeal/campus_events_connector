@@ -22,12 +22,12 @@ class TimeRange extends AbstractImportedEntity implements BelongsToEventInterfac
     use DatePeriodTrait;
 
     /**
-     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\Event
+     * @var ?\BrainAppeal\CampusEventsConnector\Domain\Model\Event
      */
     protected $event = null;
 
     /**
-     * @var \BrainAppeal\CampusEventsConnector\Domain\Model\EventSession
+     * @var ?\BrainAppeal\CampusEventsConnector\Domain\Model\EventSession
      */
     protected $eventSession = null;
 

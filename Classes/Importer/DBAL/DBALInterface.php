@@ -29,7 +29,18 @@ interface DBALInterface
      */
     public function findByImport(string $modelClass, string $importSource, int $importId, $pid): ?ImportedModelInterface;
 
+    /**
+     * @param string $table
+     * @param string $importSource
+     * @param int $importId
+     * @param int|null $pid
+     * @return array|null
+     */
+    public function findRowByImport(string $table, string $importSource, int $importId, ?int $pid = null): ?array;
+
     public function updateObjects($objects);
+
+    public function persistImportModels($groupedImportMappingModels): void;
 
     public function removeNotUpdatedObjects(string $modelClass, string $importSource, int $pid, int $importTimestamp, array $excludeUids = []): void;
 

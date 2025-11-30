@@ -14,9 +14,10 @@
 namespace BrainAppeal\CampusEventsConnector\Importer;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class ExtendedFileImporter extends AbstractFileImporter implements \TYPO3\CMS\Core\SingletonInterface
+class ExtendedFileImporter extends AbstractFileImporter implements SingletonInterface
 {
 
     /**

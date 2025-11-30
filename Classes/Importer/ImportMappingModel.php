@@ -18,23 +18,48 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 class ImportMappingModel
 {
     /**
-     * @var ImportedModelInterface|null
+     * @var ?ImportedModelInterface
      */
-    protected $domainModel;
+    protected ?ImportedModelInterface $domainModel = null;
 
-    protected $isProcessed = false;
+    protected bool $isProcessed = false;
+
+    protected ?string $table = null;
+    private string $importSource;
 
     /**
-     * @param mixed[] $queueItem
+     * @param int $importId
+     * @param string $importType
+     * @param string $importSource
+     * @param ?array<string, mixed> $queueItem The record from the import queue
      */
-    public function __construct(private readonly int $importId, private readonly string $importType, protected $queueItem = null)
+    public function __construct(private readonly int $importId, private readonly string $importType, string $importSource, protected ?array $queueItem = null)
     {
+        if (isset(ExtendedApiConnector::IMPORT_TYPE_TABLE_MAP[$importType])) {
+            $this->table = ExtendedApiConnector::IMPORT_TYPE_TABLE_MAP[$importType];
+        }
+        $this->importSource = $importSource;
+    }
+
+    public function getImportSource(): string
+    {
+        return $this->importSource;
+    }
+
+    public function getTable(): ?string
+    {
+        return $this->table;
+    }
+
+    public function useDataHandler(): bool
+    {
+        return $this->table !== null;
     }
 
     /**
      * @return bool
      */
-    public function existsInApi()
+    public function existsInApi(): bool
     {
         return null !== $this->queueItem;
     }

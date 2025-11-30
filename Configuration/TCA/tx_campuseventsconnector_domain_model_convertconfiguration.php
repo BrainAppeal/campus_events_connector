@@ -121,6 +121,10 @@ return [
                             'disabled' => false,
                         ]
                     ],
+                    // Allow language synchronization so that relations are copied on localization
+                    'behaviour' => [
+                        'allowLanguageSynchronization' => true,
+                    ],
                 ],
             ],
             'filter_categories' => [
@@ -144,6 +148,10 @@ return [
                             'disabled' => false,
                         ]
                     ],
+                    // Allow language synchronization so that relations are copied on localization
+                    'behaviour' => [
+                        'allowLanguageSynchronization' => true,
+                    ],
                 ],
             ],
             'view_lists' => [
@@ -165,6 +173,10 @@ return [
                         'addRecord' => [
                             'disabled' => false,
                         ]
+                    ],
+                    // Allow language synchronization so that relations are copied on localization
+                    'behaviour' => [
+                        'allowLanguageSynchronization' => true,
                     ],
                 ],
             ],

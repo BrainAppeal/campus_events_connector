@@ -67,6 +67,7 @@ return [
         [
             'name' => [
                 'exclude' => true,
+                'l10n_mode' => 'prefixLangTitle',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_targetgroup.name',
                 'config' => [
                     'type' => 'input',

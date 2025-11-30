@@ -4,6 +4,9 @@
 CREATE TABLE tx_campuseventsconnector_domain_model_event (
 	status int(11) DEFAULT '0' NOT NULL,
 	canceled smallint(5) unsigned DEFAULT '0' NOT NULL,
+	published smallint(5) unsigned DEFAULT '0' NOT NULL,
+	completed smallint(5) unsigned DEFAULT '0' NOT NULL,
+	archived smallint(5) unsigned DEFAULT '0' NOT NULL,
 	url varchar(255) DEFAULT '' NOT NULL,
 	name varchar(255) DEFAULT '' NOT NULL,
 	subtitle varchar(255) DEFAULT '' NOT NULL,
@@ -48,6 +51,8 @@ CREATE TABLE tx_campuseventsconnector_domain_model_event (
     referents_title varchar(255) DEFAULT '' NOT NULL,
 	seo_description text,
     seo_title varchar(255) DEFAULT '' NOT NULL,
+	seo_robots_index smallint(5) unsigned DEFAULT '0' NOT NULL,
+	seo_robots_follow smallint(5) unsigned DEFAULT '0' NOT NULL,
     sponsors int(11) unsigned DEFAULT '0' NOT NULL,
     sponsors_title varchar(255) DEFAULT '' NOT NULL,
 	slug varchar(2048),
@@ -288,7 +293,8 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventticketpricevariant (
 	tax_rate varchar(255) DEFAULT '' NOT NULL,
 	tax varchar(255) DEFAULT '' NOT NULL,
 	direct_checkout_url varchar(255) DEFAULT '' NOT NULL,
-
+	price_category int(11) unsigned DEFAULT '0',
+	event int(11) unsigned DEFAULT '0',
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
@@ -326,6 +332,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_referent (
 	institution varchar(255) DEFAULT '' NOT NULL,
 	phone varchar(255) DEFAULT '' NOT NULL,
 	email varchar(255) DEFAULT '' NOT NULL,
+	type smallint(5) unsigned DEFAULT '0' NOT NULL,
 	business_address text,
 	publications text,
 	focus_of_work text,

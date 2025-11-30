@@ -19,36 +19,14 @@ class TCAUtility
     public const TCA_IMPORT_KEY = 'ce';
     public const TABLE_EVENTS = 'tx_campuseventsconnector_domain_model_event';
 
-    public static function getDefaultFieldConfiguration(string $table): array
+    public static function getDefaultFieldConfiguration(string $table, bool $addLanguageFields = true): array
     {
-        return [
+        $defaultTcaColumns = [
             'sys_language_uid' => [
                 'exclude' => true,
                 'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
                 'config' => [
                     'type' => 'language',
-                ],
-            ],
-            'l10n_parent' => [
-                'displayCond' => 'FIELD:sys_language_uid:>:0',
-                'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
-                'config' => [
-                    'type' => 'group',
-                    'allowed' => $table,
-                    'size' => 1,
-                    'maxitems' => 1,
-                    'minitems' => 0,
-                    'default' => 0,
-                ],
-            ],
-            'l10n_source' => [
-                'config' => [
-                    'type' => 'passthrough',
-                ],
-            ],
-            'l10n_diffsource' => [
-                'config' => [
-                    'type' => 'passthrough',
                 ],
             ],
             'pid' => [
@@ -94,6 +72,33 @@ class TCAUtility
                 ],
             ],
         ];
+        if ($addLanguageFields) {
+            return array_merge([
+                'l10n_parent' => [
+                    'displayCond' => 'FIELD:sys_language_uid:>:0',
+                    'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
+                    'config' => [
+                        'type' => 'group',
+                        'allowed' => $table,
+                        'size' => 1,
+                        'maxitems' => 1,
+                        'minitems' => 0,
+                        'default' => 0,
+                    ],
+                ],
+                'l10n_source' => [
+                    'config' => [
+                        'type' => 'passthrough',
+                    ],
+                ],
+                'l10n_diffsource' => [
+                    'config' => [
+                        'type' => 'passthrough',
+                    ],
+                ],
+            ], $defaultTcaColumns);
+        }
+        return $defaultTcaColumns;
     }
 
     /**

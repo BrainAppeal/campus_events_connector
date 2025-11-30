@@ -16,7 +16,7 @@ use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 $tableName = 'tx_campuseventsconnector_domain_model_eventsession';
-$defaultColumnsColumns = TCAUtility::getDefaultFieldConfiguration($tableName);
+$defaultColumnsColumns = TCAUtility::getDefaultFieldConfiguration($tableName, false);
 $importColumns = TCAUtility::getImportFieldConfiguration();
 $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(TCAUtility::EXT_NAME);
 $importFieldsReadOnly = $extConf['tca_fields_read_only'] ?? false;
@@ -30,8 +30,6 @@ return [
         'crdate' => 'crdate',
         'versioningWS' => true,
         'languageField' => 'sys_language_uid',
-        'transOrigPointerField' => 'l10n_parent',
-        'transOrigDiffSourceField' => 'l10n_diffsource',
         'delete' => 'deleted',
         'enablecolumns' => [
             'disabled' => 'hidden',
@@ -59,7 +57,7 @@ return [
         'paletteTimespan' => ['showitem' => 'start_tstamp, end_tstamp'],
         'paletteLanguage' => [
             'showitem' => '
-                sys_language_uid,l10n_parent, l10n_diffsource,
+                sys_language_uid,
             ',
         ],
         'access' => [
@@ -72,6 +70,8 @@ return [
         [
             'start_tstamp' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventsession.start_tstamp',
                 'config' => [
                     'type' => 'datetime',
@@ -86,6 +86,8 @@ return [
             ],
             'end_tstamp' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventsession.end_tstamp',
                 'config' => [
                     'type' => 'datetime',
@@ -100,6 +102,8 @@ return [
             ],
             'session_time_periods' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_sessions',
                 'config' => [
                     'type' => 'inline',
@@ -114,11 +118,29 @@ return [
                         'showAllLocalizationLink' => 1
                     ],
                     'readOnly' => $importFieldsReadOnly,
+                    // Allow language synchronization so that relations can be localized via DataHandler
+                    'behaviour' => [
+                        'allowLanguageSynchronization' => true,
+                    ],
                 ],
             ],
             'event' => [
+                'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventsession.event',
                 'config' => [
-                    'type' => 'passthrough',
+                    'type' => 'select',
+                    'renderType' => 'selectSingle',
+                    'foreign_table' => 'tx_campuseventsconnector_domain_model_event',
+                    'maxitems' => 1,
+                    'default' => 0,
+                    'readOnly' => $importFieldsReadOnly,
+                ],
+                TCAUtility::TCA_IMPORT_KEY => [
+                    'field' => 'event',
+                    'import_type' => 'reference_id',
+                    'reference_type' => 'Event'
                 ],
             ],
         ]

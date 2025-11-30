@@ -15,6 +15,15 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.canceled">
 				<target>Abgesagt</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.published">
+				<target>Veröffentlicht</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.completed">
+				<target>Erledigt</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.archived">
+				<target>Archiviert</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.url">
 				<target>Url</target>
 			</trans-unit>
@@ -143,6 +152,12 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.seo_title">
 				<target>SEO Titel</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.seo_robots_index">
+				<target>Diese Seite in Suchmaschinen anzeigen</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.seo_robots_follow">
+				<target>Suchmaschinen dürfen Links auf dieser Seite folgen</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.sponsors">
 				<target>Sponsoren</target>
@@ -279,6 +294,9 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventsession.end_tstamp">
 				<target>Endzeit</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventsession.event">
+				<target>Veranstaltung</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant">
 				<target>Preis-Varianten</target>
 			</trans-unit>
@@ -305,6 +323,12 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant.direct_checkout_url">
 				<target>Direct checkout url</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant.price_category">
+				<target>Preis-Kategorie</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventticketpricevariant.event">
+				<target>Veranstaltung</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_pricecategory">
 				<target>Preiskategorie</target>
@@ -374,6 +398,15 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_referent.description">
 				<target>Beschreibung</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.type">
+				<target>Intern/extern</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.type.0">
+				<target>Intern</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_referent.type.1">
+				<target>Extern</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor">
 				<target>Sponsor</target>

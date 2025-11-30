@@ -82,6 +82,8 @@ return [
             ],
             'first_name' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_contactperson.first_name',
                 'config' => [
                     'type' => 'input',
@@ -95,6 +97,8 @@ return [
             ],
             'last_name' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_contactperson.last_name',
                 'config' => [
                     'type' => 'input',
@@ -160,6 +164,8 @@ return [
             ],
             'mail_address' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_contactperson.mail_address',
                 'config' => [
                     'type' => 'input',

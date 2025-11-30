@@ -67,6 +67,7 @@ return [
         [
             'name' => [
                 'exclude' => true,
+                'l10n_mode' => 'prefixLangTitle',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_location.name',
                 'config' => [
                     'type' => 'text',
@@ -76,7 +77,7 @@ return [
                     'readOnly' => $importFieldsReadOnly,
                 ],
                 TCAUtility::TCA_IMPORT_KEY => [
-                    'field' => 'parent',
+                    'field' => 'name',
                 ],
             ],
             'street_name' => [
@@ -146,6 +147,8 @@ return [
             ],
             'longitude' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_location.longitude',
                 'config' => [
                     'type' => 'input',
@@ -159,6 +162,8 @@ return [
             ],
             'latitude' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_location.latitude',
                 'config' => [
                     'type' => 'input',
@@ -172,6 +177,7 @@ return [
             ],
             'list_view_display_name' => [
                 'exclude' => true,
+                'l10n_mode' => 'prefixLangTitle',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_location.list_view_display_name',
                 'config' => [
                     'type' => 'input',

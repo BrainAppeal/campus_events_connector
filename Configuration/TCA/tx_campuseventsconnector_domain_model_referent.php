@@ -47,7 +47,7 @@ return [
         ]
     ],
     'types' => [
-        '1' => ['showitem' => 'title,first_name,last_name,external_url,academic_degree,institution,phone,email,business_address,publications,focus_of_work,event_formats,references,description,
+        '1' => ['showitem' => 'title,first_name,last_name,external_url,academic_degree,institution,phone,email,business_address,publications,focus_of_work,event_formats,references,description,type,
         --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
             --palette--;;paletteLanguage,
         --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access,
@@ -243,6 +243,7 @@ return [
             ],
             'description' => [
                 'exclude' => true,
+                'l10n_mode' => 'prefixLangTitle',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_referent.description',
                 'config' => [
                     'type' => 'text',
@@ -253,6 +254,31 @@ return [
                 ],
                 TCAUtility::TCA_IMPORT_KEY => [
                     'field' => 'description',
+                ],
+            ],
+            'type' => [
+                'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_referent.type',
+                'config' => [
+                    'type' => 'select',
+                    'renderType' => 'selectSingle',
+                    'items' => [
+                        [
+                            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_referent.type.0',
+                            'value' => 0,
+                        ],
+                        [
+                            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_referent.type.1',
+                            'value' => 1,
+                        ],
+                    ],
+                    'default' => 0,
+                    'readOnly' => $importFieldsReadOnly,
+                ],
+                TCAUtility::TCA_IMPORT_KEY => [
+                    'field' => 'type',
                 ],
             ],
         ]

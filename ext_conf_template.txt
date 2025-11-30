@@ -1,2 +1,5 @@
-# cat=basic/enable/100; type=boolean; label=Make table fields read only
+# cat=basic/enable/100; type=boolean; label=LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_be.xlf:tca_fields_read_only
 tca_fields_read_only = 0
+
+# cat=basic/enable/101; type=string; label=LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_be.xlf:additional_language_codes
+additional_language_codes =

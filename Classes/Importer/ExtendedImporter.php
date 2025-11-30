@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
@@ -32,10 +35,7 @@ class ExtendedImporter
      */
     protected $apiConnector;
 
-    /**
-     * @var ImportScheduleUtility
-     */
-    protected $importScheduleUtility;
+    protected ?ImportScheduleUtility $importScheduleUtility = null;
 
     /**
      * Toggle debug mode
@@ -48,14 +48,14 @@ class ExtendedImporter
      *
      * @var bool
      */
-    private $hasChangedData;
+    private bool $hasChangedData = false;
 
     /**
      * @var array
      */
-    protected $exceptions = [];
+    protected array $exceptions = [];
 
-    public function __construct(ExtendedApiConnector $apiConnector)
+    public function __construct(ExtendedApiConnector $apiConnector, private readonly TranslationHandler $translationHandler)
     {
         $this->apiConnector = $apiConnector;
     }
@@ -76,7 +76,7 @@ class ExtendedImporter
         $this->initializeExtbaseEnvironment($pid);
         // Enable debug mode to keep queue item data (prevent repeated API access for the same data)
         // + force update of all found items
-        // $this->debug = true;//'forceUpdate'
+        $this->debug = true;//'forceUpdate'
         if (!$this->debug || $this->debug === 'forceUpdate') {
             $this->getImportScheduleUtility()?->cleanUp();
         }
@@ -84,6 +84,14 @@ class ExtendedImporter
         $apiConnector = $this->apiConnector;
         $apiConnector->setBaseUri($baseUri);
         $apiConnector->setApiKey($apiKey);
+        if ($this->debug) {
+            $apiConnector->setDevelopmentLocalCacheAgeInDays(7);
+        }
+        $languageOverlays = $this->translationHandler->getPageLanguageOverlays($pid);
+        if (!empty($languageOverlays)) {
+            $extraLanguageCodes = array_column($languageOverlays, 'language_code');
+            $apiConnector->setAcceptLanguages($extraLanguageCodes);
+        }
         // If we have a lot of data some day, the number of processed items can be limited, and instead of fetching the
         // api data, we can process the stored data in the unprocessed queue items
         $this->fetchDataFromApi($apiConnector, $importStartTimestamp);
@@ -97,15 +105,23 @@ class ExtendedImporter
             try {
                 /** @var ExtendedSpecifiedImportObjectGenerator $importObjectGenerator */
                 $importObjectGenerator = GeneralUtility::makeInstance(ExtendedSpecifiedImportObjectGenerator::class);
-                $updatedDomainModels = $importObjectGenerator->processQueue($dataMap, $baseUri, $pid, $fileImporter, $this->debug !== false);
+                $groupedImportMappingModels = $importObjectGenerator->processQueue($dataMap, $baseUri, $pid, $fileImporter, $this->debug !== false);
                 $dbal = DBALFactory::getInstance();
-                $dbal->updateObjects($updatedDomainModels);
+                $dbal->persistImportModels($groupedImportMappingModels);
+                if (!empty($languageOverlays)) {
+                    /** @var DataHandlerProcessor $dataHandlerProcessor */
+                    $dataHandlerProcessor = GeneralUtility::makeInstance(DataHandlerProcessor::class);
+                    $dataHandlerProcessor->processImportModels($groupedImportMappingModels, $pid, $languageOverlays, $this->debug !== false);
+                }
                 $fileImporter->runQueue();
                 if ($fileImporter->hasUpdates()) {
                     $excludeFileReferenceUidList = $fileImporter->getExcludeFileReferenceUids();
                     $dbal->removeNotUpdatedObjects(FileReference::class, $baseUri, $pid, $importStartTimestamp, $excludeFileReferenceUidList);
                 }
                 $fileImporter->runStorageIndexing();
+                if ($this->debug) {
+                    $apiConnector->deleteOldLocalCacheFiles();
+                }
             } catch (\Throwable $e) {
                 // Store exception so that it can be saved to the database
                 $this->exceptions[] = $e;
@@ -158,7 +174,7 @@ class ExtendedImporter
      * @return bool Returns true if new or updated data were retrieved
      * @throws \BrainAppeal\CampusEventsConnector\Http\HttpException
      */
-    protected function fetchDataFromApi(ExtendedApiConnector $apiConnector, int $importStartTimestamp)
+    protected function fetchDataFromApi(ExtendedApiConnector $apiConnector, int $importStartTimestamp): bool
     {
         $importSource = $apiConnector->getBaseUri();
         // First, check if any event has changed. If not, we can stop the import
@@ -192,7 +208,7 @@ class ExtendedImporter
      * @return array
      * @throws \BrainAppeal\CampusEventsConnector\Http\HttpException
      */
-    protected function enqueueItemsForType($apiConnector, $importType, $importSource, $importStartTimestamp): array
+    protected function enqueueItemsForType(ExtendedApiConnector $apiConnector, $importType, $importSource, $importStartTimestamp): array
     {
         $allListItems = $apiConnector->fetchItemListForType($importType);
         $itemListImportTypes = [];
@@ -250,7 +266,7 @@ class ExtendedImporter
             if ($apiConnector->listItemContainsAllData($importModelType)) {
                 $apiResponse = $listItem;
             } elseif (!$this->debug || $this->debug === 'forceUpdate' || empty($prevQueueItem['import_data'])) {
-                // Debug mode: Reuse the api data from the previous entry, instead of making the api call
+                // Debug mode: Reuse the api data from the previous entry instead of making the api call,
                 // but only if the data is not marked as changed anyway
                 $apiResponse = $apiConnector->fetchRecordData($importId, $importModelType);
             } else {
@@ -286,7 +302,7 @@ class ExtendedImporter
     /**
      * @return bool
      */
-    public function hasChangedData()
+    public function hasChangedData(): bool
     {
         return $this->hasChangedData;
     }
@@ -299,7 +315,7 @@ class ExtendedImporter
         return $this->exceptions;
     }
 
-    protected function getImportScheduleUtility()
+    protected function getImportScheduleUtility(): ImportScheduleUtility
     {
         if ($this->importScheduleUtility === null) {
             $this->importScheduleUtility = GeneralUtility::makeInstance(ImportScheduleUtility::class);

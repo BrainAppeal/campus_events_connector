@@ -45,13 +45,13 @@ return [
         ]
     ],
     'types' => [
-        '1' => ['showitem' => 'name, subtitle, url, 
+        '1' => ['showitem' => 'name, subtitle, url,
         disturber_message,
-        short_description, 
-        description, 
+        short_description,
+        description,
         slug,
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.meta_data,
-            seo_title, seo_description,
+            seo_title, seo_description, seo_robots_index, seo_robots_follow,
             show_in_news, news_text,
             learning_objective,
             event_attendance_mode, event_number,
@@ -59,20 +59,20 @@ return [
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.event_times,
             --palette--;;eventTimespan,
             event_sessions,
-        --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.registration, 
+        --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.registration,
             registration_possible,
             --palette--;;eventParticipants,
-            event_ticket_price_variants, 
-            direct_registration_url, external_order_email_address, external_order_url, 
+            event_ticket_price_variants,
+            direct_registration_url, external_order_email_address, external_order_url,
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.relations,
             organizer,
             alternative_events, contact_persons, event_attachments, event_images, locations,
             --palette--;;paletteReferents,
             --palette--;;paletteSponsors,
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.classification,
-             target_groups, categories, filter_categories, view_lists, 
-        --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.other, 
-            status, canceled, speakers, time_ranges, hash, modified_at_recursive,
+             target_groups, categories, filter_categories, view_lists,
+        --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.other,
+            --palette--;;paletteStatus, speakers, time_ranges, hash, modified_at_recursive,
             location,
         --palette--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.palette.media;eventMedia,
         --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
@@ -86,8 +86,13 @@ return [
         'eventParticipants' => ['showitem' => 'min_participants, max_participants, participants'],
         'paletteReferents' => ['showitem' => 'referents_title,
             --linebreak--,referents'],
-        'paletteSponsors' => ['showitem' => 'sponsors_title, 
+        'paletteSponsors' => ['showitem' => 'sponsors_title,
             --linebreak--,sponsors'],
+        'paletteStatus' => [
+            'showitem' => '
+                status, canceled, published, completed, archived,
+            ',
+        ],
         'paletteLanguage' => [
             'showitem' => '
                 sys_language_uid,l10n_parent, l10n_diffsource,
@@ -119,6 +124,45 @@ return [
             ],
             TCAUtility::TCA_IMPORT_KEY => [
                 'field' => 'canceled',
+            ],
+        ],
+        'published' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.published',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 0,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'published',
+            ],
+        ],
+        'completed' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.completed',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 0,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'completed',
+            ],
+        ],
+        'archived' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.archived',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 0,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'archived',
             ],
         ],
         'url' => [
@@ -173,6 +217,7 @@ return [
             ],
             TCAUtility::TCA_IMPORT_KEY => [
                 'field' => 'description',
+                'type' => 'html_for_rte',
             ],
         ],
         'short_description' => [
@@ -220,7 +265,10 @@ return [
                 'enableRichtext' => true,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            // 'defaultExtras' => 'richtext:rte_transform' // Deprecated
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'learningObjective',
+                'type' => 'html_for_rte',
+            ],
         ],
         'images' => [
             'exclude' => true,
@@ -268,6 +316,10 @@ return [
                 ],
                 'maxitems' => 9999,
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that file references are copied on localization
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
         ],
         'attachments' => [
@@ -315,6 +367,10 @@ return [
                 ],
                 'maxitems' => 9999,
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that file references are copied on localization
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
         ],
         'registration_possible' => [
@@ -333,8 +389,11 @@ return [
             'config' => [
                 'type' => 'number',
                 'size' => 4,
-                'readOnly' => $importFieldsReadOnly,//Deprecated field
-            ]
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'minParticipants',
+            ],
         ],
         'max_participants' => [
             'exclude' => true,
@@ -342,8 +401,11 @@ return [
             'config' => [
                 'type' => 'number',
                 'size' => 4,
-                'readOnly' => $importFieldsReadOnly,//Deprecated field
-            ]
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'maxParticipants',
+            ],
         ],
         'participants' => [
             'exclude' => true,
@@ -351,7 +413,7 @@ return [
             'config' => [
                 'type' => 'number',
                 'size' => 4,
-                'readOnly' => $importFieldsReadOnly,//Deprecated field
+                'readOnly' => $importFieldsReadOnly,
             ]
         ],
         'speakers' => [
@@ -374,7 +436,11 @@ return [
                         'disabled' => false,
                     ]
                 ],
-                'readOnly' => $importFieldsReadOnly,//Deprecated field
+                'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
 
         ],
@@ -394,6 +460,10 @@ return [
                     'showAllLocalizationLink' => 1
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
         ],
         'location' => [
@@ -411,7 +481,11 @@ return [
                     'showPossibleLocalizationRecords' => 1,
                     'showAllLocalizationLink' => 1
                 ],
-                'readOnly' => $importFieldsReadOnly,//Deprecated field
+                'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
         ],
         'categories' => [
@@ -435,6 +509,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
 
         ],
@@ -459,6 +537,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
 
         ],
@@ -483,6 +565,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
 
         ],
@@ -507,6 +593,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
         ],
         'view_lists' => [
@@ -530,6 +620,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
 
         ],
@@ -554,6 +648,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
 
         ],
@@ -578,6 +676,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
 
         ],
@@ -596,6 +698,8 @@ return [
         ],
         'start_tstamp' => [
             'exclude' => true,
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.start_tstamp',
             'config' => [
                 'type' => 'datetime',
@@ -610,6 +714,8 @@ return [
         ],
         'end_tstamp' => [
             'exclude' => true,
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.end_tstamp',
             'config' => [
                 'type' => 'datetime',
@@ -624,6 +730,8 @@ return [
         ],
         'event_sessions' => [
             'exclude' => true,
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_sessions',
             'config' => [
                 'type' => 'inline',
@@ -639,6 +747,10 @@ return [
                     'showAllLocalizationLink' => 1
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
         ],
         'event_attachments' => [
@@ -657,6 +769,10 @@ return [
                     'showAllLocalizationLink' => 1
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
         ],
         'event_images' => [
@@ -675,6 +791,10 @@ return [
                     'showAllLocalizationLink' => 1
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
         ],
 
@@ -725,6 +845,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
 
         ],
@@ -788,6 +912,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
 
         ],
@@ -799,6 +927,7 @@ return [
             ],
             TCAUtility::TCA_IMPORT_KEY => [
                 'field' => 'modifiedAtRecursive',
+                'type' => 'datetime_to_tstamp',
             ],
         ],
         'order_type' => [
@@ -834,6 +963,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
 
         ],
@@ -877,6 +1010,32 @@ return [
                 'field' => 'seoDescription',
             ],
         ],
+        'seo_robots_index' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.seo_robots_index',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 0,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'seoRobotsIndex',
+            ],
+        ],
+        'seo_robots_follow' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.seo_robots_follow',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 0,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            TCAUtility::TCA_IMPORT_KEY => [
+                'field' => 'seoRobotsFollow',
+            ],
+        ],
         'sponsors_title' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.sponsors_title',
@@ -911,6 +1070,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                // Allow language synchronization so that relations can be localized via DataHandler
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
 
         ],

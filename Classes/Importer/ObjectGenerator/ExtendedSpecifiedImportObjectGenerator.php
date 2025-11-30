@@ -30,6 +30,7 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ViewList;
 use BrainAppeal\CampusEventsConnector\Importer\ImportMappingModel;
+use BrainAppeal\CampusEventsConnector\Utility\DataParser;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -93,6 +94,14 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         $object->setSeoDescription($data['seoDescription'] ?? '');
         $object->setSponsorsTitle($data['sponsorsTitle'] ?? '');
         $object->setCanceled(!empty($data['canceled']));
+        $object->setPublished(!empty($data['published']));
+        $object->setArchived(!empty($data['completed']));
+        $object->setCompleted(!empty($data['archived']));
+        $object->setSeoRobotsIndex(($data['seoRobotsIndex']??'') !== 'noindex');
+        $object->setSeoRobotsFollow(($data['seoRobotsFollow']??'') !== 'nofollow');
+        $object->setLearningObjective($this->cleanupHtmlForRTE((string)($data['learningObjective'] ?? '')));
+        $object->setMinParticipants((int)($data['minParticipants'] ?? null));
+        $object->setMaxParticipants((int)($data['maxParticipants'] ?? null));
 
         if (!empty($data['organizers'])){
             $this->processReferencesMultiple(
@@ -192,7 +201,8 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
             if ($objectLocations->count() > 0) {
                 $object->setLocation($objectLocations->current());
             }
-
+        } else {
+            $object->setLocation(null);
         }
         if (!empty($data['referents'])){
             $this->processReferencesMultiple(
@@ -333,6 +343,7 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         $object->setPublications($this->cropFieldValue($data, 'publications', 65535));
         $object->setReferences($this->cropFieldValue($data, 'references', 65535));
         $object->setTitle($this->cropFieldValue($data, 'title', 255));
+        $object->setType((int)($data['type'] ?? 0));;
     }
 
     /**
@@ -479,6 +490,22 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
         $object->setQuota($this->cropFieldValue($data, 'quota', 255));
         $object->setTax($this->cropFieldValue($data, 'tax', 255));
         $object->setTaxRate($this->cropFieldValue($data, 'taxRate', 255));
+        if (!empty($data['priceCategory'])) {
+            $refArray = ['@id' => $data['priceCategory'], '@type' => 'PriceCategory'];
+            $referencedModel = $this->getImportMappingModelByReference($refArray);
+            $refImportModel = $referencedModel->getDomainModel();
+            if ($refImportModel instanceof PriceCategory) {
+                $object->setPriceCategory($refImportModel);
+            }
+        }
+        if (!empty($data['event'])) {
+            $refArray = ['@id' => $data['event'], '@type' => 'Event'];
+            $referencedModel = $this->getImportMappingModelByReference($refArray);
+            $refImportModel = $referencedModel->getDomainModel();
+            if ($refImportModel instanceof Event) {
+                $object->setEvent($refImportModel);
+            }
+        }
     }
 
     protected function assignPriceCategoryProperties(ImportMappingModel $importMappingModel)
@@ -540,7 +567,7 @@ class ExtendedSpecifiedImportObjectGenerator extends ExtendedImportObjectGenerat
      */
     protected function strToTime($dateValue)
     {
-        if (!empty($dateValue) && ($tstamp = strtotime((string) $dateValue)) && $tstamp <= self::UNIX_TIMESTAMP_MAX) {
+        if (!empty($dateValue) && ($tstamp = strtotime((string) $dateValue)) && $tstamp <= DataParser::UNIX_TIMESTAMP_MAX) {
             return $tstamp;
         }
         return false;

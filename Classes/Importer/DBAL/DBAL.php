@@ -15,14 +15,21 @@
 namespace BrainAppeal\CampusEventsConnector\Importer\DBAL;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\AbstractImportedEntity;
+use BrainAppeal\CampusEventsConnector\Domain\Model\Event;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
+use BrainAppeal\CampusEventsConnector\Domain\Repository\EventRepository;
+use BrainAppeal\CampusEventsConnector\Importer\ExtendedApiConnector;
+use BrainAppeal\CampusEventsConnector\Importer\ImportMappingModel;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
+use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
+use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
 
 class DBAL implements DBALInterface, SingletonInterface
@@ -75,6 +82,40 @@ class DBAL implements DBALInterface, SingletonInterface
     }
 
     /**
+     * @param string $importSource
+     * @param int $importId
+     * @param ?int $pid
+     * @return ?array<string, mixed>
+     */
+    public function findRowByImport(string $table, string $importSource, int $importId, ?int $pid = null): ?array
+    {
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
+        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder
+            ->select('*')
+            ->from($table)
+            ->where(
+                $queryBuilder->expr()->eq('ce_import_source', $queryBuilder->createNamedParameter($importSource, Connection::PARAM_STR)),
+                $queryBuilder->expr()->eq('ce_import_id', $queryBuilder->createNamedParameter($importId, Connection::PARAM_STR))
+            );
+        $tableControl = $GLOBALS['TCA'][$table]['ctrl'] ?? [];
+        $languageField = $tableControl['languageField'] ?? '';
+        if (!empty($languageField)) {
+            $queryBuilder->andWhere($queryBuilder->expr()->eq($languageField, $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)));
+        }
+        if ($pid) {
+            $queryBuilder->andWhere($queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pid, Connection::PARAM_INT)));
+        }
+        $queryBuilder->setMaxResults(1);
+        $row = $queryBuilder->executeQuery()->fetchAssociative();
+        if (empty($row)) {
+            return null;
+        }
+        return $row;
+    }
+
+    /**
      * @param ImportedModelInterface[] $objects
      */
     public function updateObjects($objects)
@@ -96,7 +137,42 @@ class DBAL implements DBALInterface, SingletonInterface
         }
     }
 
-    private function deleteRawFromTable(string $tableName, $importSource, $pid, $importTimestamp, $excludeUids)
+    /**
+     * @param array<string, array<int, ImportMappingModel>> $groupedImportMappingModels
+     * @throws IllegalObjectTypeException
+     * @throws UnknownObjectException
+     */
+    public function persistImportModels($groupedImportMappingModels): void
+    {
+        if (empty($groupedImportMappingModels)) {
+            return;
+        }
+        foreach ($groupedImportMappingModels as $importType => $importModelsForType) {
+            $objectClass = ExtendedApiConnector::IMPORT_TYPE_CLASS_MAP[$importType];
+            $repository = $this->getRepository($objectClass);
+            if ($repository instanceof AbstractImportedRepository) {
+                foreach ($importModelsForType as $importMappingModel) {
+                    /** @var ImportMappingModel $importMappingModel */
+                    if (null !== $object = $importMappingModel->getDomainModel()) {
+                        /** @var AbstractImportedEntity $object */
+                        $object->setCeImportedAt(time());
+                        if ($object->getUid() > 0) {
+                            $repository->update($object);
+                        } else {
+                            $repository->add($object);
+                        }
+                    }
+                }
+            }
+
+        }
+        $eventRepository = $this->getRepository(Event::class);
+        if ($eventRepository instanceof EventRepository) {
+            $eventRepository->persistAll();
+        }
+    }
+
+    private function deleteRawFromTable(string $tableName, $importSource, $pid, $importTimestamp, $excludeUids): void
     {
         $pid = (int)$pid;
         $importSource = preg_replace("/['\"]/", '', (string)$importSource);
@@ -244,7 +320,7 @@ class DBAL implements DBALInterface, SingletonInterface
             ->where(
                 $queryBuilder->expr()->eq(
                     'uid_local',
-                    $queryBuilder->createNamedParameter($file->getUid(), \PDO::PARAM_INT)
+                    $queryBuilder->createNamedParameter($file->getUid(), Connection::PARAM_INT)
                 )
             )
             ->executeQuery()
@@ -264,6 +340,7 @@ class DBAL implements DBALInterface, SingletonInterface
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         // No datamap changes, only command map (deletions)
         $dataHandler->start([], $cmd);
+        $dataHandler->enableLogging = false;
         $dataHandler->process_cmdmap();
     }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="messages" date="2025-11-29T16:00:00Z" product-name="campus_events_connector">
+        <header/>
+        <body>
+            <trans-unit id="tca_fields_read_only">
+				<source>Make table fields read only</source>
+			</trans-unit>
+            <trans-unit id="additional_language_codes">
+				<source>Comma separated list of additional language codes for translations that will be fetched from the API. This only works, if the target page is translated for the target language</source>
+			</trans-unit>
+        </body>
+    </file>
+</xliff>

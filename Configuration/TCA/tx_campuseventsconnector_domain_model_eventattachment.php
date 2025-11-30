@@ -45,7 +45,7 @@ return [
         ]
     ],
     'types' => [
-        '1' => ['showitem' => 'name, file_hash, attachment_file,
+        '1' => ['showitem' => 'name, file_hash, attachment_file,event,
         --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
             --palette--;;paletteLanguage,
         --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access,
@@ -67,6 +67,7 @@ return [
         [
             'name' => [
                 'exclude' => true,
+                'l10n_mode' => 'prefixLangTitle',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventattachment.name',
                 'config' => [
                     'type' => 'input',
@@ -80,6 +81,8 @@ return [
             ],
             'file_hash' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventattachment.file_hash',
                 'config' => [
                     'type' => 'text',
@@ -136,6 +139,27 @@ return [
                         ],
                     ],
                     'maxitems' => 1,
+                    // Allow language synchronization so that file references are copied on localization
+                    'behaviour' => [
+                        'allowLanguageSynchronization' => true,
+                    ],
+                ],
+            ],
+            'event' => [
+                'exclude' => true,
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventsession.event',
+                'config' => [
+                    'type' => 'select',
+                    'renderType' => 'selectSingle',
+                    'foreign_table' => 'tx_campuseventsconnector_domain_model_event',
+                    'maxitems' => 1,
+                    'default' => 0,
+                    'readOnly' => $importFieldsReadOnly,
+                ],
+                TCAUtility::TCA_IMPORT_KEY => [
+                    'field' => 'event',
+                    'import_type' => 'reference_id',
+                    'reference_type' => 'Event'
                 ],
             ],
         ]

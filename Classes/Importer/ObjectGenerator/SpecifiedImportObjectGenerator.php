@@ -24,6 +24,7 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup;
 use BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ViewList;
 use BrainAppeal\CampusEventsConnector\Importer\FileImporter;
+use BrainAppeal\CampusEventsConnector\Utility\DataParser;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
@@ -223,7 +224,7 @@ class SpecifiedImportObjectGenerator extends ImportObjectGenerator
      */
     protected function strToTime($dateValue)
     {
-        if (!empty($dateValue) && ($tstamp = strtotime((string) $dateValue)) && $tstamp <= self::UNIX_TIMESTAMP_MAX) {
+        if (!empty($dateValue) && ($tstamp = strtotime((string) $dateValue)) && $tstamp <= DataParser::UNIX_TIMESTAMP_MAX) {
             return $tstamp;
         }
         return false;

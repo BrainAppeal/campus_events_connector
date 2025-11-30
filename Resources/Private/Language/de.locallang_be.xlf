@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="messages" date="2025-11-29T16:00:00Z" product-name="campus_events_connector">
+		<header/>
+		<body>
+            <trans-unit id="tca_fields_read_only">
+				<target>Tabellenfelder schreibgeschützt machen</target>
+			</trans-unit>
+            <trans-unit id="additional_language_codes">
+				<target>Durch Kommas getrennte Liste zusätzlicher Sprachcodes für Übersetzungen, die aus der API abgerufen werden. Dies funktioniert nur, wenn die Zielseite für die Zielsprache übersetzt ist.</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

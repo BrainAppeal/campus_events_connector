@@ -21,6 +21,13 @@ class EventTicketPriceVariant extends AbstractImportedEntity
 {
 
     /**
+     * Event
+     *
+     * @var ?Event
+     */
+    protected ?Event $event = null;
+
+    /**
      * bookableFrom
      *
      * @var \DateTime
@@ -75,6 +82,23 @@ class EventTicketPriceVariant extends AbstractImportedEntity
      * @var string
      */
     protected $directCheckoutUrl = '';
+
+    /**
+     * Price category
+     *
+     * @var ?PriceCategory
+     */
+    protected ?PriceCategory $priceCategory = null;
+
+    public function getEvent(): ?Event
+    {
+        return $this->event;
+    }
+
+    public function setEvent(?Event $event): void
+    {
+        $this->event = $event;
+    }
 
     /**
      * @return \DateTime
@@ -203,4 +227,16 @@ class EventTicketPriceVariant extends AbstractImportedEntity
     {
         $this->directCheckoutUrl = $directCheckoutUrl;
     }
+
+    public function getPriceCategory(): ?PriceCategory
+    {
+        return $this->priceCategory;
+    }
+
+    public function setPriceCategory(?PriceCategory $priceCategory): void
+    {
+        $this->priceCategory = $priceCategory;
+    }
+
+
 }

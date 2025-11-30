@@ -45,7 +45,7 @@ return [
         ]
     ],
     'types' => [
-        '1' => ['showitem' => 'bookable_from,bookable_till,quota,name,price,tax_rate,tax,direct_checkout_url,
+        '1' => ['showitem' => 'bookable_from,bookable_till,quota,name,price,tax_rate,tax,direct_checkout_url,price_category,event,
         --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
             --palette--;;paletteLanguage,
         --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access,
@@ -67,6 +67,8 @@ return [
         [
             'bookable_from' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.bookable_from',
                 'config' => [
                     'dbType' => 'datetime',
@@ -82,6 +84,8 @@ return [
             ],
             'bookable_till' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.bookable_till',
                 'config' => [
                     'dbType' => 'datetime',
@@ -97,6 +101,8 @@ return [
             ],
             'quota' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.quota',
                 'config' => [
                     'type' => 'input',
@@ -136,6 +142,8 @@ return [
             ],
             'tax_rate' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.tax_rate',
                 'config' => [
                     'type' => 'input',
@@ -149,6 +157,8 @@ return [
             ],
             'tax' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.tax',
                 'config' => [
                     'type' => 'input',
@@ -171,6 +181,58 @@ return [
                 ],
                 TCAUtility::TCA_IMPORT_KEY => [
                     'field' => 'directCheckoutUrl',
+                ],
+            ],
+            'event' => [
+                'exclude' => true,
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.event',
+                'config' => [
+                    'type' => 'select',
+                    'renderType' => 'selectSingle',
+                    'foreign_table' => 'tx_campuseventsconnector_domain_model_event',
+                    'maxitems' => 1,
+                    'default' => 0,
+                    'readOnly' => $importFieldsReadOnly,
+                ],
+                TCAUtility::TCA_IMPORT_KEY => [
+                    'field' => 'event',
+                    'import_type' => 'reference_id',
+                    'reference_type' => 'Event'
+                ],
+            ],
+            'price_category' => [
+                'exclude' => true,
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.price_category',
+                'config' => [
+                    'type' => 'inline',
+                    'foreign_table' => 'tx_campuseventsconnector_domain_model_pricecategory',
+                    'items' => [
+                        [
+                            'label' => '',
+                            'value' => 0,
+                        ],
+                    ],
+                    'minitems' => 0,
+                    'maxitems' => 1,
+                    'appearance' => [
+                        'expandSingle' => true,
+                        'showNewRecordLink' => !$importFieldsReadOnly,
+                        'enabledControls' => [
+                            'info' => !$importFieldsReadOnly,
+                            'new' => !$importFieldsReadOnly,
+                            'dragdrop' => false,
+                            'sort' => false,
+                            'hide' => !$importFieldsReadOnly,
+                            'delete' => !$importFieldsReadOnly,
+                            'localize' => !$importFieldsReadOnly,
+                        ],
+                    ],
+                    //'readOnly' => $importFieldsReadOnly,
+                ],
+                TCAUtility::TCA_IMPORT_KEY => [
+                    'field' => 'priceCategory',
+                    'import_type' => 'reference_id',
+                    'reference_type' => 'PriceCategory'
                 ],
             ],
         ]

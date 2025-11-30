@@ -67,6 +67,7 @@ return [
         [
             'name' => [
                 'exclude' => true,
+                'l10n_mode' => 'prefixLangTitle',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_sponsor.name',
                 'config' => [
                     'type' => 'input',
@@ -80,6 +81,7 @@ return [
             ],
             'url' => [
                 'exclude' => true,
+                'l10n_mode' => 'prefixLangTitle',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_sponsor.url',
                 'config' => [
                     'type' => 'input',
@@ -93,6 +95,8 @@ return [
             ],
             'image_hash' => [
                 'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_sponsor.image_hash',
                 'config' => [
                     'type' => 'text',
@@ -150,6 +154,10 @@ return [
                         ],
                     ],
                     'maxitems' => 1,
+                    // Allow language synchronization so that file references are copied on localization
+                    'behaviour' => [
+                        'allowLanguageSynchronization' => true,
+                    ],
                 ],
             ],
         ]
