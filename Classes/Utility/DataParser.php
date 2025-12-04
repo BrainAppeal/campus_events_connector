@@ -12,7 +12,7 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
  */
 class DataParser
 {
-    public const int UNIX_TIMESTAMP_MAX = 2147483647;
+    public const UNIX_TIMESTAMP_MAX = 2147483647;
 
     /**
      * @var array<string, array<string, string>>

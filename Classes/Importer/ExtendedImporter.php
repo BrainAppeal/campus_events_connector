@@ -78,7 +78,7 @@ class ExtendedImporter
         // + force update of all found items
         //$this->debug = true;//'forceUpdate'
         if (!$this->debug || $this->debug === 'forceUpdate') {
-            $this->getImportScheduleUtility()?->cleanUp();
+            $this->getImportScheduleUtility()->cleanUp();
         }
         $importStartTimestamp = time();
         $apiConnector = $this->apiConnector;

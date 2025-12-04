@@ -1,5 +1,8 @@
 # CHANGELOG.md
 
+## 5.1.1 (2025-12-04)
+- fix PHP 8.2 compatibility
+
 ## 5.1.0 (2025-11-30)
 
 ### Changed:
