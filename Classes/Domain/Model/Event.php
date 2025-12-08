@@ -14,6 +14,8 @@
 
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
+use TYPO3\CMS\Extbase\Annotation\ORM\Lazy;
+use TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
@@ -91,7 +93,7 @@ class Event extends AbstractImportedEntity
      *
      * @var ?string
      */
-    protected $directRegistrationUrl = '';
+    protected ?string $directRegistrationUrl = '';
 
     /**
      * name
@@ -218,40 +220,45 @@ class Event extends AbstractImportedEntity
      * alternativeEvents
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Event>
      */
-    protected $alternativeEvents;
+    #[Lazy]
+    protected ?ObjectStorage $alternativeEvents = null;
 
     /**
      * images
      * @var ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference>
      * @deprecated
      */
-    protected $images;
+    #[Lazy]
+    protected ?ObjectStorage $images = null;
 
     /**
      * attachments
      * @var ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference>
      * @deprecated
      */
-    protected $attachments;
+    #[Lazy]
+    protected ?ObjectStorage $attachments = null;
 
     /**
      * eventAttachments
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment>
      */
-    protected $eventAttachments;
+    #[Lazy]
+    protected ?ObjectStorage $eventAttachments = null;
 
     /**
      * eventImages
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventImage>
      */
-    protected $eventImages;
+    #[Lazy]
+    protected ?ObjectStorage $eventImages = null;
 
     /**
      * registrationPossible
      * @var bool
      * @deprecated
      */
-    protected $registrationPossible = false;
+    protected ?bool $registrationPossible = false;
 
     /**
      * minParticipants
@@ -281,28 +288,32 @@ class Event extends AbstractImportedEntity
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker>
      * @deprecated
      */
-    protected $speakers;
+    #[Lazy()]
+    protected ?ObjectStorage $speakers = null;
 
     /**
      * referents
      *
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Referent>
      */
-    protected $referents;
+    #[Lazy()]
+    protected ?ObjectStorage $referents = null;
 
     /**
      * sponsors
      *
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor>
      */
-    protected $sponsors;
+    #[Lazy()]
+    protected ?ObjectStorage $sponsors = null;
 
     /**
      * contactPersons
      *
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ContactPerson>
      */
-    protected $contactPersons;
+    #[Lazy()]
+    protected ?ObjectStorage $contactPersons = null;
 
     /**
      * timeRanges
@@ -310,7 +321,8 @@ class Event extends AbstractImportedEntity
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange>
      */
     #[\TYPO3\CMS\Extbase\Annotation\ORM\Cascade(['value' => 'remove'])]
-    protected $timeRanges;
+    #[Lazy()]
+    protected ?ObjectStorage $timeRanges = null;
 
     /**
      * eventSessions
@@ -318,63 +330,72 @@ class Event extends AbstractImportedEntity
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventSession>
      */
     #[\TYPO3\CMS\Extbase\Annotation\ORM\Cascade(['value' => 'remove'])]
-    protected $eventSessions;
+    #[Lazy()]
+    protected ?ObjectStorage $eventSessions = null;
 
     /**
      * location
      * @deprecated
-     * @var ?\BrainAppeal\CampusEventsConnector\Domain\Model\Location
+     * @var Location|LazyLoadingProxy|null
      */
-    protected $location;
+    #[Lazy]
+    protected Location|LazyLoadingProxy|null $location = null;
 
     /**
      * categories
      *
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Category>
      */
-    protected $categories;
+    #[Lazy()]
+    protected ?ObjectStorage $categories = null;
 
     /**
      * organizer
      *
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer>
      */
-    protected $organizer;
+    #[Lazy()]
+    protected ?ObjectStorage $organizer = null;
 
     /**
      * targetGroups
      *
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup>
      */
-    protected $targetGroups;
+    #[Lazy()]
+    protected ?ObjectStorage $targetGroups = null;
 
     /**
      * viewLists
      *
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList>
      */
-    protected $viewLists = null;
+    #[Lazy()]
+    protected ?ObjectStorage $viewLists = null;
 
     /**
      * filterCategories
      *
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory>
      */
-    protected $filterCategories;
+    #[Lazy()]
+    protected ?ObjectStorage $filterCategories = null;
 
     /**
      * eventTicketPriceVariants
      *
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventTicketPriceVariant>
      */
-    protected $eventTicketPriceVariants;
+    #[Lazy()]
+    protected ?ObjectStorage $eventTicketPriceVariants = null;
 
     /**
      * locations
      *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Location>
+     * @var ObjectStorage<Location>
      */
-    protected $locations;
+    #[Lazy()]
+    protected ?ObjectStorage $locations = null;
 
     /**
      * hash
@@ -403,24 +424,24 @@ class Event extends AbstractImportedEntity
      */
     protected function initStorageObjects()
     {
-        $this->speakers = new ObjectStorage();
-        $this->timeRanges = new ObjectStorage();
-        $this->categories = new ObjectStorage();
-        $this->organizer = new ObjectStorage();
-        $this->filterCategories = new ObjectStorage();
-        $this->targetGroups = new ObjectStorage();
-        $this->images = new ObjectStorage();
-        $this->attachments = new ObjectStorage();
-        $this->alternativeEvents = new ObjectStorage();
-        $this->eventAttachments = new ObjectStorage();
-        $this->eventImages = new ObjectStorage();
-        $this->referents = new ObjectStorage();
-        $this->sponsors = new ObjectStorage();
-        $this->contactPersons = new ObjectStorage();
-        $this->eventSessions = new ObjectStorage();
-        $this->eventTicketPriceVariants = new ObjectStorage();
-        $this->locations = new ObjectStorage();
-        $this->viewLists = new ObjectStorage();
+        $this->speakers ??= new ObjectStorage();
+        $this->timeRanges ??= new ObjectStorage();
+        $this->categories ??= new ObjectStorage();
+        $this->organizer ??= new ObjectStorage();
+        $this->filterCategories ??= new ObjectStorage();
+        $this->targetGroups ??= new ObjectStorage();
+        $this->images ??= new ObjectStorage();
+        $this->attachments ??= new ObjectStorage();
+        $this->alternativeEvents ??= new ObjectStorage();
+        $this->eventAttachments ??= new ObjectStorage();
+        $this->eventImages ??= new ObjectStorage();
+        $this->referents ??= new ObjectStorage();
+        $this->sponsors ??= new ObjectStorage();
+        $this->contactPersons ??= new ObjectStorage();
+        $this->eventSessions ??= new ObjectStorage();
+        $this->eventTicketPriceVariants ??= new ObjectStorage();
+        $this->locations ??= new ObjectStorage();
+        $this->viewLists ??= new ObjectStorage();
     }
 
     /**
@@ -453,9 +474,9 @@ class Event extends AbstractImportedEntity
      * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker> speakers
      * @deprecated
      */
-    public function getSpeakers()
+    public function getSpeakers(): ObjectStorage
     {
-        if (null === $this->speakers) {
+        if ($this->speakers === null) {
             $this->speakers = new ObjectStorage();
         }
         return $this->speakers;
@@ -468,7 +489,7 @@ class Event extends AbstractImportedEntity
      * @return void
      * @deprecated
      */
-    public function setSpeakers(ObjectStorage $speakers)
+    public function setSpeakers(ObjectStorage $speakers): void
     {
         $this->speakers = $speakers;
     }
@@ -936,22 +957,25 @@ class Event extends AbstractImportedEntity
     /**
      * Returns the location
      *
-     * @return ?\BrainAppeal\CampusEventsConnector\Domain\Model\Location $location
+     * @return LazyLoadingProxy|Location|null $location
      * @deprecated
      */
-    public function getLocation()
+    public function getLocation(): Location|LazyLoadingProxy|null
     {
+        if ($this->location instanceof LazyLoadingProxy) {
+            $this->location->_loadRealInstance();
+        }
         return $this->location;
     }
 
     /**
      * Sets the location
      *
-     * @param ?\BrainAppeal\CampusEventsConnector\Domain\Model\Location $location
+     * @param LazyLoadingProxy|Location|null $location
      * @return void
      * @deprecated
      */
-    public function setLocation($location)
+    public function setLocation(Location|LazyLoadingProxy|null $location)
     {
         $this->location = $location;
     }
@@ -983,7 +1007,7 @@ class Event extends AbstractImportedEntity
      *
      * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Category> $categories
      */
-    public function getCategories()
+    public function getCategories(): ObjectStorage
     {
         if (null === $this->categories) {
             $this->categories = new ObjectStorage();
@@ -1029,7 +1053,7 @@ class Event extends AbstractImportedEntity
      *
      * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer> $organizer
      */
-    public function getOrganizer()
+    public function getOrganizer(): ObjectStorage
     {
         if (null === $this->organizer) {
             $this->organizer = new ObjectStorage();
@@ -1075,7 +1099,7 @@ class Event extends AbstractImportedEntity
      *
      * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange> timeRanges
      */
-    public function getTimeRanges()
+    public function getTimeRanges(): ObjectStorage
     {
         if (null === $this->timeRanges) {
             $this->timeRanges = new ObjectStorage();
@@ -1122,7 +1146,7 @@ class Event extends AbstractImportedEntity
      *
      * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup> targetGroups
      */
-    public function getTargetGroups()
+    public function getTargetGroups(): ObjectStorage
     {
         if (null === $this->targetGroups) {
             $this->targetGroups = new ObjectStorage();
@@ -1168,7 +1192,7 @@ class Event extends AbstractImportedEntity
      *
      * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory> filterCategories
      */
-    public function getFilterCategories()
+    public function getFilterCategories(): ObjectStorage
     {
         if (null === $this->filterCategories) {
             $this->filterCategories = new ObjectStorage();
@@ -1211,7 +1235,7 @@ class Event extends AbstractImportedEntity
      *
      * @return int
      */
-    public function getStartTstamp()
+    public function getStartTstamp(): int
     {
         if (!$this->startTstamp) {
             $tstamp = 0;
@@ -1269,145 +1293,145 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getExternalOrderUrl()
+    public function getExternalOrderUrl(): ?string
     {
         return $this->externalOrderUrl;
     }
 
     /**
-     * @param string $externalOrderUrl
+     * @param ?string $externalOrderUrl
      */
-    public function setExternalOrderUrl($externalOrderUrl)
+    public function setExternalOrderUrl(?string $externalOrderUrl): void
     {
         $this->externalOrderUrl = $externalOrderUrl;
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getExternalOrderEmailAddress()
+    public function getExternalOrderEmailAddress(): ?string
     {
         return $this->externalOrderEmailAddress;
     }
 
     /**
-     * @param string $externalOrderEmailAddress
+     * @param ?string $externalOrderEmailAddress
      */
-    public function setExternalOrderEmailAddress($externalOrderEmailAddress)
+    public function setExternalOrderEmailAddress($externalOrderEmailAddress): void
     {
         $this->externalOrderEmailAddress = $externalOrderEmailAddress;
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getDirectRegistrationUrl()
+    public function getDirectRegistrationUrl(): ?string
     {
         return $this->directRegistrationUrl;
     }
 
     /**
-     * @param string $directRegistrationUrl
+     * @param ?string $directRegistrationUrl
      */
-    public function setDirectRegistrationUrl(string $directRegistrationUrl)
+    public function setDirectRegistrationUrl(?string $directRegistrationUrl): void
     {
         $this->directRegistrationUrl = $directRegistrationUrl;
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getEventNumber()
+    public function getEventNumber(): ?string
     {
         return $this->eventNumber;
     }
 
     /**
-     * @param string $eventNumber
+     * @param ?string $eventNumber
      */
-    public function setEventNumber($eventNumber)
+    public function setEventNumber(?string $eventNumber)
     {
         $this->eventNumber = $eventNumber;
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getDisturberMessage()
+    public function getDisturberMessage(): ?string
     {
         return $this->disturberMessage;
     }
 
     /**
-     * @param string $disturberMessage
+     * @param ?string $disturberMessage
      */
-    public function setDisturberMessage($disturberMessage)
+    public function setDisturberMessage(?string $disturberMessage)
     {
         $this->disturberMessage = $disturberMessage;
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getSponsorsTitle()
+    public function getSponsorsTitle(): ?string
     {
         return $this->sponsorsTitle;
     }
 
     /**
-     * @param string $sponsorsTitle
+     * @param ?string $sponsorsTitle
      */
-    public function setSponsorsTitle($sponsorsTitle)
+    public function setSponsorsTitle(?string $sponsorsTitle)
     {
         $this->sponsorsTitle = $sponsorsTitle;
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getReferentsTitle()
+    public function getReferentsTitle(): ?string
     {
         return $this->referentsTitle;
     }
 
     /**
-     * @param string $referentsTitle
+     * @param ?string $referentsTitle
      */
-    public function setReferentsTitle($referentsTitle)
+    public function setReferentsTitle(?string $referentsTitle)
     {
         $this->referentsTitle = $referentsTitle;
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getSeoTitle()
+    public function getSeoTitle(): ?string
     {
         return $this->seoTitle;
     }
 
     /**
-     * @param string $seoTitle
+     * @param ?string $seoTitle
      */
-    public function setSeoTitle($seoTitle)
+    public function setSeoTitle(?string $seoTitle)
     {
         $this->seoTitle = $seoTitle;
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getSeoDescription()
+    public function getSeoDescription(): ?string
     {
         return $this->seoDescription;
     }
 
     /**
-     * @param string $seoDescription
+     * @param ?string $seoDescription
      */
-    public function setSeoDescription($seoDescription)
+    public function setSeoDescription(?string $seoDescription)
     {
         $this->seoDescription = $seoDescription;
     }
@@ -1433,7 +1457,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @return string
+     * @return ?string
      */
     public function getEventAttendanceMode()
     {
@@ -1441,7 +1465,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @param string $eventAttendanceMode
+     * @param ?string $eventAttendanceMode
      */
     public function setEventAttendanceMode($eventAttendanceMode)
     {
@@ -1467,8 +1491,11 @@ class Event extends AbstractImportedEntity
     /**
      * @return ObjectStorage
      */
-    public function getAlternativeEvents()
+    public function getAlternativeEvents(): ObjectStorage
     {
+        if ($this->alternativeEvents === null) {
+            $this->alternativeEvents = new ObjectStorage();
+        }
         return $this->alternativeEvents;
     }
 
@@ -1505,8 +1532,11 @@ class Event extends AbstractImportedEntity
     /**
      * @return ObjectStorage
      */
-    public function getEventAttachments()
+    public function getEventAttachments(): ObjectStorage
     {
+        if ($this->eventAttachments === null) {
+            $this->eventAttachments = new ObjectStorage();
+        }
         return $this->eventAttachments;
     }
 
@@ -1543,8 +1573,11 @@ class Event extends AbstractImportedEntity
     /**
      * @return ObjectStorage
      */
-    public function getEventImages()
+    public function getEventImages(): ObjectStorage
     {
+        if ($this->eventImages === null) {
+            $this->eventImages = new ObjectStorage();
+        }
         return $this->eventImages;
     }
 
@@ -1581,8 +1614,11 @@ class Event extends AbstractImportedEntity
     /**
      * @return ObjectStorage
      */
-    public function getReferents()
+    public function getReferents(): ObjectStorage
     {
+        if ($this->referents === null) {
+            $this->referents = new ObjectStorage();
+        }
         return $this->referents;
     }
 
@@ -1619,8 +1655,11 @@ class Event extends AbstractImportedEntity
     /**
      * @return ObjectStorage
      */
-    public function getSponsors()
+    public function getSponsors(): ObjectStorage
     {
+        if ($this->sponsors === null) {
+            $this->sponsors = new ObjectStorage();
+        }
         return $this->sponsors;
     }
 
@@ -1778,7 +1817,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Location>
+     * @return ObjectStorage<Location>
      */
     public function getLocations(): ObjectStorage
     {
@@ -1799,10 +1838,10 @@ class Event extends AbstractImportedEntity
     /**
      * Adds a Location
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Location $location
+     * @param Location $location
      * @return void
      */
-    public function addLocation(\BrainAppeal\CampusEventsConnector\Domain\Model\Location $location): void
+    public function addLocation(Location $location): void
     {
         if (null === $this->location) {
             $this->location = $location;
@@ -1813,10 +1852,10 @@ class Event extends AbstractImportedEntity
     /**
      * Removes a Location
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Location $locationToRemove The Location to be removed
+     * @param Location $locationToRemove The Location to be removed
      * @return void
      */
-    public function removeLocation(\BrainAppeal\CampusEventsConnector\Domain\Model\Location $locationToRemove): void
+    public function removeLocation(Location $locationToRemove): void
     {
         $this->getLocations()->detach($locationToRemove);
     }

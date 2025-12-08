@@ -14,6 +14,9 @@
 
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
+use TYPO3\CMS\Extbase\Annotation\ORM\Lazy;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
+
 /**
  * Sponsor
  */
@@ -30,26 +33,27 @@ class Sponsor extends AbstractImportedEntity
     /**
      * url
      *
-     * @var string
+     * @var ?string
      */
-    protected $url = '';
+    protected ?string $url = '';
 
     /**
      * imageHash
      *
-     * @var string
+     * @var ?string
      */
-    protected $imageHash = '';
+    protected ?string $imageHash = '';
 
     /**
      * Image
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference>
+     * @var ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference>
      */
-    protected $imageFile = null;
+    #[Lazy]
+    protected ?ObjectStorage $imageFile = null;
 
     public function __construct()
     {
-        $this->imageFile = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        $this->imageFile ??= new ObjectStorage();
     }
 
     /**
@@ -74,49 +78,52 @@ class Sponsor extends AbstractImportedEntity
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->url;
     }
 
     /**
-     * @param string $url
+     * @param ?string $url
      */
-    public function setUrl($url)
+    public function setUrl(?string $url): void
     {
         $this->url = $url;
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getImageHash()
+    public function getImageHash(): ?string
     {
         return $this->imageHash;
     }
 
     /**
-     * @param string $imageHash
+     * @param ?string $imageHash
      */
-    public function setImageHash($imageHash)
+    public function setImageHash(?string $imageHash): void
     {
         $this->imageHash = $imageHash;
     }
 
     /**
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage
+     * @return ObjectStorage
      */
-    public function getImageFile()
+    public function getImageFile(): ObjectStorage
     {
+        if ($this->imageFile === null) {
+            $this->imageFile = new ObjectStorage();
+        }
         return $this->imageFile;
     }
 
     /**
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage $imageFile
+     * @param ObjectStorage $imageFile
      */
-    public function setImageFile($imageFile)
+    public function setImageFile(ObjectStorage $imageFile)
     {
         $this->imageFile = $imageFile;
     }

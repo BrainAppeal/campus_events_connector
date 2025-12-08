@@ -1,5 +1,8 @@
 # CHANGELOG.md
 
+## 5.1.2 (2025-12-08)
+- use lazy loading for event model properties
+
 ## 5.1.1 (2025-12-04)
 - fix PHP 8.2 compatibility
 
@@ -17,12 +20,12 @@
 
 ### Changed:
 - prevent unnecessary API calls
-- run file indexer if new files have been imported
+- run the file indexer if new files have been imported
 
 ## 5.0.2 (2025-08-25)
 
 ### Fixed:
-- support extended domain modals in import process
+- support extended domain modals in the import process
 
 ## 5.0.1 (2025-08-05)
 
