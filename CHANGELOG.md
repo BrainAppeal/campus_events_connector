@@ -1,5 +1,8 @@
 # CHANGELOG.md
 
+## 5.1.3 (2025-12-12)
+- refactor the import to prevent triggering redundant database operations
+
 ## 5.1.2 (2025-12-08)
 - use lazy loading for event model properties
 

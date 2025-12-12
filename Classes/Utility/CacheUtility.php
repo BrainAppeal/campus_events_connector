@@ -15,6 +15,7 @@ namespace BrainAppeal\CampusEventsConnector\Utility;
 
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
 
 class CacheUtility
 {
@@ -33,7 +34,7 @@ class CacheUtility
             $clearCacheCommands = GeneralUtility::trimExplode(',', strtolower((string) $pageTS['TCEMAIN.']['clearCacheCmd']), true);
             $clearCacheCommands = array_unique($clearCacheCommands);
             foreach ($clearCacheCommands as $clearCacheCommand) {
-                if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($clearCacheCommand)) {
+                if (MathUtility::canBeInterpretedAsInteger($clearCacheCommand)) {
                     $pageIdsToClear[$clearCacheCommand] = $clearCacheCommand;
                 }
             }
@@ -53,6 +54,7 @@ class CacheUtility
         /** @var DataHandler $dataHandler */
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->start([], []);
+        $dataHandler->enableLogging = false;
 
         return $dataHandler;
     }

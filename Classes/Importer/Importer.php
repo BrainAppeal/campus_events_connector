@@ -15,6 +15,7 @@ namespace BrainAppeal\CampusEventsConnector\Importer;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\Event;
 use BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory;
+use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory;
 use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface;
 use BrainAppeal\CampusEventsConnector\Importer\ObjectGenerator\ImportObjectGenerator;
 use BrainAppeal\CampusEventsConnector\Importer\ObjectGenerator\SpecifiedImportObjectGenerator;
@@ -54,7 +55,7 @@ class Importer
      */
     private function getDBAL(): DBALInterface
     {
-        $dbal = \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory::getInstance();
+        $dbal = DBALFactory::getInstance();
 
         return $dbal;
     }
@@ -101,15 +102,15 @@ class Importer
             $objects = $this->importObjectGenerator->generateMultiple($modelClass,$apiResponse['data'][$alias]);
             $dbal->updateObjects($objects);
         }
-
+        $dbImportSource = DBALFactory::getInstance()->getFilteredDbImportSource($baseUri);
         foreach ($this->importObjectGenerator->getModifiedObjectClasses() as $modelClass) {
-            $dbal->removeNotUpdatedObjects($modelClass, $baseUri, $pid, $importStartTimestamp);
+            $dbal->removeNotUpdatedObjects($modelClass, $dbImportSource, $pid, $importStartTimestamp);
         }
 
         $fileImporter->runQueue();
         $excludeFileReferenceUids = $fileImporter->getExcludeFileReferenceUids();
 
-        $dbal->removeNotUpdatedObjects(FileReference::class, $baseUri, $pid, $importStartTimestamp, $excludeFileReferenceUids);
+        $dbal->removeNotUpdatedObjects(FileReference::class, $dbImportSource, $pid, $importStartTimestamp, $excludeFileReferenceUids);
 
         return true;
     }

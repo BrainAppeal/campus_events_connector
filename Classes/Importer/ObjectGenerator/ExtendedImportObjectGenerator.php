@@ -26,12 +26,13 @@ use BrainAppeal\CampusEventsConnector\Importer\ExtendedFileImporter;
 use BrainAppeal\CampusEventsConnector\Importer\ImportMappingModel;
 use BrainAppeal\CampusEventsConnector\Utility\ImportScheduleUtility;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 abstract class ExtendedImportObjectGenerator implements SingletonInterface
 {
 
-    protected ?string $baseUri = null;
+    protected ?string $dbImportSource = null;
 
     /**
      * @var int
@@ -41,16 +42,10 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
     private ?DBALInterface $dbal = null;
 
     /**
-     * Local cache for imported items
-     * @var array
-     */
-    protected $importItems = [];
-
-    /**
      * Local storage for extbase instances
      * @var array<string, array<int, ImportMappingModel>>
      */
-    protected $groupedImportMappingModels = [];
+    protected array $groupedImportMappingModels = [];
 
     /**
      * @var array
@@ -71,41 +66,47 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
         if (null === $this->dbal) {
             $this->dbal = DBALFactory::getInstance();
         }
-
         return $this->dbal;
     }
 
     /**
      * @param array $dataMap
-     * @param string $importSource
+     * @param string $dbImportSource
      * @param int $pid
      * @param ExtendedFileImporter $fileImporter
      * @param bool|string $debug
      * @return array<string, array<int, ImportMappingModel>>
      */
-    public function processQueue(array $dataMap, string $importSource, int $pid, ExtendedFileImporter $fileImporter, bool|string $debug = false): array
+    public function processQueue(array $dataMap, string $dbImportSource, int $pid, ExtendedFileImporter $fileImporter, bool|string $debug = false): array
     {
         $this->fileImporter = $fileImporter;
         $this->dataMap = $dataMap;
-        $this->baseUri = $importSource;
+        $this->dbImportSource = $dbImportSource;
         $this->pid = $pid;
         $this->groupedImportMappingModels = [];
         /** @var ImportScheduleUtility $importScheduleUtility */
         $importScheduleUtility = GeneralUtility::makeInstance(ImportScheduleUtility::class);
-        $queueList = $importScheduleUtility->fetchScheduleEntries();
+        $queueList = $importScheduleUtility->fetchScheduleEntries(null, false);
         $groupedImportList = [];
         // First, build a mapping for all import items (needed later for model references)
         foreach ($queueList as $queueItem) {
             $importType = $queueItem['import_type'];
             $importId = (int)$queueItem['import_uid'];
-            $mappingModel = new ImportMappingModel($importId, $importType, $importSource, $queueItem);
+            $mappingModel = new ImportMappingModel($importId, $importType, $dbImportSource, $queueItem);
             $this->groupedImportMappingModels[$importType][$importId] = $mappingModel;
             $groupedImportList[$importType][] = $importId;
         }
         foreach ($groupedImportList as $importType => $importTypeIdList) {
             foreach ($importTypeIdList as $importId) {
                 $importMappingModel = $this->getImportMappingModel($importId, $importType);
-                $this->assignClassSpecificProperties($importMappingModel);
+                if ($importMappingModel === null || $importMappingModel->isProcessed()) {
+                    continue;
+                }
+                try {
+                    $this->assignClassSpecificProperties($importMappingModel);
+                } catch (\Exception $e) {
+                    $importMappingModel->setIsInvalid(true, $e->getMessage());
+                }
                 if ($queueItemId = $importMappingModel->getQueueItemUid()) {
                     $importScheduleUtility->finishScheduleEntryAsImported(
                         $queueItemId,
@@ -124,26 +125,23 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
      *
      * @param int $importId
      * @param string $importType
-     * @return ImportMappingModel
+     * @return ?ImportMappingModel
      */
-    protected function getImportMappingModel(int $importId, string $importType): ImportMappingModel
+    protected function getImportMappingModel(int $importId, string $importType): ?ImportMappingModel
     {
-        if (!isset($this->groupedImportMappingModels[$importType][$importId])) {
-            $mappingModel = new ImportMappingModel($importId, $importType, $this->baseUri, null);
-            $this->groupedImportMappingModels[$importType][$importId] = $mappingModel;
-        } else {
-            $mappingModel = $this->groupedImportMappingModels[$importType][$importId];
-        }
-        if ($mappingModel->getDomainModel() === null) {
+        $mappingModel = $this->groupedImportMappingModels[$importType][$importId] ?? null;
+        if ($mappingModel !== null && $mappingModel->getDomainModel() === null) {
             $dataTypeMap = $this->dataMap[$importType];
             $class = $dataTypeMap['class'];
-            $domainModel = $this->getDBAL()->findByImport($class, $this->baseUri, $importId, $this->pid);
+            $domainModel = $this->getDBAL()->findByImport($class, $this->dbImportSource, $importId, $this->pid);
             if ($domainModel === null) {
                 /** @var ImportedModelInterface $domainModel */
                 $domainModel = GeneralUtility::makeInstance($class);
                 $domainModel->setCeImportId($importId);
-                $domainModel->setCeImportSource($this->baseUri);
+                $domainModel->setCeImportSource($this->dbImportSource);
                 $domainModel->setPid($this->pid);
+            } else {
+                $domainModel->_memorizeCleanState();
             }
             $mappingModel->setDomainModel($domainModel);
         }
@@ -154,9 +152,9 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
      * Returns the import mapping model for the given model reference data
      *
      * @param array<string, mixed> $referenceData Model data referenced by another model
-     * @return ImportMappingModel
+     * @return ?ImportMappingModel
      */
-    protected function getImportMappingModelByReference(array $referenceData): ImportMappingModel
+    protected function getImportMappingModelByReference(array $referenceData): ?ImportMappingModel
     {
         $importType = $referenceData['@type'];
         $importId = ExtendedApiConnector::filterId($referenceData['@id'], $importType);
@@ -170,12 +168,16 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
     {
         $domainModel = $importMappingModel->getDomainModel();
         $importType = $importMappingModel->getImportType();
-        $importId = $importMappingModel->getImportId();
-        if (!($domainModel instanceof ImportedModelInterface) || !$importMappingModel->existsInApi()) {
+        if (!($domainModel instanceof ImportedModelInterface) || !$importMappingModel->existsInApi() || $importMappingModel->isDataMapped()) {
             return;
         }
-        $domainModel->setCeImportedAt(time());
-        $domainModel->setCeImportId($importId);
+        $importMappingModel->setDataMapped(true);
+        if (($importId = $importMappingModel->getImportId()) !== $domainModel->getCeImportId()) {
+            $domainModel->setCeImportId($importId);
+        }
+        if ($importMappingModel->isProcessed()) {
+            return;
+        }
         switch ($importType) {
             case 'Category':
                 $this->assignCategoryProperties($importMappingModel);
@@ -255,10 +257,10 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
     protected function processReferencesMultiple(
         ImportedModelInterface $object,
         array                  $referencesFromApi,
-                               $objectProperty,
-                               $objectPropertyPlural = null,
-                               $referencingProperty = null
-    )
+        string                 $objectProperty,
+        ?string                $objectPropertyPlural = null,
+        ?string                $referencingProperty = null
+    ): void
     {
         if (empty($objectPropertyPlural)) {
             $objectPropertyPlural = $objectProperty . 's';
@@ -275,11 +277,10 @@ abstract class ExtendedImportObjectGenerator implements SingletonInterface
         }
         $mapExistingReferences = [];
         foreach ($referencesFromApi as $referenceData) {
-            $refImportMappingModel = $this->getImportMappingModelByReference($referenceData);
-            $refDomainModel = $refImportMappingModel->getDomainModel();
+            $refDomainModel = $this->getImportMappingModelByReference($referenceData)?->getDomainModel();
             if (($refDomainModel instanceof ImportedModelInterface)) {
                 $refUid = $refDomainModel->getUid();
-                $refImportKey = (string) $refDomainModel->getCeImportSource() . ':' . $refDomainModel->getCeImportId();
+                $refImportKey = $refDomainModel->getCeImportSource() . ':' . $refDomainModel->getCeImportId();
                 if ($refUid && array_key_exists($refUid, $mapPreviouslyImportedReferences)) {
                     unset($mapPreviouslyImportedReferences[$refUid]);
                     $mapExistingReferences[$refUid] = $refDomainModel;

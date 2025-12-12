@@ -20,6 +20,8 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\Event;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\EventRepository;
+use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBAL;
+use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
@@ -104,6 +106,11 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
 
         $events = $this->getMatchingEventsByConfiguration($this->getEventRepository(), $this->configuration);
 
+        $objectRepository = $this->getObjectRepository();
+        $dbal = DBALFactory::getInstance();
+        /** @var DBAL $dbal */
+        $tableName = $objectRepository->getImportTableName();
+        $dbImportSource = $dbal->fixImportSourceNames($tableName, $this->importSource);
         $timestamp = time();
         foreach ($events as $event) {
             if ($this->isConversionPossible($event)) {
@@ -114,7 +121,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
         $objectRepository = $this->getObjectRepository();
         $objectRepository->persistAll();
 
-        $results = $objectRepository->findByNotImportedSince($timestamp, $this->importSource, null);
+        $results = $objectRepository->findByNotImportedSince($timestamp, $dbImportSource, null);
         foreach ($results as $result) {
             $objectRepository->remove($result);
         }
@@ -160,7 +167,9 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
 
         $this->individualizeObjectByEvent($object, $event, $configuration);
 
-        $object->setCeImportedAt(time());
+        if ($object->_isDirty()) {
+            $object->setCeImportedAt(time());
+        }
         if ($object->getUid() > 0) {
             $objectRepository->update($object);
         } else {
@@ -189,11 +198,12 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
         $importSource = $this->importSource;
         $importId = $event->getUid();
         if ($importTable && isset($GLOBALS['TCA'][$importTable])) {
+            $dbImportSource = DBALFactory::getInstance()->getFilteredDbImportSource($importSource);
             $newIdPrefix = 'NEW123456';
             $saveId = $newIdPrefix . '0';
             $importData = array_merge($this->getAdditionDataHandlerValues($event), [
                 'pid' => $pid,
-                'ce_import_source' => $importSource,
+                'ce_import_source' => $dbImportSource,
                 'ce_import_id' => $importId,
             ]);
             $tcaColumns = array_keys($GLOBALS['TCA'][$importTable]['columns']);

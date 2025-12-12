@@ -24,6 +24,12 @@ class ImportMappingModel
 
     protected bool $isProcessed = false;
 
+    protected bool $isInvalid = false;
+
+    protected ?string $invalidReason = null;
+
+    protected bool $dataMapped = false;
+
     protected ?string $table = null;
     private string $importSource;
 
@@ -39,6 +45,9 @@ class ImportMappingModel
             $this->table = ExtendedApiConnector::IMPORT_TYPE_TABLE_MAP[$importType];
         }
         $this->importSource = $importSource;
+        if ($queueItem['data_processed']??false) {
+            $this->isProcessed = true;
+        }
     }
 
     public function getImportSource(): string
@@ -121,10 +130,31 @@ class ImportMappingModel
         $this->isProcessed = $isProcessed;
     }
 
+    public function isDataMapped(): bool
+    {
+        return $this->dataMapped;
+    }
+
+    public function setDataMapped(bool $dataMapped): void
+    {
+        $this->dataMapped = $dataMapped;
+    }
+
+    public function isInvalid(): bool
+    {
+        return $this->isInvalid;
+    }
+
+    public function setIsInvalid(bool $isInvalid, ?string $invalidReason = null): void
+    {
+        $this->isInvalid = $isInvalid;
+        $this->invalidReason = $invalidReason;
+    }
+
     /**
      * @return int|null
      */
-    public function getQueueItemUid()
+    public function getQueueItemUid(): ?int
     {
         if (null !== $this->queueItem) {
             return (int) $this->queueItem['uid'];
@@ -135,18 +165,15 @@ class ImportMappingModel
     /**
      * @return int|null
      */
-    public function getTargetModelUid()
+    public function getTargetModelUid(): ?int
     {
-        if (null !== $this->domainModel) {
-            return $this->domainModel->getUid();
-        }
-        return null;
+        return $this->domainModel?->getUid();
     }
 
     /**
-     * @return array|null
+     * @return array|null|bool
      */
-    public function getImportData()
+    public function getImportData(): bool|array|null
     {
         if (null !== $this->queueItem && !empty($this->queueItem['import_data'])) {
             return json_decode((string) $this->queueItem['import_data'], true);

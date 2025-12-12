@@ -72,7 +72,7 @@ return [
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.classification,
              target_groups, categories, filter_categories, view_lists,
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.other,
-            --palette--;;paletteStatus, speakers, time_ranges, hash, modified_at_recursive,
+            --palette--;;paletteStatus, speakers, hash, modified_at_recursive,
             location,
         --palette--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.palette.media;eventMedia,
         --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
@@ -419,6 +419,8 @@ return [
         'speakers' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.speakers',
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
@@ -437,55 +439,34 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
             ],
 
         ],
         'time_ranges' => [
-            'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.time_ranges',
             'config' => [
-                'type' => 'inline',
-                'foreign_table' => 'tx_campuseventsconnector_domain_model_timerange',
-                'foreign_field' => 'event',
-                'maxitems' => 9999,
-                'appearance' => [
-                    'collapseAll' => true,
-                    'levelLinksPosition' => 'top',
-                    'showSynchronizationLink' => 1,
-                    'showPossibleLocalizationRecords' => 1,
-                    'showAllLocalizationLink' => 1
-                ],
-                'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
+                'type' => 'passthrough',
             ],
         ],
         'location' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.location',
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'config' => [
-                'type' => 'inline',
+                'type' => 'select',
+                'renderType' => 'selectSingle',
                 'foreign_table' => 'tx_campuseventsconnector_domain_model_location',
-                'minitems' => 0,
+                'size' => 1,
                 'maxitems' => 1,
-                'appearance' => [
-                    'collapseAll' => true,
-                    'levelLinksPosition' => 'top',
-                    'showSynchronizationLink' => 1,
-                    'showPossibleLocalizationRecords' => 1,
-                    'showAllLocalizationLink' => 1
+                'default' => 0,
+                'items' => [
+                    [
+                        'label' => '',
+                        'value' => 0,
+                    ],
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
             ],
         ],
         'categories' => [
@@ -519,6 +500,8 @@ return [
         'organizer' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.organizer',
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
@@ -537,16 +520,14 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
             ],
 
         ],
         'target_groups' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.target_groups',
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
@@ -565,16 +546,14 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
             ],
 
         ],
         'filter_categories' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.filter_categories',
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
@@ -593,15 +572,13 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
             ],
         ],
         'view_lists' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.view_lists',
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
@@ -620,10 +597,6 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
             ],
 
         ],
@@ -658,6 +631,8 @@ return [
         'contact_persons' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.contact_persons',
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
@@ -676,10 +651,6 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
             ],
 
         ],
@@ -730,8 +701,6 @@ return [
         ],
         'event_sessions' => [
             'exclude' => true,
-            'l10n_mode' => 'exclude',
-            'l10n_display' => 'defaultAsReadonly',
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_sessions',
             'config' => [
                 'type' => 'inline',
@@ -827,22 +796,20 @@ return [
         'event_ticket_price_variants' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_ticket_price_variants',
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'config' => [
-                'type' => 'select',
-                'renderType' => 'selectMultipleSideBySide',
+                'type' => 'inline',
                 'foreign_table' => 'tx_campuseventsconnector_domain_model_eventticketpricevariant',
+                'foreign_field' => 'event',
                 'MM' => 'tx_campuseventsconnector_event_eventticketpricevariant_mm',
-                'size' => 10,
-                'autoSizeMax' => 30,
                 'maxitems' => 9999,
-                'multiple' => 0,
-                'fieldControl' => [
-                    'editPopup' => [
-                        'disabled' => false
-                    ],
-                    'addRecord' => [
-                        'disabled' => false,
-                    ]
+                'appearance' => [
+                    'collapseAll' => true,
+                    'levelLinksPosition' => 'top',
+                    'showSynchronizationLink' => 1,
+                    'showPossibleLocalizationRecords' => 1,
+                    'showAllLocalizationLink' => 1
                 ],
                 'readOnly' => $importFieldsReadOnly,
                 // Allow language synchronization so that relations can be localized via DataHandler
@@ -923,7 +890,9 @@ return [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.modified_at_recursive',
             'config' => [
-                'type' => 'passthrough',
+                'type' => 'datetime',
+                'format' => 'datetime',
+                'readOnly' => true,
             ],
             TCAUtility::TCA_IMPORT_KEY => [
                 'field' => 'modifiedAtRecursive',

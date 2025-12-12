@@ -138,9 +138,12 @@ return [
             ],
             'event_session' => [
                 'exclude' => true,
-                'l10n_mode' => 'exclude',
-                'l10n_display' => 'defaultAsReadonly',
+                //'l10n_mode' => 'exclude',
+                //'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.event_session',
+                'config' => [
+                    'type' => 'passthrough',
+                ],/*
                 'config' => [
                     'type' => 'select',
                     'renderType' => 'selectSingle',
@@ -153,7 +156,7 @@ return [
                     'field' => 'eventSession',
                     'import_type' => 'reference_id',
                     'reference_type' => 'Event'
-                ],
+                ],*/
             ],
         ]
     ),

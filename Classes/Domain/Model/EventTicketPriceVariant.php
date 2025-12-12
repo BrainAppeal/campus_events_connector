@@ -17,7 +17,7 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 /**
  * EventTicketPriceVariant
  */
-class EventTicketPriceVariant extends AbstractImportedEntity
+class EventTicketPriceVariant extends AbstractImportedEntity implements BelongsToEventInterface
 {
 
     /**
@@ -30,23 +30,23 @@ class EventTicketPriceVariant extends AbstractImportedEntity
     /**
      * bookableFrom
      *
-     * @var \DateTime
+     * @var ?\DateTime
      */
-    protected $bookableFrom = null;
+    protected ?\DateTime $bookableFrom = null;
 
     /**
      * bookableTill
      *
-     * @var \DateTime
+     * @var ?\DateTime
      */
-    protected $bookableTill = null;
+    protected ?\DateTime $bookableTill = null;
 
     /**
      * quota
      *
-     * @var string
+     * @var ?int
      */
-    protected $quota = '';
+    protected ?int $pvQuota = null;
 
     /**
      * name
@@ -58,23 +58,23 @@ class EventTicketPriceVariant extends AbstractImportedEntity
     /**
      * price
      *
-     * @var string
+     * @var ?float
      */
-    protected $price = '';
+    protected ?float $pvPrice = null;
 
     /**
      * taxRate
      *
-     * @var string
+     * @var ?float
      */
-    protected $taxRate = '';
+    protected ?float $pvTaxRate = null;
 
     /**
      * tax
      *
-     * @var string
+     * @var ?float
      */
-    protected $tax = '';
+    protected ?float $pvTax = null;
 
     /**
      * directCheckoutUrl
@@ -101,51 +101,59 @@ class EventTicketPriceVariant extends AbstractImportedEntity
     }
 
     /**
-     * @return \DateTime
+     * @return ?\DateTime
      */
-    public function getBookableFrom()
+    public function getBookableFrom(): ?\DateTime
     {
         return $this->bookableFrom;
     }
 
     /**
-     * @param \DateTime $bookableFrom
+     * @param ?\DateTime $bookableFrom
      */
-    public function setBookableFrom($bookableFrom)
+    public function setBookableFrom(?\DateTime $bookableFrom)
     {
         $this->bookableFrom = $bookableFrom;
     }
 
     /**
-     * @return \DateTime
+     * @return ?\DateTime
      */
-    public function getBookableTill()
+    public function getBookableTill(): ?\DateTime
     {
         return $this->bookableTill;
     }
 
     /**
-     * @param \DateTime $bookableTill
+     * @param ?\DateTime $bookableTill
      */
-    public function setBookableTill($bookableTill)
+    public function setBookableTill(?\DateTime $bookableTill): void
     {
         $this->bookableTill = $bookableTill;
     }
 
     /**
-     * @return string
+     * @return ?int
      */
-    public function getQuota()
+    public function getQuota(): ?int
     {
-        return $this->quota;
+        return $this->pvQuota;
     }
 
     /**
-     * @param string $quota
+     * @return ?int
      */
-    public function setQuota($quota)
+    public function getPvQuota(): ?int
     {
-        $this->quota = $quota;
+        return $this->pvQuota;
+    }
+
+    /**
+     * @param ?int $pvQuota
+     */
+    public function setPvQuota(?int $pvQuota): void
+    {
+        $this->pvQuota = $pvQuota;
     }
 
     /**
@@ -159,57 +167,81 @@ class EventTicketPriceVariant extends AbstractImportedEntity
     /**
      * @param string $name
      */
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
 
     /**
-     * @return string
+     * @return ?float
      */
-    public function getPrice()
+    public function getPrice(): ?float
     {
-        return $this->price;
+        return $this->pvPrice;
     }
 
     /**
-     * @param string $price
+     * @return ?float
      */
-    public function setPrice($price)
+    public function getPvPrice(): ?float
     {
-        $this->price = $price;
+        return $this->pvPrice;
     }
 
     /**
-     * @return string
+     * @param ?float $pvPrice
      */
-    public function getTaxRate()
+    public function setPvPrice(?float $pvPrice): void
     {
-        return $this->taxRate;
+        $this->pvPrice = $pvPrice;
     }
 
     /**
-     * @param string $taxRate
+     * @return ?float
      */
-    public function setTaxRate($taxRate)
+    public function getTaxRate(): ?float
     {
-        $this->taxRate = $taxRate;
+        return $this->pvTaxRate;
     }
 
     /**
-     * @return string
+     * @return ?float
      */
-    public function getTax()
+    public function getPvTaxRate(): ?float
     {
-        return $this->tax;
+        return $this->pvTaxRate;
     }
 
     /**
-     * @param string $tax
+     * @param ?float $pvTaxRate
      */
-    public function setTax($tax)
+    public function setPvTaxRate(?float $pvTaxRate): void
     {
-        $this->tax = $tax;
+        $this->pvTaxRate = $pvTaxRate;
+    }
+
+    /**
+     * @return ?float
+     */
+    public function getTax(): ?float
+    {
+        return $this->pvTax;
+    }
+
+    /**
+     * @return ?float
+     */
+    public function getPvTax(): ?float
+    {
+        return $this->pvTax;
+    }
+
+    /**
+     * @param ?float $pvTax
+     */
+    public function setPvTax(?float $pvTax): void
+    {
+        $this->pvTax = $pvTax;
     }
 
     /**
@@ -223,7 +255,7 @@ class EventTicketPriceVariant extends AbstractImportedEntity
     /**
      * @param string $directCheckoutUrl
      */
-    public function setDirectCheckoutUrl($directCheckoutUrl)
+    public function setDirectCheckoutUrl($directCheckoutUrl): void
     {
         $this->directCheckoutUrl = $directCheckoutUrl;
     }

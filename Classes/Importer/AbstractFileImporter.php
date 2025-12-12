@@ -14,6 +14,7 @@
 namespace BrainAppeal\CampusEventsConnector\Importer;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
 use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory;
 use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALInterface;
 use TYPO3\CMS\Core\Core\Environment;
@@ -194,7 +195,10 @@ abstract class AbstractFileImporter
             'ce_import_id' => $importId,
             'ce_imported_at' => time(),
         ];
-        $fileReferenceUid = $this->getDBAL()->addSysFileReference($file, $object, $property, $attribs);
+        $uidForeign = $object->getUid();
+        $table = AbstractImportedRepository::getTableForModelClass($object::class);
+        $storagePid = $object->getPid();
+        $fileReferenceUid = $this->getDBAL()->addSysFileReference($file, $table, $storagePid, $uidForeign, $property, $attribs);
         if ($fileReferenceUid) {
             $this->updateReferenceIds[$fileReferenceUid] = $fileReferenceUid;
         }

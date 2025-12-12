@@ -102,12 +102,13 @@ class ExtendedImporter
             /** @var ExtendedFileImporter $fileImporter */
             $fileImporter = GeneralUtility::makeInstance(ExtendedFileImporter::class);
             $fileImporter->initialize($storageId, $storageFolder, $baseUri);
+            $dbImportSource = DBALFactory::getInstance()->getFilteredDbImportSource($baseUri);
             try {
                 /** @var ExtendedSpecifiedImportObjectGenerator $importObjectGenerator */
                 $importObjectGenerator = GeneralUtility::makeInstance(ExtendedSpecifiedImportObjectGenerator::class);
-                $groupedImportMappingModels = $importObjectGenerator->processQueue($dataMap, $baseUri, $pid, $fileImporter, $this->debug !== false);
+                $groupedImportMappingModels = $importObjectGenerator->processQueue($dataMap, $dbImportSource, $pid, $fileImporter, $this->debug !== false);
                 $dbal = DBALFactory::getInstance();
-                $dbal->persistImportModels($groupedImportMappingModels);
+                $persistedCount = $dbal->persistImportModels($groupedImportMappingModels);
                 if (!empty($languageOverlays)) {
                     /** @var DataHandlerProcessor $dataHandlerProcessor */
                     $dataHandlerProcessor = GeneralUtility::makeInstance(DataHandlerProcessor::class);
@@ -116,9 +117,12 @@ class ExtendedImporter
                 $fileImporter->runQueue();
                 if ($fileImporter->hasUpdates()) {
                     $excludeFileReferenceUidList = $fileImporter->getExcludeFileReferenceUids();
-                    $dbal->removeNotUpdatedObjects(FileReference::class, $baseUri, $pid, $importStartTimestamp, $excludeFileReferenceUidList);
+                    $dbal->removeNotUpdatedObjects(FileReference::class, $dbImportSource, $pid, $importStartTimestamp, $excludeFileReferenceUidList);
+                    $fileImporter->runStorageIndexing();
                 }
-                $fileImporter->runStorageIndexing();
+                if ($persistedCount === 0 && !$fileImporter->hasUpdates()) {
+                    $this->hasChangedData = false;
+                }
                 if ($this->debug) {
                     $apiConnector->deleteOldLocalCacheFiles();
                 }
@@ -176,19 +180,19 @@ class ExtendedImporter
      */
     protected function fetchDataFromApi(ExtendedApiConnector $apiConnector, int $importStartTimestamp): bool
     {
-        $importSource = $apiConnector->getBaseUri();
+        $dbImportSource = DBALFactory::getInstance()->getFilteredDbImportSource($apiConnector->getBaseUri());
         // First, check if any event has changed. If not, we can stop the import
         // this is because each event contains the field "modifiedAtRecursive", which also changes if any related data
         // have been changed
         $mainImportType = 'Event';
-        $itemListImportTypes = $this->enqueueItemsForType($apiConnector, $mainImportType, $importSource, $importStartTimestamp);
+        $itemListImportTypes = $this->enqueueItemsForType($apiConnector, $mainImportType, $dbImportSource, $importStartTimestamp);
         // If any of the main items has been updated, we have to check for changes in all other entry types
         // This prevents deletion of items that may currently not be referenced but are still active
         if (!empty($itemListImportTypes) && array_sum($itemListImportTypes) > 0) {
             $allImportTypes = $apiConnector->getApiImportTypes();
             foreach ($allImportTypes as $importType) {
                 if ($importType !== $mainImportType) {
-                    $this->enqueueItemsForType($apiConnector, $importType, $importSource, $importStartTimestamp);
+                    $this->enqueueItemsForType($apiConnector, $importType, $dbImportSource, $importStartTimestamp);
                 }
             }
         } else {
@@ -203,12 +207,12 @@ class ExtendedImporter
      * Enqueue all items (that need to be updated) for the given type
      * @param ExtendedApiConnector $apiConnector
      * @param string $importType
-     * @param string $importSource The import source
+     * @param string $dbImportSource The import source
      * @param int $importStartTimestamp
      * @return array
      * @throws \BrainAppeal\CampusEventsConnector\Http\HttpException
      */
-    protected function enqueueItemsForType(ExtendedApiConnector $apiConnector, $importType, $importSource, $importStartTimestamp): array
+    protected function enqueueItemsForType(ExtendedApiConnector $apiConnector, string $importType, string $dbImportSource, int $importStartTimestamp): array
     {
         $allListItems = $apiConnector->fetchItemListForType($importType);
         $itemListImportTypes = [];
@@ -224,7 +228,8 @@ class ExtendedImporter
         }
         $typeMapping = $apiConnector->getMappingForType($importType);
         $dbal = DBALFactory::getInstance();
-        $dbal->processImportedItems($typeMapping['table'], $importIdList, $importSource, $importStartTimestamp);
+        $dbal->fixImportSourceNames($typeMapping['table'], $apiConnector->getBaseUri());
+        $dbal->processImportedItems($typeMapping['table'], $importIdList, $dbImportSource, $importStartTimestamp);
         return $itemListImportTypes;
     }
 

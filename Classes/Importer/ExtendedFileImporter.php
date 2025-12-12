@@ -14,6 +14,7 @@
 namespace BrainAppeal\CampusEventsConnector\Importer;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -35,6 +36,7 @@ class ExtendedFileImporter extends AbstractFileImporter implements SingletonInte
         $this->storageId = $storageId;
         $this->storageFolder = $storageFolder;
         $this->baseUri = $baseUri;
+        DBALFactory::getInstance()->fixImportSourceNames('sys_file_reference', $baseUri);
     }
 
     /**

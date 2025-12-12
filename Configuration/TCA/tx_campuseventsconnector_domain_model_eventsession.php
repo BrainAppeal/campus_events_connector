@@ -118,10 +118,6 @@ return [
                         'showAllLocalizationLink' => 1
                     ],
                     'readOnly' => $importFieldsReadOnly,
-                    // Allow language synchronization so that relations can be localized via DataHandler
-                    'behaviour' => [
-                        'allowLanguageSynchronization' => true,
-                    ],
                 ],
             ],
             'event' => [

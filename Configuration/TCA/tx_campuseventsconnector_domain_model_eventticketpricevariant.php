@@ -45,7 +45,7 @@ return [
         ]
     ],
     'types' => [
-        '1' => ['showitem' => 'bookable_from,bookable_till,quota,name,price,tax_rate,tax,direct_checkout_url,price_category,event,
+        '1' => ['showitem' => 'bookable_from,bookable_till,pv_quota,name,pv_price,pv_tax_rate,tax,direct_checkout_url,price_category,event,
         --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
             --palette--;;paletteLanguage,
         --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access,
@@ -99,15 +99,15 @@ return [
                     'type' => 'datetime_to_tstamp',
                 ],
             ],
-            'quota' => [
+            'pv_quota' => [
                 'exclude' => true,
                 'l10n_mode' => 'exclude',
                 'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.quota',
                 'config' => [
-                    'type' => 'input',
-                    'size' => 30,
-                    'eval' => 'trim',
+                    'type' => 'number',
+                    'size' => 20,
+                    'nullable' => true,
                     'readOnly' => $importFieldsReadOnly,
                 ],
                 TCAUtility::TCA_IMPORT_KEY => [
@@ -127,43 +127,46 @@ return [
                     'field' => 'name',
                 ],
             ],
-            'price' => [
+            'pv_price' => [
                 'exclude' => true,
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.price',
                 'config' => [
-                    'type' => 'input',
-                    'size' => 30,
-                    'eval' => 'trim',
+                    'type' => 'number',
+                    'format' => 'decimal',
+                    'size' => 20,
+                    'nullable' => true,
                     'readOnly' => $importFieldsReadOnly,
                 ],
                 TCAUtility::TCA_IMPORT_KEY => [
                     'field' => 'price',
                 ],
             ],
-            'tax_rate' => [
+            'pv_tax_rate' => [
                 'exclude' => true,
                 'l10n_mode' => 'exclude',
                 'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.tax_rate',
                 'config' => [
-                    'type' => 'input',
-                    'size' => 30,
-                    'eval' => 'trim',
+                    'type' => 'number',
+                    'format' => 'decimal',
+                    'size' => 20,
+                    'nullable' => true,
                     'readOnly' => $importFieldsReadOnly,
                 ],
                 TCAUtility::TCA_IMPORT_KEY => [
                     'field' => 'taxRate',
                 ],
             ],
-            'tax' => [
+            'pv_tax' => [
                 'exclude' => true,
                 'l10n_mode' => 'exclude',
                 'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.tax',
                 'config' => [
-                    'type' => 'input',
-                    'size' => 30,
-                    'eval' => 'trim',
+                    'type' => 'number',
+                    'format' => 'decimal',
+                    'size' => 20,
+                    'nullable' => true,
                     'readOnly' => $importFieldsReadOnly,
                 ],
                 TCAUtility::TCA_IMPORT_KEY => [

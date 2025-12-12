@@ -21,16 +21,16 @@ class ImportScheduleUtility implements SingletonInterface
 {
     public const TABLE_IMPORT_ROW = 'tx_campuseventsconnector_import_schedule';
 
-    const IMPORT_TYPE_INSERT = 1;
-    const IMPORT_TYPE_UPDATE = 2;
-    const IMPORT_TYPE_NO_CHANGE = 0;
+    public const IMPORT_TYPE_INSERT = 1;
+    public const IMPORT_TYPE_UPDATE = 2;
+    public const IMPORT_TYPE_NO_CHANGE = 0;
 
     /**
      * Local storage for schedule entries
      *
      * @var array
      */
-    protected $previousEntries = [];
+    protected array $previousEntries = [];
 
     /**
      * Fetch old entry in schedule
@@ -58,11 +58,11 @@ class ImportScheduleUtility implements SingletonInterface
     /**
      * Returns the number of unprocessed schedule entries
      *
-     * @param string|null $importType Optional data type
+     * @param ?string $importType Optional data type
      *
-     * @return mixed|false
+     * @return int
      */
-    public function countUnprocessedScheduleEntries($importType = null)
+    public function countUnprocessedScheduleEntries(?string $importType = null): int
     {
         $queryBuilder = $this->getScheduleQueryBuilder();
         $conditions = [];
@@ -73,7 +73,7 @@ class ImportScheduleUtility implements SingletonInterface
         $queryBuilder->count('*')
             ->from(self::TABLE_IMPORT_ROW);
         $queryBuilder->where(...$conditions);
-        return $queryBuilder->executeQuery()->fetchOne();
+        return (int)$queryBuilder->executeQuery()->fetchOne();
     }
 
 
@@ -83,7 +83,7 @@ class ImportScheduleUtility implements SingletonInterface
      * @param bool $onlyUnprocessed Only load unprocessed items
      * @return array[]
      */
-    public function fetchScheduleEntries($importType = null, $onlyUnprocessed = true)
+    public function fetchScheduleEntries($importType = null, $onlyUnprocessed = true): array
     {
         $queryBuilder = $this->getScheduleQueryBuilder();
         $conditions = [];
@@ -160,7 +160,7 @@ class ImportScheduleUtility implements SingletonInterface
      * @param int $targetRecordId
      * @param bool $keepImportData
      */
-    public function finishScheduleEntryAsImported(int $uid, int $targetRecordId = 0, bool $keepImportData = false)
+    public function finishScheduleEntryAsImported(int $uid, int $targetRecordId = 0, bool $keepImportData = false): void
     {
         $scheduleConnection = $this->getScheduleConnection();
 
@@ -180,7 +180,7 @@ class ImportScheduleUtility implements SingletonInterface
      * Clean up old queue items
      * @param string $timeModifier
      */
-    public function cleanUp(string $timeModifier = '-1 week')
+    public function cleanUp(string $timeModifier = '-1 week'): void
     {
         $deleteQueryBuilder = $this->getScheduleQueryBuilder();
         $deleteQueryBuilder->delete(self::TABLE_IMPORT_ROW)->where('crdate < ' . strtotime($timeModifier))->executeStatement();

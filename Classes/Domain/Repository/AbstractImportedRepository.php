@@ -15,9 +15,11 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\AbstractImportedEntity;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
@@ -36,9 +38,19 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 abstract class AbstractImportedRepository extends Repository
 {
     /**
-     * @var string
+     * @var string[]
      */
-    private $importTableName;
+    private static array $classTableMapping = [];
+
+    public static function getTableForModelClass($modelClass): string
+    {
+        if (!isset(self::$classTableMapping[$modelClass])) {
+            $dataMapper = GeneralUtility::makeInstance(DataMapFactory::class);
+            self::$classTableMapping[$modelClass] = $dataMapper->buildDataMap($modelClass)->getTableName();
+        }
+
+        return self::$classTableMapping[$modelClass];
+    }
 
     /**
      * @param null|int|int[] $pid
@@ -59,7 +71,7 @@ abstract class AbstractImportedRepository extends Repository
     }
 
     /**
-     * Find all events on given pid
+     * Find all events on the given pid or pid list
      *
      * @param null|int|int[] $pid
      *
@@ -71,7 +83,7 @@ abstract class AbstractImportedRepository extends Repository
     }
 
     /**
-     * Find all events on given pid
+     * Find all events on the given pid or pid list
      * @param null|int|int[] $pid
      * @param array $constraints Optional query constraints
      * @param int $limit
@@ -96,21 +108,22 @@ abstract class AbstractImportedRepository extends Repository
      * @param null|int|int[] $pid
      * @return ImportedModelInterface|null
      */
-    public function findByImport(string $importSource, int $importId, $pid = null)
+    public function findByImport(string $importSource, int $importId, $pid = null): ?ImportedModelInterface
     {
+        $dbImportSource = DBALFactory::getInstance()->getFilteredDbImportSource($importSource);
         $this->setPidRestriction($pid);
 
         $query = $this->createQuery();
         $query->matching($query->logicalAnd(
-            $query->like('ceImportSource', $importSource),
+            $query->like('ceImportSource', $dbImportSource),
             $query->equals('ceImportId', $importId)
         ));
         $query->setOrderings([
-            "ceImportedAt" => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
+            "ceImportedAt" => QueryInterface::ORDER_DESCENDING
         ]);
 
-        /** @var ImportedModelInterface $result */
         $result = $query->execute()->getFirst();
+        /** @var ?ImportedModelInterface $result */
 
         return $result;
     }
@@ -130,7 +143,7 @@ abstract class AbstractImportedRepository extends Repository
         ];
         $query->matching($query->logicalAnd(...$constraints));
         $query->setOrderings([
-            "ceImportedAt" => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
+            "ceImportedAt" => QueryInterface::ORDER_DESCENDING
         ]);
 
         /** @var ImportedModelInterface $result */
@@ -147,10 +160,11 @@ abstract class AbstractImportedRepository extends Repository
      */
     public function createNewModelInstance(string $importSource, int $importId, int $pid): ImportedModelInterface
     {
+        $dbImportSource = DBALFactory::getInstance()->getFilteredDbImportSource($importSource);
         /** @var ImportedModelInterface $object */
         $object = GeneralUtility::makeInstance($this->objectType);
         $object->setCeImportId($importId);
-        $object->setCeImportSource($importSource);
+        $object->setCeImportSource($dbImportSource);
         $object->setPid($pid);
 
         return $object;
@@ -163,12 +177,7 @@ abstract class AbstractImportedRepository extends Repository
      */
     public function getImportTableName(): string
     {
-        if (null === $this->importTableName) {
-            $dataMapper = GeneralUtility::makeInstance(DataMapFactory::class);
-            $this->importTableName = $dataMapper->buildDataMap($this->objectType)->getTableName();
-        }
-
-        return $this->importTableName;
+        return self::getTableForModelClass($this->objectType);
     }
 
     /**
@@ -179,11 +188,12 @@ abstract class AbstractImportedRepository extends Repository
      */
     public function findByNotImportedSince(int $timestamp, string $importSource, $pid = null): array
     {
+        $dbImportSource = DBALFactory::getInstance()->getFilteredDbImportSource($importSource);
         $this->setPidRestriction($pid);
 
         $query = $this->createQuery();
         $query->matching($query->logicalAnd(
-            $query->like('ceImportSource', $importSource),
+            $query->like('ceImportSource', $dbImportSource),
             $query->lessThan('ceImportedAt', $timestamp)
         ));
 

@@ -142,11 +142,11 @@ class ExtendedApiConnector
         'Sponsor' => 'tx_campuseventsconnector_domain_model_sponsor',
         'ViewList' => 'tx_campuseventsconnector_domain_model_viewlist',
         'FilterCategory' => 'tx_campuseventsconnector_domain_model_filtercategory',
+        'SessionTimePeriod' => 'tx_campuseventsconnector_domain_model_timerange',
         'EventSession' => 'tx_campuseventsconnector_domain_model_eventsession',
         'EventAttachment' => 'tx_campuseventsconnector_domain_model_eventattachment',
         'EventImage' => 'tx_campuseventsconnector_domain_model_eventimage',
         'EventTicketPriceVariant' => 'tx_campuseventsconnector_domain_model_eventticketpricevariant',
-        'SessionTimePeriod' => 'tx_campuseventsconnector_domain_model_timerange',
         'Event' => 'tx_campuseventsconnector_domain_model_event',
     ];
 

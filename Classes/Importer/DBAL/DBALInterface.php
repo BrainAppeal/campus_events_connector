@@ -15,6 +15,7 @@ namespace BrainAppeal\CampusEventsConnector\Importer\DBAL;
 
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
+use TYPO3\CMS\Core\Resource\AbstractFile;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
@@ -40,9 +41,9 @@ interface DBALInterface
 
     public function updateObjects($objects);
 
-    public function persistImportModels($groupedImportMappingModels): void;
+    public function persistImportModels($groupedImportMappingModels): int;
 
-    public function removeNotUpdatedObjects(string $modelClass, string $importSource, int $pid, int $importTimestamp, array $excludeUids = []): void;
+    public function removeNotUpdatedObjects(string $modelClass, string $dbImportSource, int $pid, int $importTimestamp, array $excludeUids = []): void;
 
     /**
      * Update the import fields of all records that were found in the api list call;
@@ -50,20 +51,21 @@ interface DBALInterface
      *
      * @param string $tableName
      * @param array $importIdList
-     * @param string $importSource
+     * @param string $dbImportSource
      * @param int $tstamp
-     * @return mixed
      */
-    public function processImportedItems($tableName, $importIdList, $importSource, $tstamp);
+    public function processImportedItems(string $tableName, array $importIdList, string $dbImportSource, int $tstamp): void;
 
     /**
-     * @param \TYPO3\CMS\Core\Resource\File $sysFile
-     * @param ImportedModelInterface $target
+     * @param AbstractFile $sysFile
+     * @param string $table
+     * @param int $storagePid
+     * @param int $uidForeign
      * @param string $property
      * @param array $attribs
      * @return int|null
      */
-    public function addSysFileReference($sysFile, $target, $property, $attribs = []);
+    public function addSysFileReference(AbstractFile $sysFile, string $table, int $storagePid, int $uidForeign, $property, $attribs = []): ?int;
 
     public function updateSysFileReference(FileReference $sysFileReference, $attribs = []): void;
 
@@ -77,4 +79,7 @@ interface DBALInterface
      */
     public function deleteAllFileReferencesForFile(File $file): void;
 
+    public function getFilteredDbImportSource(string $importSource): string;
+
+    public function fixImportSourceNames(string $tableName, string $importSource): string;
 }

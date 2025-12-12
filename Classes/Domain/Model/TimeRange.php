@@ -22,39 +22,39 @@ class TimeRange extends AbstractImportedEntity implements BelongsToEventInterfac
     use DatePeriodTrait;
 
     /**
-     * @var ?\BrainAppeal\CampusEventsConnector\Domain\Model\Event
+     * @var ?Event
      */
-    protected $event = null;
+    protected ?Event $event = null;
 
     /**
-     * @var ?\BrainAppeal\CampusEventsConnector\Domain\Model\EventSession
+     * @var ?EventSession
      */
-    protected $eventSession = null;
+    protected ?EventSession $eventSession = null;
 
     /**
      * startDateIsSet
      *
-     * @var bool
+     * @var ?bool
      */
-    protected $startDateIsSet;
+    protected ?bool $startDateIsSet = false;
 
     /**
      * endDateIsSet
      *
-     * @var bool
+     * @var ?bool
      */
-    protected $endDateIsSet;
+    protected ?bool $endDateIsSet = false;
 
     /**
-     * @return Event
+     * @return ?Event
      */
     public function getEvent(): ?Event
     {
-        return $this->event;
+        return $this->eventSession?->getEvent();
     }
 
     /**
-     * @param Event $event
+     * @param ?Event $event
      */
     public function setEvent(?Event $event): void
     {
@@ -62,7 +62,7 @@ class TimeRange extends AbstractImportedEntity implements BelongsToEventInterfac
     }
 
     /**
-     * @return EventSession
+     * @return ?EventSession
      */
     public function getEventSession(): ?EventSession
     {
@@ -70,42 +70,48 @@ class TimeRange extends AbstractImportedEntity implements BelongsToEventInterfac
     }
 
     /**
-     * @param EventSession $eventSession
+     * @param ?EventSession $eventSession
      */
     public function setEventSession(?EventSession $eventSession): void
     {
         $this->eventSession = $eventSession;
+        // TimeRange without an event session makes no sense, so the event is also unset
+        if ($eventSession === null) {
+            $this->event = null;
+        } elseif (($event = $eventSession->getEvent()) && $event !== $this->event) {
+            $this->event = $event;
+        }
     }
 
     /**
      * @return bool
      */
-    public function isStartDateIsSet()
+    public function isStartDateIsSet(): bool
     {
-        return $this->startDateIsSet;
+        return (bool)$this->startDateIsSet;
     }
 
     /**
-     * @param bool $startDateIsSet
+     * @param ?bool $startDateIsSet
      */
-    public function setStartDateIsSet($startDateIsSet)
+    public function setStartDateIsSet(?bool $startDateIsSet): void
     {
-        $this->startDateIsSet = $startDateIsSet;
+        $this->startDateIsSet = (bool)$startDateIsSet;
     }
 
     /**
      * @return bool
      */
-    public function isEndDateIsSet()
+    public function isEndDateIsSet(): bool
     {
-        return $this->endDateIsSet;
+        return (bool)$this->endDateIsSet;
     }
 
     /**
-     * @param bool $endDateIsSet
+     * @param ?bool $endDateIsSet
      */
-    public function setEndDateIsSet($endDateIsSet)
+    public function setEndDateIsSet(?bool $endDateIsSet): void
     {
-        $this->endDateIsSet = $endDateIsSet;
+        $this->endDateIsSet = (bool)$endDateIsSet;
     }
 }

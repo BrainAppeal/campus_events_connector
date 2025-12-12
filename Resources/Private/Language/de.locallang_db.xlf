@@ -136,7 +136,7 @@
 				<target>Orte</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.modified_at_recursive">
-				<target>Modified at recursive</target>
+				<target>Letzte Änderung (rekursiv)</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type">
 				<target>Anmeldungs-Typ</target>

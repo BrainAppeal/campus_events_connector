@@ -17,8 +17,9 @@ use BrainAppeal\CampusEventsConnector\Importer\PostImportHookInterface;
 use BrainAppeal\CampusEventsConnector\Utility\CacheUtility;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
-class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
+class EventImportTask extends AbstractTask
 {
     public const API_VERSION_LEGACY = 'below-2-27-0';
     public const API_VERSION_ABOVE_227 = 'above-2-27-0';
@@ -82,22 +83,18 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
      */
     public function execute(): bool
     {
+        $logException = null;
         if ($this->apiVersion === self::API_VERSION_ABOVE_227) {
             $importer = $this->getExtendedImporter();
             $success = $importer->import($this->baseUri, $this->apiKey, (int) $this->pid, (int) $this->storageId, $this->storageFolder);
-            if (!$success) {
-                $exceptions = $importer->getExceptions();
-                if (!empty($exceptions)) {
-                    $logException = null;
-                    if ($exceptions[0] instanceof \Exception) {
-                        $logException = $exceptions[0];
-                    } elseif ($exceptions[0] instanceof \Throwable) {
-                        $logException = new Exception('Wrapped throwable: ' . $exceptions[0]->getMessage(), $exceptions[0]->getCode(), $exceptions[0]);
-                    }
-                    if ($logException) {
-                        $this->logException($logException);
-                        throw $logException;
-                    }
+            if (!empty($exceptions = $importer->getExceptions())) {
+                if ($exceptions[0] instanceof \Exception) {
+                    $logException = $exceptions[0];
+                } elseif ($exceptions[0] instanceof \Throwable) {
+                    $logException = new Exception('Wrapped throwable: ' . $exceptions[0]->getMessage(), $exceptions[0]->getCode(), $exceptions[0]);
+                }
+                if ($logException) {
+                    $this->logException($logException);
                 }
             }
         } else {
@@ -112,6 +109,9 @@ class EventImportTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask
             /** @var CacheUtility $cacheUtility */
             $cacheUtility = GeneralUtility::makeInstance(CacheUtility::class);
             $cacheUtility->clearCacheForPage($this->pid);
+        }
+        if ($logException) {
+            throw $logException;
         }
 
         return $success;

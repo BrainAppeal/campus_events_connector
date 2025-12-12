@@ -15,6 +15,7 @@
 namespace BrainAppeal\CampusEventsConnector\Importer\DBAL;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\AbstractImportedEntity;
+use BrainAppeal\CampusEventsConnector\Domain\Model\BelongsToEventInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Model\Event;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
@@ -24,13 +25,13 @@ use BrainAppeal\CampusEventsConnector\Importer\ImportMappingModel;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Resource\AbstractFile;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
-use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
 
 class DBAL implements DBALInterface, SingletonInterface
 {
@@ -39,10 +40,7 @@ class DBAL implements DBALInterface, SingletonInterface
      */
     private $repositories = [];
 
-    /**
-     * @var string[]
-     */
-    private $classTableMapping = [];
+    protected ?string $dbImportSource = null;
 
     /**
      * @param string $modelClass
@@ -89,6 +87,7 @@ class DBAL implements DBALInterface, SingletonInterface
      */
     public function findRowByImport(string $table, string $importSource, int $importId, ?int $pid = null): ?array
     {
+        $dbImportSource = $this->getFilteredDbImportSource($importSource);
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll();
@@ -96,7 +95,7 @@ class DBAL implements DBALInterface, SingletonInterface
             ->select('*')
             ->from($table)
             ->where(
-                $queryBuilder->expr()->eq('ce_import_source', $queryBuilder->createNamedParameter($importSource, Connection::PARAM_STR)),
+                $queryBuilder->expr()->eq('ce_import_source', $queryBuilder->createNamedParameter($dbImportSource, Connection::PARAM_STR)),
                 $queryBuilder->expr()->eq('ce_import_id', $queryBuilder->createNamedParameter($importId, Connection::PARAM_STR))
             );
         $tableControl = $GLOBALS['TCA'][$table]['ctrl'] ?? [];
@@ -124,7 +123,6 @@ class DBAL implements DBALInterface, SingletonInterface
             $repository = $this->getRepository($object::class);
             if ($repository instanceof AbstractImportedRepository) {
                 /** @var AbstractImportedEntity $object */
-                $object->setCeImportedAt(time());
                 if ($object->getUid() > 0) {
                     $repository->update($object);
                 } else {
@@ -142,11 +140,14 @@ class DBAL implements DBALInterface, SingletonInterface
      * @throws IllegalObjectTypeException
      * @throws UnknownObjectException
      */
-    public function persistImportModels($groupedImportMappingModels): void
+    public function persistImportModels($groupedImportMappingModels): int
     {
         if (empty($groupedImportMappingModels)) {
-            return;
+            return 0;
         }
+        $persistedCount = 0;
+        // Invalid entities do not need to be persisted, they are removed from the cache
+        $externalPersistedCountForCacheUpdate = 0;
         foreach ($groupedImportMappingModels as $importType => $importModelsForType) {
             $objectClass = ExtendedApiConnector::IMPORT_TYPE_CLASS_MAP[$importType];
             $repository = $this->getRepository($objectClass);
@@ -155,28 +156,43 @@ class DBAL implements DBALInterface, SingletonInterface
                     /** @var ImportMappingModel $importMappingModel */
                     if (null !== $object = $importMappingModel->getDomainModel()) {
                         /** @var AbstractImportedEntity $object */
-                        $object->setCeImportedAt(time());
-                        if ($object->getUid() > 0) {
-                            $repository->update($object);
+                        if ($importMappingModel->isInvalid() || (!$importMappingModel->isDataMapped() && !$object->getUid())) {
+                            $repository->remove($object);
+                            ++$persistedCount;
+                        } elseif (($object instanceof BelongsToEventInterface) && !$object->getEvent()) {
+                            $repository->remove($object);
+                            $importMappingModel->setIsInvalid(true);
+                            if ($object->getUid()) {
+                                ++$persistedCount;
+                            }
+                        } elseif ($object->getUid() > 0) {
+                            if ($object->objectIsDirtyDeep()) {
+                                $repository->update($object);
+                                ++$persistedCount;
+                                ++$externalPersistedCountForCacheUpdate;
+                            }
                         } else {
                             $repository->add($object);
+                            ++$persistedCount;
+                            ++$externalPersistedCountForCacheUpdate;
                         }
                     }
                 }
             }
 
         }
-        $eventRepository = $this->getRepository(Event::class);
-        if ($eventRepository instanceof EventRepository) {
-            $eventRepository->persistAll();
+        if ($persistedCount > 0) {
+            $eventRepository = $this->getRepository(Event::class);
+            if ($eventRepository instanceof EventRepository) {
+                $eventRepository->persistAll();
+            }
         }
+        return $externalPersistedCountForCacheUpdate;
     }
 
-    private function deleteRawFromTable(string $tableName, $importSource, $pid, $importTimestamp, $excludeUids): void
+    private function deleteRawFromTable(string $tableName, string $importSource, int $pid, int $importTimestamp, array $excludeUids = []): void
     {
-        $pid = (int)$pid;
-        $importSource = preg_replace("/['\"]/", '', (string)$importSource);
-        $importTimestamp = (int)$importTimestamp;
+        $dbImportSource = $this->fixImportSourceNames($tableName, $importSource);
 
         /** @noinspection SqlResolve */
         $deleteSql = "DELETE FROM $tableName WHERE pid = ? AND ce_import_source = ? AND ce_imported_at < ?";
@@ -189,45 +205,97 @@ class DBAL implements DBALInterface, SingletonInterface
         /** @var ConnectionPool $connectionPool */
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         $connection = $connectionPool->getConnectionForTable($tableName);
-        $connection->executeStatement($deleteSql, [$pid, $importSource, $importTimestamp]);
+        $connection->executeStatement($deleteSql, [$pid, $dbImportSource, $importTimestamp]);
+    }
+
+    /**
+     * Extracts and returns the host from the given import source URL. If the host
+     * cannot be determined, the original import source is returned.
+     *
+     * @param string $importSource The import source URL to be filtered.
+     * @return string The extracted host from the import source or the original string if no host is present.
+     */
+    public function getFilteredDbImportSource(string $importSource): string
+    {
+        if ($this->dbImportSource) {
+            return $this->dbImportSource;
+        }
+        $importSource = preg_replace("/['\"]/", '', $importSource);
+        $host = parse_url($importSource, PHP_URL_HOST);
+        if ($host) {
+            $this->dbImportSource = (string)$host;
+        } else {
+            $this->dbImportSource = $importSource;
+        }
+        return $this->dbImportSource;
+    }
+
+    public function fixImportSourceNames(string $tableName, string $importSource): string
+    {
+        $dbImportSource = $this->getFilteredDbImportSource($importSource);
+        if ($dbImportSource !== $importSource) {
+            $connection = $this->getConnectionForTable($tableName);
+            $updateImportSourceSql = "UPDATE $tableName SET ce_import_source = ? WHERE ce_import_source = ?";
+            $connection->executeStatement($updateImportSourceSql, [$dbImportSource, $importSource]);
+            return $dbImportSource;
+        }
+        return $importSource;
     }
 
     /**
      * @inheritDoc
      */
-    public function processImportedItems($tableName, $importIdList, $importSource, $tstamp)
+    public function processImportedItems(string $tableName, array $importIdList, string $dbImportSource, int $tstamp): void
     {
-        $uidListCsv = implode(',', array_filter($importIdList, 'is_numeric'));
         $connection = $this->getConnectionForTable($tableName);
+        $uidListCsv = implode(',', array_filter($importIdList, 'is_numeric'));
+        $tableControl = $GLOBALS['TCA'][$tableName]['ctrl'] ?? [];
+        // Mark all items as deleted that were not included in the api list result
+        $markDeletedSql = "UPDATE $tableName SET tstamp = ?, deleted = 1 WHERE ce_import_source = ?";
         if (!empty($uidListCsv)) {
             // Update timestamp for all items from the api list result + mark as not deleted
             $sql = "UPDATE $tableName SET ce_imported_at = ?, deleted = 0 WHERE ce_import_source = ? AND ce_import_id IN ($uidListCsv)";
-            $connection->executeStatement($sql, [$tstamp, $importSource]);
+            $connection->executeStatement($sql, [$tstamp, $dbImportSource]);
+            /*
+            if (empty($languageField)) {
+            } else {
+                $sql .= " AND $languageField = 0";
+                $connection->executeStatement($sql, [$tstamp, $dbImportSource]);
+                $sql = "UPDATE $tableName SET ce_imported_at = ?, deleted = 0 WHERE ce_import_source = ? AND ce_import_id IN ($uidListCsv)";
+            }*/
+            $markDeletedSql .= " AND ce_import_id NOT IN ($uidListCsv)";
         }
-        // Mark all items as deleted that were not included in the api list result
-        $sql = "UPDATE $tableName SET tstamp = ?, deleted = 1 WHERE ce_import_source = ?";
-        if (!empty($uidListCsv)) {
-            $sql .= " AND ce_import_id NOT IN ($uidListCsv)";
+        $connection->executeStatement($markDeletedSql, [$tstamp, $dbImportSource]);
+        $languageField = $tableControl['languageField'] ?? '';
+        $cleanupSql = "UPDATE $tableName a, $tableName b SET b.deleted = 2 WHERE a.ce_import_source = ? AND a.ce_import_id > 0 AND b.ce_import_source = a.ce_import_source AND a.uid < b.uid AND a.ce_import_id = b.ce_import_id";
+        if ($languageField) {
+            $sql = 'SELECT DISTINCT ' . $languageField . ' FROM ' . $tableName . ' WHERE ce_import_source = ?';
+            $usedLanguages = $connection->executeQuery($sql, [$dbImportSource])->fetchFirstColumn();
+            foreach ($usedLanguages as $languageId) {
+                $connection->executeStatement($cleanupSql . " AND a.$languageField = $languageId AND b.$languageField = $languageId", [$dbImportSource]);
+            }
+        } else {
+            $connection->executeStatement($cleanupSql, [$dbImportSource]);
         }
-        $connection->executeStatement($sql, [$tstamp, $importSource]);
+        $connection->executeStatement('DELETE FROM ' . $tableName . ' WHERE deleted = 2');
     }
 
-    protected function getConnectionForTable($tableName)
+    protected function getConnectionForTable($tableName): Connection
     {
         /** @var ConnectionPool $connectionPool */
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         return $connectionPool->getConnectionForTable($tableName);
     }
 
-    public function removeNotUpdatedObjects(string $modelClass, string $importSource, int $pid, int $importTimestamp, array $excludeUids = []): void
+    public function removeNotUpdatedObjects(string $modelClass, string $dbImportSource, int $pid, int $importTimestamp, array $excludeUids = []): void
     {
         if (is_a($modelClass, FileReference::class, true)) {
-            $this->deleteRawFromTable('sys_file_reference', $importSource, $pid, $importTimestamp, $excludeUids);
+            $this->deleteRawFromTable('sys_file_reference', $dbImportSource, $pid, $importTimestamp, $excludeUids);
         } else {
             $repository = $this->getRepository($modelClass);
 
             if ($repository !== null) {
-                $results = $repository->findByNotImportedSince($importTimestamp, $importSource, $pid);
+                $results = $repository->findByNotImportedSince($importTimestamp, $dbImportSource, $pid);
                 foreach ($results as $result) {
                     $repository->remove($result);
                 }
@@ -235,16 +303,6 @@ class DBAL implements DBALInterface, SingletonInterface
                 $repository->persistAll();
             }
         }
-    }
-
-    private function getTableForModelClass($modelClass)
-    {
-        if (!isset($this->classTableMapping[$modelClass])) {
-            $dataMapper = GeneralUtility::makeInstance(DataMapFactory::class);
-            $this->classTableMapping[$modelClass] = $dataMapper->buildDataMap($modelClass)->getTableName();
-        }
-
-        return $this->classTableMapping[$modelClass];
     }
 
     /**
@@ -259,22 +317,22 @@ class DBAL implements DBALInterface, SingletonInterface
         /** @var DataHandler $dataHandler */
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->start($data, []);
+        $dataHandler->enableLogging = false;
         $dataHandler->process_datamap();
     }
 
     /**
-     * @param File $sysFile
-     * @param ImportedModelInterface $target
+     * @param AbstractFile $sysFile
+     * @param string $table
+     * @param int $storagePid
+     * @param int $uidForeign
      * @param string $property
      * @param array $attribs
      * @return int|null
      */
-    public function addSysFileReference($sysFile, $target, $property, $attribs = [])
+    public function addSysFileReference(AbstractFile $sysFile, string $table, int $storagePid, int $uidForeign, $property, $attribs = []): ?int
     {
         $uidLocal = $sysFile->getUid();
-        $uidForeign = $target->getUid();
-        $table = $this->getTableForModelClass($target::class);
-        $storagePid = $target->getPid();
 
         $newId = 'NEW' . $uidForeign . '-' . $uidLocal;
 
@@ -295,9 +353,10 @@ class DBAL implements DBALInterface, SingletonInterface
         /** @var DataHandler $dataHandler */
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->start($data, []);
+        $dataHandler->enableLogging = false;
         $dataHandler->process_datamap();
         if (!empty($dataHandler->substNEWwithIDs[$newId])) {
-            return $dataHandler->substNEWwithIDs[$newId];
+            return (int)$dataHandler->substNEWwithIDs[$newId];
         }
         return null;
     }

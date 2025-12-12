@@ -36,6 +36,17 @@ class DataHandlerProcessor implements SingletonInterface
     private bool $debug = false;
 
     /**
+     * @var string[]
+     */
+    private array $excludeTablesFromTranslation = [
+        'tx_campuseventsconnector_domain_model_timerange',
+        'tx_campuseventsconnector_domain_model_eventsession',
+        'tx_campuseventsconnector_domain_model_eventattachment',
+        'tx_campuseventsconnector_domain_model_eventimage',
+        'tx_campuseventsconnector_domain_model_eventticketpricevariant',
+    ];
+
+    /**
      * @param array<string, array<int, ImportMappingModel>> $groupedImportMappingModels
      * @param int $pid The target page id
      * @param array<int, array{language_code: string, pid: int, l10n_parent: int, sys_language_uid: int, language_aspect: LanguageAspect, uid: int}> $languageOverlays
@@ -47,6 +58,20 @@ class DataHandlerProcessor implements SingletonInterface
             return;
         }
         $this->debug = $debug;
+        foreach (ExtendedApiConnector::IMPORT_TYPE_TABLE_MAP as $table) {
+            $tableControl = $GLOBALS['TCA'][$table]['ctrl'] ?? [];
+            $languageField = $tableControl['languageField'] ?? '';
+            if (empty($languageField)) {
+                $this->excludeTablesFromTranslation[] = $table;
+            }
+            $tableColumns = $GLOBALS['TCA'][$table]['columns'] ?? [];
+            foreach ($tableColumns as $columnConfig) {
+                if ($columnConfig['config']['type'] === 'inline' && $foreignTable = $columnConfig['config']['foreign_table'] ?? null) {
+                    $this->excludeTablesFromTranslation[] = $foreignTable;
+                }
+            }
+        }
+        $this->excludeTablesFromTranslation = array_unique($this->excludeTablesFromTranslation);
         // The sort order in the array is important here, as the order of the tables in the array determines the order of the processing
         foreach (ExtendedApiConnector::IMPORT_TYPE_TABLE_MAP as $importType => $table) {
             $importModelsForType = $groupedImportMappingModels[$importType] ?? [];
@@ -86,7 +111,7 @@ class DataHandlerProcessor implements SingletonInterface
     protected function updateImportItemWithDataHandler(ImportMappingModel $importMappingModel, int $pid, array $languageOverlays, DataParser $parser, array $formatFunctions): void
     {
         $rawData = $importMappingModel->getImportData();
-        if (empty($rawData) || !$importMappingModel->existsInApi()) {
+        if (empty($rawData) || !$importMappingModel->existsInApi() || $importMappingModel->isInvalid()) {
             return;
         }
         $table = $importMappingModel->getTable();
@@ -340,65 +365,5 @@ class DataHandlerProcessor implements SingletonInterface
             $value
         );
         return $decodedValue ?: '';
-    }
-
-    /**
-     * These fields are currently not imported with the data handler but still with extbase
-     * @param string $importType
-     * @return array
-     */
-    private function getExcludeFields(string $importType): array
-    {
-        $excludeFields = [];
-        switch ($importType) {
-            case 'FilterCategory':
-                $excludeFields[] = 'children';
-                break;
-            case 'Referent':
-                $excludeFields[] = 'birthdate';
-                $excludeFields[] = 'iban';
-                $excludeFields[] = 'bic';
-                $excludeFields[] = 'bankName';
-                $excludeFields[] = 'taxNumber';
-                $excludeFields[] = 'name';
-                break;
-            case 'Event':
-                $excludeFields[] = 'seller';
-                $excludeFields[] = 'eventTicketPriceVariants';
-                $excludeFields[] = 'notOrderableMessage';
-                $excludeFields[] = 'externalOrderEmailSubject';
-                $excludeFields[] = 'externalOrderEmailBody';
-                $excludeFields[] = 'waitingQueue';
-                $excludeFields[] = 'alternativeEvents';
-                $excludeFields[] = 'locations';
-                $excludeFields[] = 'viewLists';
-                $excludeFields[] = 'organizers';
-                $excludeFields[] = 'filterCategories';
-                $excludeFields[] = 'targetGroups';
-                $excludeFields[] = 'sponsors';
-                $excludeFields[] = 'attachments';
-                $excludeFields[] = 'images';
-                $excludeFields[] = 'categories';
-                $excludeFields[] = 'mandator';
-                $excludeFields[] = 'eventSessions';
-                $excludeFields[] = 'dynamicAttributes';
-                $excludeFields[] = 'location';
-                $excludeFields[] = 'contactPersons';
-                $excludeFields[] = 'referents';
-                $excludeFields[] = 'sessionDates';
-                break;
-            case 'EventSession':
-                $excludeFields[] = 'sessionDates';
-                break;
-            case 'EventAttachment':
-                $excludeFields[] = 'attachmentFile';
-                break;
-            case 'EventImage':
-            case 'Sponsor':
-                $excludeFields[] = 'imageFile';
-                break;
-        }
-        $excludeFields[] = 'translations';
-        return $excludeFields;
     }
 }
