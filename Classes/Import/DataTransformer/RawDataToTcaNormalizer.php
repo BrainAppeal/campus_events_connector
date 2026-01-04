@@ -42,7 +42,7 @@ class RawDataToTcaNormalizer
      */
     private RawValueExtractor $rawValueExtractor;
 
-    public function __construct(private ImportTableConfigurationModel $importConfiguration)
+    public function __construct(private readonly ImportTableConfigurationModel $importConfiguration)
     {
         $this->table = $importConfiguration->getTableName();
 

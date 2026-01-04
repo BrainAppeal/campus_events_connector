@@ -22,20 +22,10 @@ abstract class AbstractDataTransformer implements ImportDataTransformerInterface
     private array $existingIdentifiers = [];
     private readonly string $table;
     private int $priority;
-
-    /**
-     * Information about cropped fields. This indicates that the database field must be changed
-     * @var array<string, array{targetField: string, maxLength: int, allowedLength: int, croppedValueCount: int, valueBeforeCrop: string}>
-     */
-    protected array $croppedFieldInfo = [];
     /**
      * @var RawDataToTcaNormalizer
      */
     private RawDataToTcaNormalizer $rawDataConverter;
-    /**
-     * @var ?array<string, array{identifier: string|string[], isListType: bool}>
-     */
-    public ?array $childRecordTypes = null;
     /**
      * Data collection normalizers by field name
      * @var array<string, NormalizerStrategyInterface>

@@ -29,7 +29,7 @@ class FileDataTransformerHelper
     private ?string $baseUri = null;
 
     /**
-     * @param \BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel[] $fileImportMap
+     * @param ImportFieldConfigurationModel[] $fileImportMap
      */
     public function __construct(private array $fileImportMap)
     {
@@ -45,7 +45,12 @@ class FileDataTransformerHelper
      */
     public function requiresFileProcessing(?array $importData): bool
     {
-        return array_any($this->fileImportMap, static fn(ImportFieldConfigurationModel $fieldMap) => !empty($importData[$fieldMap->getSourceField()]) || !empty($importData[$fieldMap->get('timestamp_import_field')]));
+        foreach ($this->fileImportMap as $fieldMap) {
+            if (!empty($importData[$fieldMap->getSourceField()]) || !empty($importData[$fieldMap->get('timestamp_import_field')])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

@@ -55,6 +55,9 @@ readonly class NormalizerStrategyRegistry
         if (DecimalNormalizerStrategy::supports($normalizerKey)) {
             return DecimalNormalizerStrategy::class;
         }
+        if (IsoDateToDatetimeNormalizerStrategy::supports($normalizerKey)) {
+            return IsoDateToDatetimeNormalizerStrategy::class;
+        }
         return null;
     }
 

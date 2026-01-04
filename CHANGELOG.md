@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 5.2.1 (2026-01-04)
+- make compatible with PHP 8.2 in non-composer mode
+- add normalizer for ISO date format
+
 ## 5.2.0 (2026-01-04)
 - remove old API support
 - complete rewrite of the import process for better performance (Removed Extbase usage)

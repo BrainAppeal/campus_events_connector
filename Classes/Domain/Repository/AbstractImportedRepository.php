@@ -75,9 +75,10 @@ abstract class AbstractImportedRepository extends Repository
      * @param int|int[]|null $pid
      * @param array $constraints Optional query constraints
      * @param int $limit
+     * @param array<string,string> $orderBy Optional query orderings
      * @return QueryResultInterface|list<array<string,mixed>> The query result object or an array if $returnRawQueryResult is TRUE
      */
-    public function findListByPid($pid, array $constraints = [], int $limit = 0)
+    public function findListByPid($pid, array $constraints = [], int $limit = 0, array $orderBy = [])
     {
         $this->setPidRestriction($pid);
         $query = $this->createQuery();
@@ -86,6 +87,9 @@ abstract class AbstractImportedRepository extends Repository
         }
         if ($limit > 0) {
             $query->setLimit($limit);
+        }
+        if (!empty($orderBy)) {
+            $query->setOrderings($orderBy);
         }
         return $query->execute();
     }

@@ -88,6 +88,7 @@ return [
                 ],
                 ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'bookableFrom',
+                    'normalizer' => 'iso_date_to_datetime',
                 ],
             ],
             'bookable_till' => [
@@ -104,6 +105,7 @@ return [
                 ],
                 ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'bookableTill',
+                    'normalizer' => 'iso_date_to_datetime',
                 ],
             ],
             'pv_quota' => [
