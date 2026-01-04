@@ -12,6 +12,7 @@
  */
 
 use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -61,6 +62,14 @@ return [
             'showitem' => 'hidden, starttime, endtime',
         ],
     ],
+    ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+        'importField' => 'Category',
+        'referenceUid' => TCAUtility::IMPORT_ID_FIELD,
+        'apiEndpoint' => 'categories',
+        'apiListItemContainsAllData' => true,
+        'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransformer::class,
+        'targetImportSourceField' => 'ce_import_source',
+    ],
     'columns' => array_merge(
         $defaultColumnsColumns,
         $importColumns,
@@ -75,7 +84,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'name',
                 ],
             ],

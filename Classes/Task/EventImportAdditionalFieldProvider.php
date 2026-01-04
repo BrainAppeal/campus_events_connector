@@ -13,8 +13,8 @@
 
 namespace BrainAppeal\CampusEventsConnector\Task;
 
-use BrainAppeal\CampusEventsConnector\Http\HttpException;
-use BrainAppeal\CampusEventsConnector\Importer\ExtendedApiConnector;
+use BrainAppeal\CampusEventsConnector\CeImport\DataCollection\CeApiConnector;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
@@ -52,17 +52,17 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
      * @param AbstractTask|null $task When editing, reference to the current task. NULL when adding.
      * @param SchedulerModuleController $schedulerModule Reference to the calling object (Scheduler's BE module)
-     * @return array Array containing all the information pertaining to the additional fields
+     * @return array<string, mixed> Array containing all the information pertaining to the additional fields
      */
-    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $schedulerModule)
+    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $schedulerModule): array
     {
         $additionalFields = [];
         $additionalFields['task_eventImport_baseUri'] = $this->getBaseUriAdditionalField($taskInfo, $task);
         $additionalFields['task_eventImport_apiKey'] = $this->getApiKeyAdditionalField($taskInfo, $task);
-        $additionalFields['task_eventImport_apiVersion'] = $this->getApiVersionAdditionalField($taskInfo, $task);
         $additionalFields['task_eventImport_pid'] = $this->getPidAdditionalField($taskInfo, $task);
         $additionalFields['task_eventImport_storageId'] = $this->getStorageIdAdditionalField($task);
         $additionalFields['task_eventImport_storageFolder'] = $this->getStorageFolderAdditionalField($taskInfo, $task);
+        $additionalFields['task_eventImport_forceUpdate'] = $this->getForceUpdateAdditionalField($taskInfo, $task);
         return $additionalFields;
     }
 
@@ -83,41 +83,6 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         $fieldConfiguration = [
             'code' => $fieldHtml,
             'label' => self::LL_PREFIX . '.api_key',
-            'cshKey' => '_MOD_system_txschedulerM1',
-            'cshLabel' => $fieldId
-        ];
-        return $fieldConfiguration;
-    }
-
-    /**
-     * @param array $taskInfo Reference to the array containing the info used in the add/edit form
-     * @param EventImportTask|null $task When editing, reference to the current task. NULL when adding.
-     * @return array Array containing all the information pertaining to the additional fields
-     */
-    protected function getApiVersionAdditionalField(array &$taskInfo, ?EventImportTask $task): array
-    {
-        $fieldId = 'campusEventsConnector_eventImport_apiVersion';
-        $selectedApiVersion = null !== $task ? $task->getApiVersion() : EventImportTask::API_VERSION_ABOVE_227;
-        if (empty($taskInfo[$fieldId])) {
-            $taskInfo[$fieldId] = $selectedApiVersion;
-        }
-        $fieldName = 'tx_scheduler[' . $fieldId . ']';
-
-        $options = [];
-        $optionValues = [
-            EventImportTask::API_VERSION_LEGACY => "geringer als 2.27.0",
-            EventImportTask::API_VERSION_ABOVE_227 => "2.27.0 oder höher"
-        ];
-        foreach ($optionValues as $optionValue => $optionName) {
-            $selAttr = $selectedApiVersion === $optionValue ? ' selected="selected"' : '';
-            $options[] = '<option value="' . $optionValue . '"'.$selAttr.'>' . $optionName . '</option>';
-        }
-
-        $fieldHtml = '<select class="form-control" name="' . $fieldName . '" id="' . $fieldId . '">' . implode("\n", $options) . '</select>';
-
-        $fieldConfiguration = [
-            'code' => $fieldHtml,
-            'label' => self::LL_PREFIX . '.api_version',
             'cshKey' => '_MOD_system_txschedulerM1',
             'cshLabel' => $fieldId
         ];
@@ -205,8 +170,8 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
     protected function getStorageFolderAdditionalField(array &$taskInfo, ?EventImportTask $task): array
     {
         $fieldId = 'campusEventsConnector_eventImport_storageFolder';
-        $storageFolder = null !== $task ? $task->getStorageFolder() : null;
         if (empty($taskInfo[$fieldId])) {
+            $storageFolder = null !== $task ? $task->getStorageFolder() : null;
             $taskUid = (null === $task) ? time()%10000 : $task->getTaskUid();
             $taskInfo[$fieldId] = empty($storageFolder) ? 'campus_events_import/task-'.$taskUid.'/' : $storageFolder;
         }
@@ -219,6 +184,26 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
             'cshLabel' => $fieldId
         ];
         return $fieldConfiguration;
+    }
+
+    protected function getForceUpdateAdditionalField(array &$taskInfo, ?EventImportTask $task): array
+    {
+        $propertyName = 'forceUpdate';
+        $value = $taskInfo['emailOnBrokenLinkOnly']??null;
+        if ($value === null && $task !== null) {
+            $value = $task->forceUpdate;
+        }
+        $fieldId = 'campusEventsConnector_eventImport_' . $propertyName;
+        $fieldName = 'tx_scheduler[' . $fieldId . ']';
+        $fieldCode = '<input type="checkbox" class="form-check-input" name="'.$fieldName.'" '
+            . 'id="' . $fieldId . '" ' . ($value ? 'checked="checked"' : '') . '>';
+        return [
+            'code' => $fieldCode,
+            'cshKey' => '_MOD_system_txschedulerM1',
+            'cshLabel' => $fieldId,
+            'label' => self::LL_PREFIX . '.force_update',
+            'type' => 'checkToggle',
+        ];
     }
 
     /**
@@ -252,10 +237,6 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
             $validData = false;
         }
 
-        $apiVersion = !empty($submittedData['campusEventsConnector_eventImport_apiVersion'])
-            && $submittedData['campusEventsConnector_eventImport_apiVersion'] === EventImportTask::API_VERSION_LEGACY
-            ? EventImportTask::API_VERSION_LEGACY : EventImportTask::API_VERSION_ABOVE_227;
-
         $apiKey = $submittedData['campusEventsConnector_eventImport_apiKey'];
         if (empty($apiKey) || preg_match('/^[\w]{8}-[\w]{16}-[\w]{8}$/', (string) $apiKey) !== 1) {
             $this->addTranslatableMessage(self::LL_PREFIX . '.error.invalid_api_key');
@@ -265,25 +246,12 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         if ($validData) {
             $hasApiCheckFailureMessage = false;
             if ($baseUri !== EventImportTask::BASE_URI_DEFAULT) {
-                $apiConnector = $this->initializeApiConnector($baseUri, $apiKey, $apiVersion);
-                $validData = $apiConnector->checkApiVersion();
-                if (!empty($apiConnector->getExceptions())) {
-                    $validData = false;
-                    foreach ($apiConnector->getExceptions() as $apiException) {
-                        $this->addMessage(
-                            $apiException->getMessage(),
-                            ContextualFeedbackSeverity::ERROR
-                        );
-                        if ($apiException instanceof HttpException && $apiException->getCode() === 401) {
-                            $hasApiCheckFailureMessage = true;
-                            $this->addTranslatableMessage(self::LL_PREFIX . '.error.invalid_api_key');
-                        }
-                    }
-                }
+                $apiConnector = $this->initializeApiConnector($baseUri, $apiKey);
+                $validData = $apiConnector->checkApiAccess();
             } else {
                 $validData = false;
             }
-            if (!$validData && !$hasApiCheckFailureMessage) {
+            if (!$validData) {
                 $this->addTranslatableMessage(self::LL_PREFIX . '.error.invalid_base_uri');
             }
         }
@@ -294,21 +262,13 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
     /**
      * @param string $baseUri Tha base uri for the api
      * @param string $apiKey The api key
-     * @param string $apiVersion The api version
-     * @return \BrainAppeal\CampusEventsConnector\Importer\ApiConnector|ExtendedApiConnector
+     * @return CeApiConnector
      */
-    private function initializeApiConnector(string $baseUri, string $apiKey, string $apiVersion)
+    private function initializeApiConnector(string $baseUri, string $apiKey): CeApiConnector
     {
-        if ($apiVersion === EventImportTask::API_VERSION_LEGACY) {
-            /** @var \BrainAppeal\CampusEventsConnector\Importer\ApiConnector $apiConnector */
-            $apiConnector = GeneralUtility::makeInstance(
-                \BrainAppeal\CampusEventsConnector\Importer\ApiConnector::class
-            );
-        } else {
-            /** @var ExtendedApiConnector $apiConnector */
-            $apiConnector = GeneralUtility::makeInstance(ExtendedApiConnector::class);
-        }
-        $apiConnector->setBaseUri($baseUri);
+        /** @var CeApiConnector $apiConnector */
+        $apiConnector = GeneralUtility::makeInstance(CeApiConnector::class);
+        $apiConnector->setBaseUrl($baseUri);
         $apiConnector->setApiKey($apiKey);
         return $apiConnector;
     }
@@ -323,14 +283,32 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         $validData = false;
         $data = $submittedData['campusEventsConnector_eventImport_pid'];
         if (empty($data) || is_numeric($data)) {
-            $dbal = \BrainAppeal\CampusEventsConnector\Importer\DBAL\DBALFactory::getInstance();
-            $validData = $dbal->checkIfPidIsValid($data);
+            $validData = $this->checkIfPidIsValid($data);
         }
         if (!$validData) {
             // Issue error message
             $this->addTranslatableMessage(self::LL_PREFIX . '.error.invalid_pid');
         }
         return $validData;
+    }
+
+    /**
+     * @param int $pid
+     * @return bool
+     */
+    private function checkIfPidIsValid(int $pid): bool
+    {
+        /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('pages');
+        $queryBuilder->resetRestrictions();
+        $pageRowOrNull = $queryBuilder
+            ->select('uid')
+            ->from('pages')
+            ->where($queryBuilder->expr()->eq('uid', (int)$pid))
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchAssociative();
+        return !empty($pageRowOrNull) && (int)$pageRowOrNull['uid'] === $pid;
     }
 
     /**
@@ -368,7 +346,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
      * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validateStorageFolderAdditionalField(array $submittedData, SchedulerModuleController $parentObject)
+    public function validateStorageFolderAdditionalField(array $submittedData, SchedulerModuleController $parentObject): bool
     {
         $validData = false;
         $data = $submittedData['campusEventsConnector_eventImport_storageFolder'];
@@ -382,16 +360,15 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
     }
 
     /**
-     * Save additional field in task
+     * Assign addition fields to the task object
      *
      * @param array $submittedData Contains data submitted by the user
      * @param AbstractTask|EventImportTask $task Reference to the current task object
      */
-    public function saveAdditionalFields(array $submittedData, AbstractTask $task)
+    public function saveAdditionalFields(array $submittedData, AbstractTask $task): void
     {
         /** @var EventImportTask $task */
         $task->apiKey = $submittedData['campusEventsConnector_eventImport_apiKey'];
-        $task->apiVersion = $submittedData['campusEventsConnector_eventImport_apiVersion'];
         $baseUri = $submittedData['campusEventsConnector_eventImport_baseUri'];
         if (!empty($baseUri) && !str_starts_with((string) $baseUri, 'http')) {
             $baseUri = 'https://' . $baseUri;
@@ -400,6 +377,7 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
         $task->pid = $submittedData['campusEventsConnector_eventImport_pid'];
         $task->storageId = $submittedData['campusEventsConnector_eventImport_storageId'];
         $task->storageFolder = $submittedData['campusEventsConnector_eventImport_storageFolder'];
+        $task->forceUpdate = $submittedData['campusEventsConnector_eventImport_forceUpdate']??false;
     }
 
     /**

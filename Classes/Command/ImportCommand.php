@@ -4,24 +4,21 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Command;
 
-use BrainAppeal\CampusEventsConnector\Importer\PostImportHookInterface;
-use BrainAppeal\CampusEventsConnector\Utility\CacheUtility;
+use BrainAppeal\CampusEventsConnector\CeImport\ImportRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ImportCommand extends Command
 {
-    private const API_VERSION_ABOVE_227 = 'above-2-27-0';
 
     /**
-     * Configure the command by defining the name, options and arguments
+     * Configure the command by defining the name, options, and arguments
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument(
@@ -50,11 +47,23 @@ class ImportCommand extends Command
                 'The storage folder (relative to storage root)',
                 'campus_events_import/task-1793/'
             )
-            ->addArgument(
-                'apiversion',
-                InputArgument::OPTIONAL,
-                'The API version; either "above-2-27-0" or "below-2-27-0"',
-                self::API_VERSION_ABOVE_227
+            ->addOption(
+                'force-update',
+                'f',
+                InputOption::VALUE_NONE,
+                'Force a full update of all records, ignoring timestamps and data hashes'
+            )
+            ->addOption(
+                'stop-previous',
+                's',
+                InputOption::VALUE_NONE,
+                'Reset the running flag of any current import process'
+            )
+            ->addOption(
+                'debug',
+                'd',
+                InputOption::VALUE_NONE,
+                'Enable debug mode'
             );
     }
     /**
@@ -64,73 +73,27 @@ class ImportCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        Bootstrap::initializeBackendAuthentication();
         $baseUri = $input->getArgument('baseuri');
         $targetPid = (int)$input->getArgument('pid');
         $storageId = (int)$input->getArgument('storageId');
         $storageFolder = $input->getArgument('storageFolder');
         $apiKey = $input->getArgument('apikey');
-        $apiVersion = (string)$input->getArgument('apiversion');
-        if ($apiVersion === self::API_VERSION_ABOVE_227) {
-            $importer = $this->getExtendedImporter();
-            $success = $importer->import($baseUri, $apiKey, $targetPid, $storageId, $storageFolder);
-            $exceptions = $importer->getExceptions();
-            /** @var \Exception[] $exceptions */
-            if (!empty($exceptions)) {
-                $output->writeln(sprintf(
-                    '<info>Exception occurred: "%s"</info>',
-                    $exceptions[0]->getMessage()
-                ));
-            }
-        } else {
-            $importer = $this->getImporter();
-            $success = $importer->import($baseUri, $apiKey, $targetPid, $storageId, $storageFolder);
+        $config = [
+            'importStoragePid' => $targetPid,
+            'forceUpdate' => $input->hasOption('force-update') && $input->getOption('force-update'),
+            'stopPrevious' => $input->hasOption('stop-previous') && $input->getOption('stop-previous'),
+            'completeUpdate' => true,
+            'importTargetResourceIdentifier' => '',
+            'baseUri' => $baseUri,
+            'apiKey' => $apiKey,
+            'debug' => $input->hasOption('debug') && $input->getOption('debug'),
+        ];
+        if (!empty($this->storageId) && !empty($this->storageFolder)) {
+            $config['importTargetResourceIdentifier'] = $storageId . ':' . trim($storageFolder, '/') . '/';
         }
+        $importRunner = GeneralUtility::makeInstance(ImportRunner::class);
+        $importRunner->run($targetPid, $config, $input, $output);
 
-        $this->callHooks($targetPid);
-
-        if ($importer->hasChangedData()) {
-            /** @var CacheUtility $cacheUtility */
-            $cacheUtility = GeneralUtility::makeInstance(CacheUtility::class);
-            $cacheUtility->clearCacheForPage($targetPid);
-        }
-
-        return $success ? 0 : 1;
-    }
-
-    /**
-     * @return \BrainAppeal\CampusEventsConnector\Importer\Importer
-     */
-    private function getImporter()
-    {
-        /** @var \BrainAppeal\CampusEventsConnector\Importer\Importer $importer */
-        $importer = GeneralUtility::makeInstance(\BrainAppeal\CampusEventsConnector\Importer\Importer::class);
-
-        return $importer;
-    }
-
-    /**
-     * @return \BrainAppeal\CampusEventsConnector\Importer\ExtendedImporter
-     */
-    private function getExtendedImporter()
-    {
-        /** @var \BrainAppeal\CampusEventsConnector\Importer\ExtendedImporter $importer */
-        $importer = GeneralUtility::makeInstance(\BrainAppeal\CampusEventsConnector\Importer\ExtendedImporter::class);
-
-        return $importer;
-    }
-
-    private function callHooks(int $targetPid)
-    {
-        if (isset($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'])
-            && is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'])
-        ) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'] as $classRef) {
-                $hookObj = GeneralUtility::makeInstance($classRef);
-                if ($hookObj instanceof PostImportHookInterface || method_exists($hookObj, 'postImport')) {
-                    $hookObj->postImport($targetPid);
-                }
-            }
-        }
+        return Command::SUCCESS;
     }
 }

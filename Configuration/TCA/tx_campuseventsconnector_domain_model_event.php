@@ -12,6 +12,7 @@
  */
 
 use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -36,7 +37,7 @@ return [
             'starttime' => 'starttime',
             'endtime' => 'endtime',
         ],
-        'searchFields' => 'status,canceled,url,name,subtitle,description,short_description,show_in_news,news_text,learning_objective,images,attachments,registration_possible,min_participants,max_participants,participants,speakers,time_ranges,location,categories,organizer,target_groups,view_lists,filter_categories',
+        'searchFields' => 'status,canceled,url,name,subtitle,description,short_description,learning_objective,min_participants,max_participants,participants,categories,organizer,target_groups,view_lists,filter_categories',
         'typeicon_classes' => [
             'default' => 'campus-events-event',
         ],
@@ -52,7 +53,6 @@ return [
         slug,
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.meta_data,
             seo_title, seo_description, seo_robots_index, seo_robots_follow,
-            show_in_news, news_text,
             learning_objective,
             event_attendance_mode, event_number,
             order_type,
@@ -60,7 +60,6 @@ return [
             --palette--;;eventTimespan,
             event_sessions,
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.registration,
-            registration_possible,
             --palette--;;eventParticipants,
             event_ticket_price_variants,
             direct_registration_url, external_order_email_address, external_order_url,
@@ -72,18 +71,15 @@ return [
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.classification,
              target_groups, categories, filter_categories, view_lists,
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.other,
-            --palette--;;paletteStatus, speakers, hash, modified_at_recursive,
-            location,
-        --palette--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.palette.media;eventMedia,
+            --palette--;;paletteStatus, modified_at_recursive,
         --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
         --palette--;;paletteLanguage,
         --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access,
                 --palette--;;access'],
     ],
     'palettes' => [
-        'eventMedia' => ['showitem' => 'images, attachments'],
         'eventTimespan' => ['showitem' => 'start_tstamp, end_tstamp'],
-        'eventParticipants' => ['showitem' => 'min_participants, max_participants, participants'],
+        'eventParticipants' => ['showitem' => 'min_participants, max_participants'],
         'paletteReferents' => ['showitem' => 'referents_title,
             --linebreak--,referents'],
         'paletteSponsors' => ['showitem' => 'sponsors_title,
@@ -101,6 +97,14 @@ return [
         'access' => [
             'showitem' => 'hidden, starttime, endtime',
         ],
+    ],
+    ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+        'importField' => 'Event',
+        'referenceUid' => TCAUtility::IMPORT_ID_FIELD,
+        'apiEndpoint' => 'events',
+        'apiListItemContainsAllData' => false,
+        'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\EventDataTransformer::class,
+        'targetImportSourceField' => 'ce_import_source',
     ],
     'columns' => array_merge($defaultColumnsColumns, [
 
@@ -122,7 +126,7 @@ return [
                 'default' => 0,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'canceled',
             ],
         ],
@@ -135,7 +139,7 @@ return [
                 'default' => 0,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'published',
             ],
         ],
@@ -148,7 +152,7 @@ return [
                 'default' => 0,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'completed',
             ],
         ],
@@ -161,7 +165,7 @@ return [
                 'default' => 0,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'archived',
             ],
         ],
@@ -174,8 +178,8 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
-                'field' => 'eventUrl',
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => ['@urls', 'eventUrl'],
             ],
         ],
         'name' => [
@@ -187,7 +191,7 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'name',
             ],
         ],
@@ -200,7 +204,7 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'subtitle',
             ],
         ],
@@ -215,9 +219,9 @@ return [
                 'enableRichtext' => true,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'description',
-                'type' => 'html_for_rte',
+                'normalizer' => 'html_for_rte',
             ],
         ],
         'short_description' => [
@@ -229,30 +233,9 @@ return [
                 'rows' => 3,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'shortDescription',
             ],
-        ],
-        'show_in_news' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.show_in_news',
-            'config' => [
-                'type' => 'check',
-                'renderType' => 'checkboxToggle',
-                'default' => 0,
-                'readOnly' => $importFieldsReadOnly,
-            ],
-        ],
-        'news_text' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.news_text',
-            'config' => [
-                'type' => 'text',
-                'cols' => 40,
-                'rows' => 15,
-                'eval' => 'trim',
-                'readOnly' => $importFieldsReadOnly,
-            ]
         ],
         'learning_objective' => [
             'exclude' => true,
@@ -265,123 +248,10 @@ return [
                 'enableRichtext' => true,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'learningObjective',
-                'type' => 'html_for_rte',
+                'normalizer' => 'html_for_rte',
             ],
-        ],
-        'images' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.images',
-            'config' => [
-                ### !!! Watch out for fieldName different from columnName
-                'type' => 'file',
-                'allowed' => $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'],
-                'appearance' => [
-                    'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:images.addFileReference'
-                ],
-                'overrideChildTca' => [
-                    'types' => [
-                        '0' => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_APPLICATION => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ]
-                    ],
-                ],
-                'maxitems' => 9999,
-                'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that file references are copied on localization
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
-            ],
-        ],
-        'attachments' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.attachments',
-            'config' => [
-                ### !!! Watch out for fieldName different from columnName
-                'type' => 'file',
-                'appearance' => [
-                    'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:media.addFileReference'
-                ],
-                'overrideChildTca' => [
-                    'types' => [
-                        '0' => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ],
-                        \TYPO3\CMS\Core\Resource\File::FILETYPE_APPLICATION => [
-                            'showitem' => '
-                            --palette--;LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
-                            --palette--;;filePalette'
-                        ]
-                    ],
-                ],
-                'maxitems' => 9999,
-                'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that file references are copied on localization
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
-            ],
-        ],
-        'registration_possible' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.registration_possible',
-            'config' => [
-                'type' => 'check',
-                'renderType' => 'checkboxToggle',
-                'default' => 0,
-                'readOnly' => $importFieldsReadOnly,
-            ]
         ],
         'min_participants' => [
             'exclude' => true,
@@ -391,7 +261,7 @@ return [
                 'size' => 4,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'minParticipants',
             ],
         ],
@@ -403,75 +273,15 @@ return [
                 'size' => 4,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'maxParticipants',
-            ],
-        ],
-        'participants' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.participants',
-            'config' => [
-                'type' => 'number',
-                'size' => 4,
-                'readOnly' => $importFieldsReadOnly,
-            ]
-        ],
-        'speakers' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.speakers',
-            'l10n_mode' => 'exclude',
-            'l10n_display' => 'defaultAsReadonly',
-            'config' => [
-                'type' => 'select',
-                'renderType' => 'selectMultipleSideBySide',
-                'foreign_table' => 'tx_campuseventsconnector_domain_model_speaker',
-                'MM' => 'tx_campuseventsconnector_event_speaker_mm',
-                'size' => 10,
-                'autoSizeMax' => 30,
-                'maxitems' => 9999,
-                'multiple' => 0,
-                'fieldControl' => [
-                    'editPopup' => [
-                        'disabled' => false
-                    ],
-                    'addRecord' => [
-                        'disabled' => false,
-                    ]
-                ],
-                'readOnly' => $importFieldsReadOnly,
-            ],
-
-        ],
-        'time_ranges' => [
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.time_ranges',
-            'config' => [
-                'type' => 'passthrough',
-            ],
-        ],
-        'location' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.location',
-            'l10n_mode' => 'exclude',
-            'l10n_display' => 'defaultAsReadonly',
-            'config' => [
-                'type' => 'select',
-                'renderType' => 'selectSingle',
-                'foreign_table' => 'tx_campuseventsconnector_domain_model_location',
-                'size' => 1,
-                'maxitems' => 1,
-                'default' => 0,
-                'items' => [
-                    [
-                        'label' => '',
-                        'value' => 0,
-                    ],
-                ],
-                'readOnly' => $importFieldsReadOnly,
             ],
         ],
         'categories' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.categories',
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
@@ -494,6 +304,10 @@ return [
                 'behaviour' => [
                     'allowLanguageSynchronization' => true,
                 ],
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'categories',
+                'foreign_match_field' => 'ce_import_id',
             ],
 
         ],
@@ -521,6 +335,10 @@ return [
                 ],
                 'readOnly' => $importFieldsReadOnly,
             ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'organizers',
+                'foreign_match_field' => 'ce_import_id',
+            ],
 
         ],
         'target_groups' => [
@@ -546,6 +364,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'targetGroups',
+                'foreign_match_field' => 'ce_import_id',
             ],
 
         ],
@@ -573,6 +395,10 @@ return [
                 ],
                 'readOnly' => $importFieldsReadOnly,
             ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'filterCategories',
+                'foreign_match_field' => 'ce_import_id',
+            ],
         ],
         'view_lists' => [
             'exclude' => true,
@@ -598,10 +424,16 @@ return [
                 ],
                 'readOnly' => $importFieldsReadOnly,
             ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'viewLists',
+                'foreign_match_field' => 'ce_import_id',
+            ],
 
         ],
         'alternative_events' => [
             'exclude' => true,
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.alternative_events',
             'config' => [
                 'type' => 'select',
@@ -624,6 +456,10 @@ return [
                 // Allow language synchronization so that relations can be localized via DataHandler
                 'behaviour' => [
                     'allowLanguageSynchronization' => true,
+                ],
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                    'field' => 'alternativeEvents',
+                    'foreign_match_field' => 'ce_import_id',
                 ],
             ],
 
@@ -652,6 +488,10 @@ return [
                 ],
                 'readOnly' => $importFieldsReadOnly,
             ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'contactPersons',
+                'foreign_match_field' => 'ce_import_id',
+            ],
 
         ],
         'disturber_message' => [
@@ -663,7 +503,7 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'disturberMessage',
             ],
         ],
@@ -678,9 +518,9 @@ return [
                 'default' => 0,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'startDate',
-                'type' => 'datetime_to_tstamp',
+                'normalizer' => 'datetime_to_tstamp',
             ],
         ],
         'end_tstamp' => [
@@ -694,13 +534,15 @@ return [
                 'default' => 0,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'endDate',
-                'type' => 'datetime_to_tstamp',
+                'normalizer' => 'datetime_to_tstamp',
             ],
         ],
         'event_sessions' => [
             'exclude' => true,
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.event_sessions',
             'config' => [
                 'type' => 'inline',
@@ -711,15 +553,8 @@ return [
                     'collapseAll' => true,
                     'expandSingle' => true,
                     'levelLinksPosition' => 'top',
-                    'showSynchronizationLink' => 1,
-                    'showPossibleLocalizationRecords' => 1,
-                    'showAllLocalizationLink' => 1
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
             ],
         ],
         'event_attachments' => [
@@ -733,15 +568,8 @@ return [
                 'appearance' => [
                     'collapseAll' => true,
                     'levelLinksPosition' => 'top',
-                    'showSynchronizationLink' => 1,
-                    'showPossibleLocalizationRecords' => 1,
-                    'showAllLocalizationLink' => 1
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
             ],
         ],
         'event_images' => [
@@ -755,15 +583,8 @@ return [
                 'appearance' => [
                     'collapseAll' => true,
                     'levelLinksPosition' => 'top',
-                    'showSynchronizationLink' => 1,
-                    'showPossibleLocalizationRecords' => 1,
-                    'showAllLocalizationLink' => 1
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
             ],
         ],
 
@@ -776,7 +597,7 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'eventAttendanceMode',
             ],
         ],
@@ -789,7 +610,7 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'eventNumber',
             ],
         ],
@@ -802,22 +623,13 @@ return [
                 'type' => 'inline',
                 'foreign_table' => 'tx_campuseventsconnector_domain_model_eventticketpricevariant',
                 'foreign_field' => 'event',
-                'MM' => 'tx_campuseventsconnector_event_eventticketpricevariant_mm',
                 'maxitems' => 9999,
                 'appearance' => [
                     'collapseAll' => true,
                     'levelLinksPosition' => 'top',
-                    'showSynchronizationLink' => 1,
-                    'showPossibleLocalizationRecords' => 1,
-                    'showAllLocalizationLink' => 1
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
             ],
-
         ],
         'external_order_email_address' => [
             'exclude' => true,
@@ -828,7 +640,7 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'externalOrderEmailAddress',
             ],
         ],
@@ -841,7 +653,7 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'externalOrderUrl',
             ],
         ],
@@ -854,12 +666,14 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
-                'field' => 'directRegistrationUrl',
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => ['@urls', 'directRegistrationUrl'],
             ],
         ],
         'locations' => [
             'exclude' => true,
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.locations',
             'config' => [
                 'type' => 'select',
@@ -879,10 +693,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'locations',
+                'foreign_match_field' => 'ce_import_id',
             ],
 
         ],
@@ -894,9 +708,9 @@ return [
                 'format' => 'datetime',
                 'readOnly' => true,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'modifiedAtRecursive',
-                'type' => 'datetime_to_tstamp',
+                'normalizer' => 'datetime_to_tstamp',
             ],
         ],
         'order_type' => [
@@ -907,12 +721,14 @@ return [
                 'size' => 4,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'orderType',
             ],
         ],
         'referents' => [
             'exclude' => true,
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.referents',
             'config' => [
                 'type' => 'select',
@@ -932,10 +748,10 @@ return [
                     ]
                 ],
                 'readOnly' => $importFieldsReadOnly,
-                // Allow language synchronization so that relations can be localized via DataHandler
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ],
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'referents',
+                'foreign_match_field' => 'ce_import_id',
             ],
 
         ],
@@ -948,7 +764,7 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'referentsTitle',
             ],
         ],
@@ -962,7 +778,7 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'seoTitle',
             ],
         ],
@@ -975,7 +791,7 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'seoDescription',
             ],
         ],
@@ -988,7 +804,7 @@ return [
                 'default' => 0,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'seoRobotsIndex',
             ],
         ],
@@ -1001,7 +817,7 @@ return [
                 'default' => 0,
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'seoRobotsFollow',
             ],
         ],
@@ -1014,7 +830,7 @@ return [
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
-            TCAUtility::TCA_IMPORT_KEY => [
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'sponsorsTitle',
             ],
         ],
@@ -1044,7 +860,10 @@ return [
                     'allowLanguageSynchronization' => true,
                 ],
             ],
-
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'sponsors',
+                'foreign_match_field' => 'ce_import_id',
+            ],
         ],
 
         'slug' => [
@@ -1064,18 +883,8 @@ return [
                     ],
                 ],
                 'fallbackCharacter' => '-',
-                'eval' => 'uniqueInSite',
+                'eval' => 'unique',
                 'default' => '',
-                'readOnly' => $importFieldsReadOnly,
-            ],
-        ],
-        'hash' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.hash',
-            'config' => [
-                'type' => 'none',
-                'size' => 30,
-                'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
         ],

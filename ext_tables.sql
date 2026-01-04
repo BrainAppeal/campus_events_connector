@@ -12,24 +12,14 @@ CREATE TABLE tx_campuseventsconnector_domain_model_event (
 	subtitle varchar(255) DEFAULT '' NOT NULL,
 	description text,
 	short_description text,
-	show_in_news smallint(5) unsigned DEFAULT '0' NOT NULL,
-	news_text text,
 	learning_objective text,
-	images int(11) unsigned DEFAULT '0' NOT NULL,
-	attachments int(11) unsigned DEFAULT '0' NOT NULL,
-	registration_possible smallint(5) unsigned DEFAULT '0' NOT NULL,
 	min_participants int(11) DEFAULT NULL,
 	max_participants int(11) DEFAULT NULL,
-	participants int(11) DEFAULT '0' NOT NULL,
-	speakers int(11) unsigned DEFAULT '0' NOT NULL,
-	time_ranges int(11) unsigned DEFAULT '0' NOT NULL,
-	location int(11) unsigned DEFAULT NULL,
 	categories int(11) unsigned DEFAULT '0' NOT NULL,
 	organizer int(11) unsigned DEFAULT '0' NOT NULL,
 	target_groups int(11) unsigned DEFAULT '0' NOT NULL,
 	filter_categories int(11) unsigned DEFAULT '0' NOT NULL,
 	view_lists int(11) unsigned DEFAULT '0' NOT NULL,
-	hash varchar(255) DEFAULT '' NOT NULL,
     alternative_events int(11) unsigned DEFAULT '0' NOT NULL,
     contact_persons int(11) unsigned DEFAULT '0' NOT NULL,
     disturber_message varchar(255) DEFAULT '' NOT NULL,
@@ -60,6 +50,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_event (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY path_segment (slug(185), uid),
     KEY import (ce_import_id,ce_import_source)
@@ -84,23 +75,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_location (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
-
-    KEY import (ce_import_id,ce_import_source)
-
-);
-
-#
-# Table structure for table 'tx_campuseventsconnector_domain_model_speaker'
-#
-CREATE TABLE tx_campuseventsconnector_domain_model_speaker (
-
-	title varchar(255) DEFAULT '' NOT NULL,
-	first_name varchar(255) DEFAULT '' NOT NULL,
-	last_name varchar(255) DEFAULT '' NOT NULL,
-
-	ce_import_source varchar(255) DEFAULT NULL,
-	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -116,6 +91,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_organizer (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -137,6 +113,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_timerange (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -152,6 +129,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_category (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -167,6 +145,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_targetgroup (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -182,6 +161,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_viewlist (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -198,6 +178,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_filtercategory (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -220,6 +201,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_contactperson (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -238,6 +220,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventattachment (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -257,6 +240,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventimage (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -276,6 +260,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventsession (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 );
@@ -299,6 +284,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventticketpricevariant (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -314,6 +300,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_pricecategory (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -343,6 +330,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_referent (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -361,6 +349,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_sponsor (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL,
+	data_hash varchar(128) NOT NULL DEFAULT '',
 
     KEY import (ce_import_id,ce_import_source)
 
@@ -379,27 +368,6 @@ CREATE TABLE tx_campuseventsconnector_domain_model_convertconfiguration (
 
 	type varchar(100) NOT NULL DEFAULT '0',
 
-);
-
-#
-# Table structure for table 'tx_campuseventsconnector_import_schedule'
-#
-CREATE TABLE tx_campuseventsconnector_import_schedule (
-	uid int(11) NOT NULL auto_increment,
-	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-	crdate int(11) unsigned DEFAULT '0' NOT NULL,
-    import_uid int(11) DEFAULT '0' NOT NULL,
-	import_type varchar(255) DEFAULT '' NOT NULL,
-    import_data mediumtext,
-	last_modified_tstamp int(11) unsigned DEFAULT '0' NOT NULL,
-    data_processed tinyint(4) DEFAULT '0' NOT NULL,
-	import_method tinyint(4) DEFAULT '0' NOT NULL,
-    target_record_id int(11) DEFAULT '0' NOT NULL,
-    data_hash varchar(255) NOT NULL DEFAULT '',
-    PRIMARY KEY (uid),
-    KEY target_record_id (target_record_id),
-    KEY data_rows_to_import (import_uid, import_type, data_processed),
-    KEY data_hash (data_hash)
 );
 
 #
@@ -434,20 +402,6 @@ CREATE TABLE tx_campuseventsconnector_convertconf_targetgroup_mm (
 # Table structure for table 'tx_campuseventsconnector_convertconf_viewlist_mm'
 #
 CREATE TABLE tx_campuseventsconnector_convertconf_viewlist_mm (
-	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
-	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
-	sorting int(11) unsigned DEFAULT '0' NOT NULL,
-	sorting_foreign int(11) unsigned DEFAULT '0' NOT NULL,
-
-	PRIMARY KEY (uid_local,uid_foreign),
-	KEY uid_local (uid_local),
-	KEY uid_foreign (uid_foreign)
-);
-
-#
-# Table structure for table 'tx_campuseventsconnector_event_speaker_mm'
-#
-CREATE TABLE tx_campuseventsconnector_event_speaker_mm (
 	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
 	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
 	sorting int(11) unsigned DEFAULT '0' NOT NULL,
@@ -557,20 +511,6 @@ CREATE TABLE tx_campuseventsconnector_event_contactperson_mm (
 );
 
 #
-# Table structure for table 'tx_campuseventsconnector_event_eventticketpricevariant_mm'
-#
-CREATE TABLE tx_campuseventsconnector_event_eventticketpricevariant_mm (
-	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
-	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
-	sorting int(11) unsigned DEFAULT '0' NOT NULL,
-	sorting_foreign int(11) unsigned DEFAULT '0' NOT NULL,
-
-	PRIMARY KEY (uid_local,uid_foreign),
-	KEY uid_local (uid_local),
-	KEY uid_foreign (uid_foreign)
-);
-
-#
 # Table structure for table 'tx_campuseventsconnector_event_location_mm'
 #
 CREATE TABLE tx_campuseventsconnector_event_location_mm (
@@ -633,4 +573,68 @@ CREATE TABLE sys_file_reference (
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
 	ce_imported_at int(11) unsigned DEFAULT NULL ,
+);
+
+
+#
+# Table structure for table 'tx_campuseventsconnector_import'
+#
+CREATE TABLE tx_campuseventsconnector_import (
+  uid int(11) NOT NULL auto_increment,
+	pid int(10) unsigned  DEFAULT '0' NOT NULL,
+	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
+	crdate int(11) unsigned DEFAULT '0' NOT NULL,
+	deleted smallint(5) unsigned DEFAULT '0' NOT NULL,
+	hidden smallint(5) unsigned DEFAULT '0' NOT NULL,
+  running tinyint(4) DEFAULT '0' NOT NULL,
+  import_start int(11) DEFAULT '0' NOT NULL,
+  import_end int(11) DEFAULT '0' NOT NULL,
+  import_source varchar(64) NOT NULL DEFAULT '',
+  total_row_count int(10) unsigned  DEFAULT '0' NOT NULL,
+  full_loaded_row_count int(10) unsigned  DEFAULT '0' NOT NULL,
+  imported_row_count int(10) unsigned NOT NULL,
+  skipped_row_count int(10) unsigned DEFAULT '0' NOT NULL,
+  import_limit int(10) unsigned NOT NULL,
+  import_source_modified_at int(11) DEFAULT '0' NOT NULL,
+	first_import_done smallint(5) unsigned DEFAULT '0' NOT NULL,
+
+  KEY first_import_done (first_import_done),
+  PRIMARY KEY (uid)
+);
+
+#
+# Table structure for table 'tx_campuseventsconnector_import_row'
+#
+CREATE TABLE tx_campuseventsconnector_import_row (
+  uid int(11) NOT NULL auto_increment,
+  pid int(11) DEFAULT '0' NOT NULL,
+  tstamp int(11) DEFAULT '0' NOT NULL,
+  crdate int(11) DEFAULT '0' NOT NULL,
+  deleted tinyint(4) DEFAULT '0' NOT NULL,
+  import_id int(11) DEFAULT '0' NOT NULL,
+  import_data mediumtext,
+  source_type varchar(128) DEFAULT '0' NOT NULL,
+  source_record_identifier varchar(64) DEFAULT '0' NOT NULL,
+  source_record_uid int(11) DEFAULT '0' NOT NULL,
+  target_record_uid int(11) DEFAULT '0' NOT NULL,
+  data_fully_loaded tinyint(4) DEFAULT '0' NOT NULL,
+  data_processed tinyint(4) DEFAULT '0' NOT NULL,
+  files_processed tinyint(4) DEFAULT '0' NOT NULL,
+  import_skipped tinyint(4) DEFAULT '0' NOT NULL,
+	unchanged tinyint(4) DEFAULT '0' NOT NULL,
+  data_hash varchar(128) NOT NULL DEFAULT '',
+	last_updated int(11) DEFAULT '0' NOT NULL,
+  priority smallint unsigned DEFAULT '0' NOT NULL,
+	sys_language_uid int(11) DEFAULT '0' NOT NULL,
+
+  PRIMARY KEY (uid),
+  KEY idx_target_record (source_type, target_record_uid),
+  KEY idx_import_id (import_id),
+  KEY idx_data_hash (data_hash),
+  KEY idx_source_record (source_type, source_record_uid),
+  KEY idx_source_record_str (source_type, source_record_identifier),
+  KEY idx_import_source_type (import_id, source_type),
+  KEY idx_import_skipped_data_processed (import_id, import_skipped, data_processed),
+  KEY idx_import_skipped_files_processed (import_id, import_skipped, files_processed),
+  KEY idx_skip_by_hash_lookup (import_id, source_type, source_record_uid, data_hash)
 );

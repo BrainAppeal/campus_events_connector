@@ -1,0 +1,216 @@
+<?php
+
+declare(strict_types=1);
+
+namespace BrainAppeal\CampusEventsConnector\Import\Finisher;
+
+use Doctrine\DBAL\Exception;
+use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DataTransformerFactory;
+use BrainAppeal\CampusEventsConnector\Import\Model\ImportFileReferenceModel;
+use BrainAppeal\CampusEventsConnector\Import\Repository\AbstractImportRowRepository;
+use BrainAppeal\CampusEventsConnector\Import\Repository\ImportEntryManager;
+use BrainAppeal\CampusEventsConnector\Import\Utility\FileUtility;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+/**
+ * Provides methods for cleaning up database tables and resetting related data.
+ * Mainly used to truncate import-related tables and manage file references.
+ */
+class CleanupService
+{
+    public function __construct(
+        protected DataTransformerFactory $dataTransformerFactory,
+    ) {}
+
+    /**
+     * Truncates specified database tables. By default, truncates only the import-related
+     * tables. If the $clearAllTables parameter is set to true, it will additionally truncate
+     * all tables associated with the registered data transformers.
+     *
+     * @param bool $clearAllTables If true, truncates all registered tables in addition to the
+     *                             default import tables.
+     * @param bool $resetDataHashes
+     * @return array Returns the list of tables that were truncated.
+     * @throws Exception
+     */
+    public function truncateTables(bool $clearAllTables, bool $resetDataHashes = false): array
+    {
+        $connection = $this->getDatabaseConnection();
+        $tables = [AbstractImportRowRepository::TABLE_IMPORT_ROW, ImportEntryManager::TABLE_IMPORT];
+        if ($clearAllTables) {
+            $fileReferenceTables = [];
+            foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
+                $tables[] = $dataTransformer->getTable();
+                foreach ($dataTransformer->getImportConfiguration()->getImportFieldMap() as $mapEntry) {
+                    if ($mapEntry->isReference() && $mmTable = $mapEntry->get('mm_table')) {
+                        $tables[] = $mmTable;
+                    }
+                }
+                if ($dataTransformer->hasFileTransformations()) {
+                    $fileReferenceTables[] = $dataTransformer->getTable();
+                }
+            }
+            // Delete all file references and the referenced files for this table
+            foreach ($fileReferenceTables as $table) {
+                $fileRefResult = FileUtility::getFileReferencesForTableRecordList($table, []);
+                while ($refRow = $fileRefResult->fetchAssociative()) {
+                    $fileReferenceModel = new ImportFileReferenceModel($refRow);
+                    FileUtility::deleteFileAndFileReference($fileReferenceModel);
+                }
+                $fileRefResult->free();
+            }
+        } elseif ($resetDataHashes) {
+            // Reset all hashes to force update of imported records
+            foreach ($this->dataTransformerFactory->getRegisteredTableNames() as $table) {
+                $connection->executeStatement(sprintf("UPDATE %s SET data_hash = ''", $table));
+            }
+        }
+        foreach ($tables as $table) {
+            $connection->executeStatement('TRUNCATE TABLE ' . $table);
+        }
+        return $tables;
+    }
+
+    /**
+     * Deletes import entries for the specified data source.
+     *
+     * @param string $dataSource The identifier of the data source whose import entries should be deleted.
+     */
+    public function deleteImportEntriesForDataSource(string $dataSource): void
+    {
+        $table = ImportEntryManager::TABLE_IMPORT;
+        $this->cleanUpOldRecords('-1 month', null, $table);
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        // Stop all running imports for the given data source
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
+        $queryBuilder->update($table);
+        $queryBuilder->set('running', 0);
+        $queryBuilder->set('hidden', 1);
+        $queryBuilder->set('import_end', time());
+        $queryBuilder->where(
+            $queryBuilder->expr()->eq(
+                'import_source',
+                $queryBuilder->createNamedParameter($dataSource, Connection::PARAM_STR)
+            ),
+            $queryBuilder->expr()->eq(
+                'hidden',
+                $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)
+            ),
+        )->executeStatement();
+        $this->deleteOldImportRows($dataSource);
+    }
+
+    /**
+     * Mark old records as deleted that were imported completely
+     * @param string $datetime The date time string to parse
+     * @param ?string $dataSource The identifier of the data source whose import entries should be deleted.
+     * @param string $table
+     */
+    public function cleanUpOldRecords(string $datetime = '-1 week', ?string $dataSource = null, string $table = AbstractImportRowRepository::TABLE_IMPORT_ROW): void
+    {
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $clearOldQueryBuilder = $connectionPool->getQueryBuilderForTable($table);
+        $clearOldQueryBuilder->delete($table)
+            ->where(
+                $clearOldQueryBuilder->expr()->lt(
+                    'tstamp',
+                    $clearOldQueryBuilder->createNamedParameter((int)strtotime($datetime), Connection::PARAM_INT)
+                ),
+            );
+        if ($dataSource !== null && $table === AbstractImportRowRepository::TABLE_IMPORT_ROW) {
+            $clearOldQueryBuilder
+                ->andWhere(
+                    $clearOldQueryBuilder->expr()->lt(
+                        'source_type',
+                        $clearOldQueryBuilder->createNamedParameter($dataSource, Connection::PARAM_STR)
+                    ),
+                );
+        }
+        if ($dataSource !== null && $table === ImportEntryManager::TABLE_IMPORT) {
+            $clearOldQueryBuilder
+                ->andWhere(
+                    $clearOldQueryBuilder->expr()->lt(
+                        'import_source',
+                        $clearOldQueryBuilder->createNamedParameter($dataSource, Connection::PARAM_STR)
+                    ),
+                );
+        }
+        $clearOldQueryBuilder->executeStatement();
+    }
+
+    /**
+     * Deletes old and obsolete import rows from the database that are no longer needed
+     * and clears outdated references from previous imports to maintain data integrity.
+     *
+     * @param string $groupKey
+     * @param int|null $importId The ID of the current import process
+     * @return void
+     * @throws Exception
+     */
+    public function deleteOldImportRows(string $groupKey, ?int $importId = null): void
+    {
+        $importEntryTable = ImportEntryManager::TABLE_IMPORT;
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($importEntryTable);
+        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder->select('uid')->from($importEntryTable)
+            ->where($queryBuilder->expr()->eq('import_source', $queryBuilder->createNamedParameter($groupKey)))
+            ->orderBy('uid', 'ASC');
+        if ($importId !== null) {
+            $queryBuilder->andWhere($queryBuilder->expr()->lt('uid', $queryBuilder->createNamedParameter($importId)));
+        }
+        $uidList = $queryBuilder->executeQuery()->fetchFirstColumn();
+        if (empty($uidList)) {
+            return;
+        }
+        $this->deleteImportRows($uidList);
+        if (count($uidList) > 5) {
+            $firstFiveUids = array_slice($uidList, 0, count($uidList) - 5);
+            $cleanImportQueryBuilder = $connectionPool->getQueryBuilderForTable($importEntryTable);
+            $cleanImportQueryBuilder->getRestrictions()->removeAll();
+            $cleanImportQueryBuilder->delete($importEntryTable)
+                ->where($cleanImportQueryBuilder->expr()->in('uid', $cleanImportQueryBuilder->createNamedParameter($firstFiveUids, Connection::PARAM_INT_ARRAY)));
+            $cleanImportQueryBuilder->executeStatement();
+        }
+    }
+
+    /**
+     * Delete all import rows with the given import IDs
+     *
+     * @param int[] $importIds
+     */
+    public function deleteImportRows(array $importIds): void
+    {
+        $table = AbstractImportRowRepository::TABLE_IMPORT_ROW;
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
+        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder->delete($table);
+        if ($importIds) {
+            $queryBuilder->where(
+                $queryBuilder->expr()->in(
+                    'import_id',
+                    $queryBuilder->createNamedParameter($importIds, Connection::PARAM_INT_ARRAY)
+                )
+            );
+        }
+        $queryBuilder->executeStatement();
+    }
+
+    /**
+     * @param string $table
+     * @return Connection
+     */
+    protected function getDatabaseConnection(string $table = AbstractImportRowRepository::TABLE_IMPORT_ROW): Connection
+    {
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        return $connectionPool->getConnectionForTable($table);
+    }
+}

@@ -30,12 +30,6 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.short_description">
 				<source>Short Description</source>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.show_in_news">
-				<source>Show In News</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.news_text">
-				<source>News Text</source>
-			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.learning_objective">
 				<source>Learning Objective</source>
 			</trans-unit>
@@ -56,9 +50,6 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.participants">
 				<source>Participants</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.speakers">
-				<source>Speakers</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.time_ranges">
 				<source>Time Ranges</source>
@@ -92,18 +83,6 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_location.zip_code">
 				<source>Zip Code</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_speaker">
-				<source>Speaker</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.title">
-				<source>Title</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.first_name">
-				<source>First Name</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.last_name">
-				<source>Last Name</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_organizer">
 				<source>Organizer</source>
@@ -213,6 +192,9 @@
             <trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_folder">
                 <source>Invalid Storage Folder</source>
             </trans-unit>
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.force_update">
+				<source>Force a full update of all records, ignoring timestamps and data hashes</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

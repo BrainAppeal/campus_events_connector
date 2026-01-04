@@ -12,6 +12,7 @@
  */
 
 use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -61,6 +62,14 @@ return [
             'showitem' => 'hidden, starttime, endtime',
         ],
     ],
+    ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+        'importField' => 'EventTicketPriceVariant',
+        'referenceUid' => TCAUtility::IMPORT_ID_FIELD,
+        'apiEndpoint' => 'event_ticket_price_variants',
+        'apiListItemContainsAllData' => false,
+        'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransformer::class,
+        'targetImportSourceField' => 'ce_import_source',
+    ],
     'columns' => array_merge(
         $defaultColumnsColumns,
         $importColumns,
@@ -77,9 +86,8 @@ return [
                     'size' => 12,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'bookableFrom',
-                    'type' => 'datetime_to_tstamp',
                 ],
             ],
             'bookable_till' => [
@@ -94,9 +102,8 @@ return [
                     'size' => 12,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'bookableTill',
-                    'type' => 'datetime_to_tstamp',
                 ],
             ],
             'pv_quota' => [
@@ -110,7 +117,7 @@ return [
                     'nullable' => true,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'quota',
                 ],
             ],
@@ -123,7 +130,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'name',
                 ],
             ],
@@ -137,7 +144,7 @@ return [
                     'nullable' => true,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'price',
                 ],
             ],
@@ -153,7 +160,7 @@ return [
                     'nullable' => true,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'taxRate',
                 ],
             ],
@@ -169,7 +176,7 @@ return [
                     'nullable' => true,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'tax',
                 ],
             ],
@@ -182,8 +189,8 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
-                    'field' => 'directCheckoutUrl',
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                    'field' => ['@urls', 'directCheckoutUrl'],
                 ],
             ],
             'event' => [
@@ -197,10 +204,9 @@ return [
                     'default' => 0,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'event',
-                    'import_type' => 'reference_id',
-                    'reference_type' => 'Event'
+                    'foreign_match_field' => 'ce_import_id',
                 ],
             ],
             'price_category' => [
@@ -232,10 +238,9 @@ return [
                     ],
                     //'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'priceCategory',
-                    'import_type' => 'reference_id',
-                    'reference_type' => 'PriceCategory'
+                    'foreign_match_field' => 'ce_import_id',
                 ],
             ],
         ]

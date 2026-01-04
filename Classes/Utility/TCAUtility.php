@@ -13,11 +13,14 @@
 
 namespace BrainAppeal\CampusEventsConnector\Utility;
 
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
+
 class TCAUtility
 {
+    public const CACHE_TAG_PREFIX = 'tx_campus_events';
     public const EXT_NAME = 'campus_events_connector';
-    public const TCA_IMPORT_KEY = 'ce';
     public const TABLE_EVENTS = 'tx_campuseventsconnector_domain_model_event';
+    public const IMPORT_ID_FIELD = 'ce_import_id';
 
     public static function getDefaultFieldConfiguration(string $table, bool $addLanguageFields = true): array
     {
@@ -27,6 +30,9 @@ class TCAUtility
                 'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
                 'config' => [
                     'type' => 'language',
+                ],
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                    'field' => '_language_id',
                 ],
             ],
             'pid' => [
@@ -107,7 +113,6 @@ class TCAUtility
     public static function getImportFieldConfiguration(): array
     {
         $tcaColumns = [
-
             'ce_import_source' => [
                 'exclude' => true,
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.name',
@@ -118,7 +123,7 @@ class TCAUtility
                     'readOnly' => 1,
                 ],
             ],
-            'ce_import_id' => [
+            self::IMPORT_ID_FIELD => [
                 'exclude' => true,
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.ce_import_id',
                 'config' => [
@@ -127,6 +132,9 @@ class TCAUtility
                     'readOnly' => true,
                     'default' => 0
                 ],
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                    'field' => 'id',
+                ],
             ],
             'ce_imported_at' => [
                 'exclude' => true,
@@ -134,6 +142,12 @@ class TCAUtility
                 'config' => [
                     'type' => 'datetime',
                     'readOnly' => true,
+                ],
+            ],
+            'data_hash' => [
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.data_hash',
+                'config' => [
+                    'type' => 'passthrough',
                 ],
             ],
         ];

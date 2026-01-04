@@ -11,10 +11,6 @@
 				<source>Status</source>
 				<target>Status</target>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.hash">
-				<source>Hash</source>
-				<target>Hashwert</target>
-			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.canceled">
 				<source>Canceled</source>
 				<target>Abgesagt</target>
@@ -38,14 +34,6 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.short_description">
 				<source>Short Description</source>
 				<target>Kurzbeschreibung</target>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.show_in_news">
-				<source>Show In News</source>
-				<target>In News anzeigen</target>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.news_text">
-				<source>News Text</source>
-				<target>News Text</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.learning_objective">
 				<source>Learning Objective</source>
@@ -234,6 +222,9 @@
             <trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_storage_folder">
                 <target>Ungültiger Pfad</target>
             </trans-unit>
+			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.force_update">
+				<target>Erzwinge ein vollständiges Update aller Datensätze, ignoriere Zeitstempel und Daten-Hashes.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

@@ -15,7 +15,6 @@
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
 use TYPO3\CMS\Extbase\Annotation\ORM\Lazy;
-use TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
@@ -187,27 +186,11 @@ class Event extends AbstractImportedEntity
     protected $eventAttendanceMode = '';
 
     /**
-     * showInNews
-     *
-     * @var bool
-     * @deprecated
-     */
-    protected $showInNews = false;
-
-    /**
      * modifiedAtRecursive
      *
      * @var int
      */
     protected $modifiedAtRecursive = 0;
-
-    /**
-     * newsText
-     *
-     * @var ?string
-     * @deprecated
-     */
-    protected $newsText = '';
 
     /**
      * learningObjective
@@ -224,22 +207,6 @@ class Event extends AbstractImportedEntity
     protected ?ObjectStorage $alternativeEvents = null;
 
     /**
-     * images
-     * @var ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference>
-     * @deprecated
-     */
-    #[Lazy]
-    protected ?ObjectStorage $images = null;
-
-    /**
-     * attachments
-     * @var ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference>
-     * @deprecated
-     */
-    #[Lazy]
-    protected ?ObjectStorage $attachments = null;
-
-    /**
      * eventAttachments
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment>
      */
@@ -252,13 +219,6 @@ class Event extends AbstractImportedEntity
      */
     #[Lazy]
     protected ?ObjectStorage $eventImages = null;
-
-    /**
-     * registrationPossible
-     * @var bool
-     * @deprecated
-     */
-    protected ?bool $registrationPossible = false;
 
     /**
      * minParticipants
@@ -281,15 +241,6 @@ class Event extends AbstractImportedEntity
      * @deprecated
      */
     protected $participants = 0;
-
-    /**
-     * speakers
-     *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker>
-     * @deprecated
-     */
-    #[Lazy()]
-    protected ?ObjectStorage $speakers = null;
 
     /**
      * referents
@@ -316,15 +267,6 @@ class Event extends AbstractImportedEntity
     protected ?ObjectStorage $contactPersons = null;
 
     /**
-     * timeRanges
-     *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange>
-     */
-    #[\TYPO3\CMS\Extbase\Annotation\ORM\Cascade(['value' => 'remove'])]
-    #[Lazy()]
-    protected ?ObjectStorage $timeRanges = null;
-
-    /**
      * eventSessions
      *
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventSession>
@@ -332,14 +274,6 @@ class Event extends AbstractImportedEntity
     #[\TYPO3\CMS\Extbase\Annotation\ORM\Cascade(['value' => 'remove'])]
     #[Lazy()]
     protected ?ObjectStorage $eventSessions = null;
-
-    /**
-     * location
-     * @deprecated
-     * @var Location|LazyLoadingProxy|null
-     */
-    #[Lazy]
-    protected Location|LazyLoadingProxy|null $location = null;
 
     /**
      * categories
@@ -398,14 +332,6 @@ class Event extends AbstractImportedEntity
     protected ?ObjectStorage $locations = null;
 
     /**
-     * hash
-     *
-     * @var string
-     * @deprecated
-     */
-    protected $hash = '';
-
-    /**
      * __construct
      */
     public function __construct()
@@ -424,14 +350,10 @@ class Event extends AbstractImportedEntity
      */
     protected function initStorageObjects()
     {
-        $this->speakers ??= new ObjectStorage();
-        $this->timeRanges ??= new ObjectStorage();
         $this->categories ??= new ObjectStorage();
         $this->organizer ??= new ObjectStorage();
         $this->filterCategories ??= new ObjectStorage();
         $this->targetGroups ??= new ObjectStorage();
-        $this->images ??= new ObjectStorage();
-        $this->attachments ??= new ObjectStorage();
         $this->alternativeEvents ??= new ObjectStorage();
         $this->eventAttachments ??= new ObjectStorage();
         $this->eventImages ??= new ObjectStorage();
@@ -442,56 +364,6 @@ class Event extends AbstractImportedEntity
         $this->eventTicketPriceVariants ??= new ObjectStorage();
         $this->locations ??= new ObjectStorage();
         $this->viewLists ??= new ObjectStorage();
-    }
-
-    /**
-     * Adds a Speaker
-     *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Speaker $speaker
-     * @return void
-     * @deprecated
-     */
-    public function addSpeaker(\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker $speaker)
-    {
-        $this->getSpeakers()->attach($speaker);
-    }
-
-    /**
-     * Removes a Speaker
-     *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Speaker $speakerToRemove The Speaker to be removed
-     * @return void
-     * @deprecated
-     */
-    public function removeSpeaker(\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker $speakerToRemove)
-    {
-        $this->getSpeakers()->detach($speakerToRemove);
-    }
-
-    /**
-     * Returns the speakers
-     *
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker> speakers
-     * @deprecated
-     */
-    public function getSpeakers(): ObjectStorage
-    {
-        if ($this->speakers === null) {
-            $this->speakers = new ObjectStorage();
-        }
-        return $this->speakers;
-    }
-
-    /**
-     * Sets the speakers
-     *
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Speaker> $speakers
-     * @return void
-     * @deprecated
-     */
-    public function setSpeakers(ObjectStorage $speakers): void
-    {
-        $this->speakers = $speakers;
     }
 
     /**
@@ -684,63 +556,6 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * Returns the showInNews
-     *
-     * @return bool $showInNews
-     * @deprecated
-     */
-    public function getShowInNews()
-    {
-        return $this->showInNews;
-    }
-
-    /**
-     * Sets the showInNews
-     *
-     * @param bool $showInNews
-     * @return void
-     * @deprecated
-     */
-    public function setShowInNews($showInNews)
-    {
-        $this->showInNews = $showInNews;
-    }
-
-    /**
-     * Returns the boolean state of showInNews
-     *
-     * @return bool
-     * @deprecated
-     */
-    public function isShowInNews()
-    {
-        return $this->showInNews;
-    }
-
-    /**
-     * Returns the newsText
-     *
-     * @return string $newsText
-     * @deprecated
-     */
-    public function getNewsText()
-    {
-        return $this->newsText;
-    }
-
-    /**
-     * Sets the newsText
-     *
-     * @param string $newsText
-     * @return void
-     * @deprecated
-     */
-    public function setNewsText($newsText)
-    {
-        $this->newsText = $newsText;
-    }
-
-    /**
      * Returns the learningObjective
      *
      * @return string $learningObjective
@@ -762,131 +577,43 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * Adds an Image
-     *
-     * @param \TYPO3\CMS\Extbase\Domain\Model\FileReference $image
-     * @return void
-     * @deprecated
-     */
-    public function addImage(\TYPO3\CMS\Extbase\Domain\Model\FileReference $image)
-    {
-        $this->images->attach($image);
-    }
-
-    /**
-     * Removes an Image
-     *
-     * @param \TYPO3\CMS\Extbase\Domain\Model\FileReference $imageToRemove The Image to be removed
-     * @return void
-     * @deprecated
-     */
-    public function removeImage(\TYPO3\CMS\Extbase\Domain\Model\FileReference $imageToRemove)
-    {
-        $this->images->detach($imageToRemove);
-    }
-
-    /**
      * Returns the images
      *
      * @return ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference> images
-     * @deprecated
      */
     public function getImages()
     {
-        return $this->images;
-    }
-
-    /**
-     * Sets the images
-     *
-     * @param ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference> $images
-     * @return void
-     * @deprecated
-     */
-    public function setImages(ObjectStorage $images)
-    {
-        $this->images = $images;
-    }
-
-    /**
-     * Adds an Attachment
-     *
-     * @param \TYPO3\CMS\Extbase\Domain\Model\FileReference $attachment
-     * @return void
-     * @deprecated
-     */
-    public function addAttachment(\TYPO3\CMS\Extbase\Domain\Model\FileReference $attachment)
-    {
-        $this->attachments->attach($attachment);
-    }
-
-    /**
-     * Removes an Attachment
-     *
-     * @param \TYPO3\CMS\Extbase\Domain\Model\FileReference $attachmentToRemove The Attachment to be removed
-     * @return void
-     * @deprecated
-     */
-    public function removeAttachment(\TYPO3\CMS\Extbase\Domain\Model\FileReference $attachmentToRemove)
-    {
-        $this->attachments->detach($attachmentToRemove);
+        return $this->getEventImages();
     }
 
     /**
      * Returns the attachments
      *
      * @return ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference> attachments
-     * @deprecated
      */
     public function getAttachments()
     {
-        return $this->attachments;
-    }
-
-    /**
-     * Sets the attachments
-     *
-     * @param ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference> $attachments
-     * @return void
-     * @deprecated
-     */
-    public function setAttachments(ObjectStorage $attachments)
-    {
-        $this->attachments = $attachments;
+        return $this->getEventAttachments();
     }
 
     /**
      * Returns the registrationPossible
      *
      * @return bool $registrationPossible
-     * @deprecated
      */
     public function getRegistrationPossible()
     {
-        return $this->registrationPossible;
-    }
-
-    /**
-     * Sets the registrationPossible
-     *
-     * @param bool $registrationPossible
-     * @return void
-     * @deprecated
-     */
-    public function setRegistrationPossible($registrationPossible)
-    {
-        $this->registrationPossible = $registrationPossible;
+        return $this->published && !$this->isCanceled();
     }
 
     /**
      * Returns the boolean state of registrationPossible
      *
      * @return bool
-     * @deprecated
      */
     public function isRegistrationPossible()
     {
-        return $this->registrationPossible;
+        return $this->getRegistrationPossible();
     }
 
     /**
@@ -935,49 +662,10 @@ class Event extends AbstractImportedEntity
      * Returns the participants
      *
      * @return int $participants
-     * @deprecated
      */
     public function getParticipants()
     {
-        return $this->participants;
-    }
-
-    /**
-     * Sets the participants
-     *
-     * @param int $participants
-     * @return void
-     * @deprecated
-     */
-    public function setParticipants($participants)
-    {
-        $this->participants = $participants;
-    }
-
-    /**
-     * Returns the location
-     *
-     * @return LazyLoadingProxy|Location|null $location
-     * @deprecated
-     */
-    public function getLocation(): Location|LazyLoadingProxy|null
-    {
-        if ($this->location instanceof LazyLoadingProxy) {
-            $this->location->_loadRealInstance();
-        }
-        return $this->location;
-    }
-
-    /**
-     * Sets the location
-     *
-     * @param LazyLoadingProxy|Location|null $location
-     * @return void
-     * @deprecated
-     */
-    public function setLocation(Location|LazyLoadingProxy|null $location)
-    {
-        $this->location = $location;
+        return $this->getMaxParticipants();
     }
 
     /**
@@ -1073,53 +761,6 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * Adds a Timerange
-     *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $timeRange
-     * @return void
-     */
-    public function addTimeRange(\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $timeRange)
-    {
-        $this->getTimeRanges()->attach($timeRange);
-    }
-
-    /**
-     * Removes a Timerange
-     *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $timeRangeToRemove The TimeRange to be removed
-     * @return void
-     */
-    public function removeTimeRange(\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $timeRangeToRemove)
-    {
-        $this->getTimeRanges()->detach($timeRangeToRemove);
-    }
-
-    /**
-     * Returns the timeRanges
-     *
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange> timeRanges
-     */
-    public function getTimeRanges(): ObjectStorage
-    {
-        if (null === $this->timeRanges) {
-            $this->timeRanges = new ObjectStorage();
-        }
-        return $this->timeRanges;
-    }
-
-    /**
-     * Sets the timeRanges
-     *
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange> $timeRanges
-     * @return void
-     * @deprecated
-     */
-    public function setTimeRanges(ObjectStorage $timeRanges)
-    {
-        $this->timeRanges = $timeRanges;
-    }
-
-    /**
      * Adds a TargetGroup
      *
      * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroup
@@ -1212,22 +853,21 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @return string
-     * @deprecated
+     * Returns the timeRanges
+     *
+     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange> timeRanges
      */
-    public function getHash()
+    public function getTimeRanges(): ObjectStorage
     {
-        return $this->hash;
-    }
-
-    /**
-     * @param string $hash
-     * @return void
-     * @deprecated
-     */
-    public function setHash($hash)
-    {
-        $this->hash = $hash;
+        $timeRanges = new ObjectStorage();
+        /** @var EventSession $eventSession */
+        foreach ($this->getEventSessions() as $eventSession) {
+            /** @var TimeRange $timeRange */
+            foreach ($eventSession->getSessionTimePeriods() as $timeRange) {
+                $timeRanges->attach($timeRange);
+            }
+        }
+        return $timeRanges;
     }
 
     /**
@@ -1612,7 +1252,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @return ObjectStorage
+     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Referent>
      */
     public function getReferents(): ObjectStorage
     {
@@ -1623,7 +1263,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @param ObjectStorage $referents
+     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Referent> $referents
      */
     public function setReferents($referents)
     {
@@ -1650,6 +1290,17 @@ class Event extends AbstractImportedEntity
     public function removeReferent(\BrainAppeal\CampusEventsConnector\Domain\Model\Referent $referentToRemove)
     {
         $this->getReferents()->detach($referentToRemove);
+    }
+
+    /**
+     * Returns the referents
+     *
+     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Referent>
+     * @deprecated
+     */
+    public function getSpeakers(): ObjectStorage
+    {
+        return $this->getReferents();
     }
 
     /**
@@ -1816,6 +1467,15 @@ class Event extends AbstractImportedEntity
         $this->getEventTicketPriceVariants()->detach($eventTicketPriceVariantToRemove);
     }
 
+    public function getLocation(): ?Location
+    {
+        /** @noinspection LoopWhichDoesNotLoopInspection */
+        foreach ($this->getLocations() as $location) {
+            return $location;
+        }
+        return null;
+    }
+
     /**
      * @return ObjectStorage<Location>
      */
@@ -1843,9 +1503,6 @@ class Event extends AbstractImportedEntity
      */
     public function addLocation(Location $location): void
     {
-        if (null === $this->location) {
-            $this->location = $location;
-        }
         $this->getLocations()->attach($location);
     }
 

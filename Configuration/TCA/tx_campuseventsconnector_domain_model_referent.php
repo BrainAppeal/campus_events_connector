@@ -12,6 +12,7 @@
  */
 
 use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -63,6 +64,14 @@ return [
             'showitem' => 'hidden, starttime, endtime',
         ],
     ],
+    ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+        'importField' => 'Referent',
+        'referenceUid' => TCAUtility::IMPORT_ID_FIELD,
+        'apiEndpoint' => 'referents',
+        'apiListItemContainsAllData' => false,
+        'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransformer::class,
+        'targetImportSourceField' => 'ce_import_source',
+    ],
     'columns' => array_merge(
         $defaultColumnsColumns,
         $importColumns,
@@ -76,7 +85,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'title',
                 ],
             ],
@@ -89,7 +98,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'firstName',
                 ],
             ],
@@ -102,7 +111,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'lastName',
                 ],
             ],
@@ -115,7 +124,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'externalUrl',
                 ],
             ],
@@ -128,7 +137,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'academicDegree',
                 ],
             ],
@@ -141,7 +150,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'institution',
                 ],
             ],
@@ -154,7 +163,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'phone',
                 ],
             ],
@@ -167,7 +176,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'email',
                 ],
             ],
@@ -181,7 +190,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'businessAddress',
                 ],
             ],
@@ -195,7 +204,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'publications',
                 ],
             ],
@@ -209,7 +218,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'focusOfWork',
                 ],
             ],
@@ -223,7 +232,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'eventFormats',
                 ],
             ],
@@ -237,7 +246,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'references',
                 ],
             ],
@@ -252,7 +261,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'description',
                 ],
             ],
@@ -277,7 +286,7 @@ return [
                     'default' => 0,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'type',
                 ],
             ],

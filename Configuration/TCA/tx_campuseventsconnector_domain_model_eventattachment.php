@@ -12,6 +12,7 @@
  */
 
 use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -61,6 +62,14 @@ return [
             'showitem' => 'hidden, starttime, endtime',
         ],
     ],
+    ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+        'importField' => 'EventAttachment',
+        'referenceUid' => TCAUtility::IMPORT_ID_FIELD,
+        'apiEndpoint' => 'event_attachments',
+        'apiListItemContainsAllData' => true,
+        'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransformer::class,
+        'targetImportSourceField' => 'ce_import_source',
+    ],
     'columns' => array_merge(
         $defaultColumnsColumns,
         $importColumns,
@@ -75,7 +84,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'name',
                 ],
             ],
@@ -91,7 +100,7 @@ return [
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'fileHash',
                 ],
             ],
@@ -144,6 +153,12 @@ return [
                         'allowLanguageSynchronization' => true,
                     ],
                 ],
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                    'field' => ['attachmentFile', 'url'],
+                    'custom_process' => 'files', //Field handled separately
+                    'size_field' => ['attachmentFile', 'size'],
+                    'alt_text_source_field' => 'name',
+                ],
             ],
             'event' => [
                 'exclude' => true,
@@ -156,10 +171,9 @@ return [
                     'default' => 0,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'event',
-                    'import_type' => 'reference_id',
-                    'reference_type' => 'Event'
+                    'foreign_match_field' => 'ce_import_id',
                 ],
             ],
         ]

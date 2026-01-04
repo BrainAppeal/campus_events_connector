@@ -12,6 +12,7 @@
  */
 
 use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -66,6 +67,14 @@ return [
             'showitem' => 'hidden, starttime, endtime',
         ],
     ],
+    ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+        'importField' => 'SessionTimePeriod',
+        'referenceUid' => TCAUtility::IMPORT_ID_FIELD,
+        'apiEndpoint' => 'session_time_periods',
+        'apiListItemContainsAllData' => true,
+        'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransformer::class,
+        'targetImportSourceField' => 'ce_import_source',
+    ],
     'columns' => array_merge(
         $defaultColumnsColumns,
         $importColumns,
@@ -81,9 +90,9 @@ return [
                     'default' => 0,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'startDate',
-                    'type' => 'datetime_to_tstamp',
+                    'normalizer' => 'datetime_to_tstamp',
                 ],
             ],
             'start_date_is_set' => [
@@ -96,7 +105,7 @@ return [
                     'renderType' => 'checkboxToggle',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'startDateTimeIsSet',
                 ],
             ],
@@ -111,9 +120,9 @@ return [
                     'default' => 0,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'endDate',
-                    'type' => 'datetime_to_tstamp',
+                    'normalizer' => 'datetime_to_tstamp',
                 ],
             ],
             'end_date_is_set' => [
@@ -126,7 +135,7 @@ return [
                     'renderType' => 'checkboxToggle',
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'endDateTimeIsSet',
                 ],
             ],
@@ -138,12 +147,7 @@ return [
             ],
             'event_session' => [
                 'exclude' => true,
-                //'l10n_mode' => 'exclude',
-                //'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.event_session',
-                'config' => [
-                    'type' => 'passthrough',
-                ],/*
                 'config' => [
                     'type' => 'select',
                     'renderType' => 'selectSingle',
@@ -152,11 +156,10 @@ return [
                     'default' => 0,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'eventSession',
-                    'import_type' => 'reference_id',
-                    'reference_type' => 'Event'
-                ],*/
+                    'collection_normalizer' => 'api_reference_to_id',
+                ],
             ],
         ]
     ),

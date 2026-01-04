@@ -52,10 +52,6 @@ return [
         'provider' => \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
         'source' => 'EXT:campus_events_connector/Resources/Public/Icons/FontAwesome/person-chalkboard.svg',
     ],
-    'campus-events-speaker' => [
-        'provider' => \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
-        'source' => 'EXT:campus_events_connector/Resources/Public/Icons/FontAwesome/person-chalkboard.svg',
-    ],
     'campus-events-sponsor' => [
         'provider' => \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
         'source' => 'EXT:campus_events_connector/Resources/Public/Icons/FontAwesome/circle-dollar-to-slot.svg',

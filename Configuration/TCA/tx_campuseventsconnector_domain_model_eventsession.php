@@ -12,6 +12,7 @@
  */
 
 use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -64,6 +65,14 @@ return [
             'showitem' => 'hidden, starttime, endtime',
         ],
     ],
+    ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+        'importField' => 'EventSession',
+        'referenceUid' => TCAUtility::IMPORT_ID_FIELD,
+        'apiEndpoint' => 'event_sessions',
+        'apiListItemContainsAllData' => true,
+        'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransformer::class,
+        'targetImportSourceField' => 'ce_import_source',
+    ],
     'columns' => array_merge(
         $defaultColumnsColumns,
         $importColumns,
@@ -79,9 +88,9 @@ return [
                     'default' => 0,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'startDate',
-                    'type' => 'datetime_to_tstamp',
+                    'normalizer' => 'datetime_to_tstamp',
                 ],
             ],
             'end_tstamp' => [
@@ -95,9 +104,9 @@ return [
                     'default' => 0,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'endDate',
-                    'type' => 'datetime_to_tstamp',
+                    'normalizer' => 'datetime_to_tstamp',
                 ],
             ],
             'session_time_periods' => [
@@ -113,17 +122,12 @@ return [
                     'appearance' => [
                         'collapseAll' => true,
                         'levelLinksPosition' => 'top',
-                        'showSynchronizationLink' => 1,
-                        'showPossibleLocalizationRecords' => 1,
-                        'showAllLocalizationLink' => 1
                     ],
                     'readOnly' => $importFieldsReadOnly,
                 ],
             ],
             'event' => [
                 'exclude' => true,
-                'l10n_mode' => 'exclude',
-                'l10n_display' => 'defaultAsReadonly',
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventsession.event',
                 'config' => [
                     'type' => 'select',
@@ -133,10 +137,9 @@ return [
                     'default' => 0,
                     'readOnly' => $importFieldsReadOnly,
                 ],
-                TCAUtility::TCA_IMPORT_KEY => [
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'event',
-                    'import_type' => 'reference_id',
-                    'reference_type' => 'Event'
+                    'foreign_match_field' => 'ce_import_id',
                 ],
             ],
         ]

@@ -39,12 +39,6 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.short_description">
 				<source>Short Description</source>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.show_in_news">
-				<source>Show In News</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.news_text">
-				<source>News Text</source>
-			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.learning_objective">
 				<source>Learning Objective</source>
 			</trans-unit>
@@ -54,23 +48,11 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.attachments">
 				<source>Attachments</source>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.registration_possible">
-				<source>Registration Possible</source>
-			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.min_participants">
 				<source>Min Participants</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.max_participants">
 				<source>Max Participants</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.participants">
-				<source>Participants</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.speakers">
-				<source>Speakers</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.time_ranges">
-				<source>Time Ranges</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.location">
 				<source>Location</source>
@@ -245,18 +227,6 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventimage.image_file">
 				<source>Image file</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_speaker">
-				<source>Speaker</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.title">
-				<source>Title</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.first_name">
-				<source>First Name</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_speaker.last_name">
-				<source>Last Name</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_organizer">
 				<source>Organizer</source>
@@ -459,14 +429,8 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.view_lists">
 				<source>View lists</source>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.ce_import_source">
-				<source>Import Source</source>
-			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.ce_import_id">
 				<source>Import ID</source>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.ce_imported_at">
-				<source>Imported at</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.tabs.meta_data">
 				<source>Meta data</source>
@@ -488,6 +452,9 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.palette.media">
 				<source>Media</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.data_hash">
+				<source>Import data hash</source>
 			</trans-unit>
 		</body>
 	</file>

@@ -9,9 +9,6 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.status">
 				<target>Status</target>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.hash">
-				<target>Hashwert</target>
-			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.canceled">
 				<target>Abgesagt</target>
 			</trans-unit>
@@ -39,12 +36,6 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.short_description">
 				<target>Kurzbeschreibung</target>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.show_in_news">
-				<target>In News anzeigen</target>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.news_text">
-				<target>News Text</target>
-			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.learning_objective">
 				<target>Lerninhalte</target>
 			</trans-unit>
@@ -54,23 +45,14 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.attachments">
 				<target>Dateien</target>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.registration_possible">
-				<target>Registrierung möglich</target>
-			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.min_participants">
 				<target>Min. Teilnehmner</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.max_participants">
 				<target>Max. Teilnehmer</target>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.participants">
-				<target>Teilnehmer</target>
-			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.speakers">
 				<target>Referenten</target>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.time_ranges">
-				<target>Veranstaltungszeiten</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.location">
 				<target>Veranstaltungsort</target>
@@ -459,14 +441,8 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_convertconfiguration.view_lists">
 				<target>Veranstaltungslisten</target>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.ce_import_source">
-				<target>Import-Quelle</target>
-			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.ce_import_id">
 				<target>Import ID</target>
-			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.ce_imported_at">
-				<target>Import-Zeitpunkt</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.tabs.meta_data">
 				<target>Metadaten</target>
@@ -488,6 +464,9 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.palette.media">
 				<target>Medien</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.data_hash">
+				<target>Import data hash</target>
 			</trans-unit>
 		</body>
 	</file>

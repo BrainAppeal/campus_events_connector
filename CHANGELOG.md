@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 5.2.0 (2026-01-04)
+- remove old API support
+- complete rewrite of the import process for better performance (Removed Extbase usage)
+
 ## 5.1.3 (2025-12-12)
 - refactor the import to prevent triggering redundant database operations
 

@@ -13,16 +13,12 @@
 
 namespace BrainAppeal\CampusEventsConnector\Task;
 
-use BrainAppeal\CampusEventsConnector\Importer\PostImportHookInterface;
-use BrainAppeal\CampusEventsConnector\Utility\CacheUtility;
-use TYPO3\CMS\Core\Exception;
+use BrainAppeal\CampusEventsConnector\CeImport\ImportRunner;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class EventImportTask extends AbstractTask
 {
-    public const API_VERSION_LEGACY = 'below-2-27-0';
-    public const API_VERSION_ABOVE_227 = 'above-2-27-0';
 
     public const BASE_URI_DEFAULT = 'https://campusevents.example.com/';
 
@@ -30,11 +26,6 @@ class EventImportTask extends AbstractTask
      * @var string
      */
     public $apiKey;
-
-    /**
-     * @var string
-     */
-    public $apiVersion;
 
     /**
      * @var string
@@ -47,88 +38,40 @@ class EventImportTask extends AbstractTask
     public $pid;
 
     /**
-     * @var int
+     * @var ?int
      */
     public $storageId;
 
     /**
-     * @var string
+     * @var ?string
      */
-    public $storageFolder;
+    public ?string $storageFolder = null;
 
-    /**
-     * @return \BrainAppeal\CampusEventsConnector\Importer\Importer
-     */
-    private function getImporter()
-    {
-        /** @var \BrainAppeal\CampusEventsConnector\Importer\Importer $importer */
-        $importer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\BrainAppeal\CampusEventsConnector\Importer\Importer::class);
-
-        return $importer;
-    }
-
-    /**
-     * @return \BrainAppeal\CampusEventsConnector\Importer\ExtendedImporter
-     */
-    private function getExtendedImporter()
-    {
-        /** @var \BrainAppeal\CampusEventsConnector\Importer\ExtendedImporter $importer */
-        $importer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\BrainAppeal\CampusEventsConnector\Importer\ExtendedImporter::class);
-
-        return $importer;
-    }
+    public bool $forceUpdate = false;
 
     /**
      * @inheritdoc
      */
     public function execute(): bool
     {
-        $logException = null;
-        if ($this->apiVersion === self::API_VERSION_ABOVE_227) {
-            $importer = $this->getExtendedImporter();
-            $success = $importer->import($this->baseUri, $this->apiKey, (int) $this->pid, (int) $this->storageId, $this->storageFolder);
-            if (!empty($exceptions = $importer->getExceptions())) {
-                if ($exceptions[0] instanceof \Exception) {
-                    $logException = $exceptions[0];
-                } elseif ($exceptions[0] instanceof \Throwable) {
-                    $logException = new Exception('Wrapped throwable: ' . $exceptions[0]->getMessage(), $exceptions[0]->getCode(), $exceptions[0]);
-                }
-                if ($logException) {
-                    $this->logException($logException);
-                }
-            }
-        } else {
-            $importer = $this->getImporter();
-            $success = $importer->import($this->baseUri, $this->apiKey, (int) $this->pid, (int) $this->storageId, $this->storageFolder);
+        $pid = (int)$this->pid;
+        $config = [
+            'importStoragePid' => $pid,
+            'forceUpdate' => $this->forceUpdate,
+            'stopPrevious' => true,
+            'completeUpdate' => true,
+            'importTargetResourceIdentifier' => '',
+            'baseUri' => $this->baseUri,
+            'apiKey' => $this->apiKey,
+            //'debug' => false,
+        ];
+        if (!empty($this->storageId) && !empty($this->storageFolder)) {
+            $config['importTargetResourceIdentifier'] = $this->storageId . ':' . trim($this->storageFolder, '/') . '/';
         }
+        $importRunner = GeneralUtility::makeInstance(ImportRunner::class);
+        $importRunner->run($pid, $config);
 
-
-        $this->callHooks();
-
-        if ($importer->hasChangedData()) {
-            /** @var CacheUtility $cacheUtility */
-            $cacheUtility = GeneralUtility::makeInstance(CacheUtility::class);
-            $cacheUtility->clearCacheForPage($this->pid);
-        }
-        if ($logException) {
-            throw $logException;
-        }
-
-        return $success;
-    }
-
-    private function callHooks()
-    {
-        if (isset($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'])
-            && is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'])
-        ) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'] as $classRef) {
-                $hookObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($classRef);
-                if ($hookObj instanceof PostImportHookInterface || method_exists($hookObj, 'postImport')) {
-                    $hookObj->postImport($this->pid);
-                }
-            }
-        }
+        return true;
     }
 
     /**
@@ -137,14 +80,6 @@ class EventImportTask extends AbstractTask
     public function getApiKey(): ?string
     {
         return $this->apiKey;
-    }
-
-    /**
-     * @return string
-     */
-    public function getApiVersion(): string
-    {
-        return $this->apiVersion ?: self::API_VERSION_ABOVE_227;
     }
 
     /**
