@@ -306,7 +306,7 @@ class AdvancedBulkReplaceService
     /**
      * Detect parameter type
      */
-    private function detectParameterType($value): int
+    private function detectParameterType($value): int|ParameterType|ArrayParameterType
     {
         if ($value === null) {
             return ParameterType::NULL;

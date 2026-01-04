@@ -27,8 +27,6 @@ use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
  */
 class Importer
 {
-    public const TABLE_IMPORT_ENTRY = 'tx_campuseventsconnector_import';
-    public const TABLE_IMPORT_ROW = 'tx_campuseventsconnector_import_row';
 
     /**
      * @var ?OutputInterface

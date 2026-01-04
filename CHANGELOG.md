@@ -1,5 +1,8 @@
 # CHANGELOG.md
 
+## 5.2.2 (2026-01-04)
+- fix return types for TPO3 13.4
+
 ## 5.2.1 (2026-01-04)
 - make compatible with PHP 8.2 in non-composer mode
 - add normalizer for ISO date format
