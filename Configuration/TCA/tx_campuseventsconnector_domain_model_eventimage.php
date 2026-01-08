@@ -159,6 +159,8 @@ return [
                     'custom_process' => 'files', //Field handled separately
                     'size_field' => ['imageFile', 'size'],
                     'alt_text_source_field' => 'name',
+                    'timestamp_import_field' => ['imageFile', 'modifiedAt'],
+                    'timestamp_normalizer' => 'datetime_to_tstamp',
                 ],
             ],
             'event' => [

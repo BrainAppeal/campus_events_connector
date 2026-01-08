@@ -159,7 +159,7 @@ class RawDataToTcaNormalizer
                 $val = $rawValue;
             }
             if (is_string($val)) {
-                $val = trim($this->decodeEscapedUtf8($val));
+                $val = trim($this->decodeEscapedUtf8($val, (bool)$mapEntry->get('filterMultiByte4', false)));
             }
             if ($mapEntry->getLength() > 0 && !is_numeric($val)) {
                 $val = $this->ensureMaxLengthInBounds((string)$val, $mapEntry);
@@ -223,7 +223,7 @@ class RawDataToTcaNormalizer
      * @param string $value The string containing escaped UTF-8 sequences to decode.
      * @return string The decoded string, or an empty string if the input is null or decoding fails.
      */
-    private function decodeEscapedUtf8(string $value): string
+    private function decodeEscapedUtf8(string $value, bool $filterMultiByte4 = true): string
     {
         // Decode escaped UTF-8 characters
         $decodedValue = preg_replace_callback(
@@ -233,6 +233,10 @@ class RawDataToTcaNormalizer
             },
             $value
         );
+        if ($filterMultiByte4) {
+            $decodedValue = preg_replace('/[\x{10000}-\x{10FFFF}]/u', '', $decodedValue);
+            $decodedValue = mb_convert_encoding($decodedValue, 'UTF-8', 'UTF-8');
+        }
         return $decodedValue ?: '';
     }
 

@@ -56,51 +56,44 @@ readonly class ReferenceResolver extends AbstractImportRowRepository
         $targetTable = $importConfiguration->getTableName();
         $uniqueTargetIdentifierField = $importConfiguration->getSourceIdentifierField();
         $mappedModels = [];
-        if ($uniqueTargetIdentifierField === 'uid') {
-            foreach ($modelsByKeyAndLanguage as $transformedModel) {
-                $uid = (int)$transformedModel->getTransformedData()['uid'];
+        // Even if the $uniqueTargetIdentifierField is the uid field, we need to load the records in case some rows
+        // were not created
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($targetTable);
+        $fields = ['uid'];
+        if ($uniqueTargetIdentifierField !== 'uid') {
+            $fields[] = $uniqueTargetIdentifierField;
+        }
+        $languageField = $GLOBALS['TCA'][$targetTable]['ctrl']['languageField'] ?? null;
+        if ($languageField) {
+            $fields[] = $languageField;
+        }
+        $queryBuilder->select(...$fields);
+        $queryBuilder->from($targetTable);
+        $queryBuilder->where(
+            $queryBuilder->expr()->in(
+                $uniqueTargetIdentifierField,
+                $queryBuilder->createNamedParameter($importKeyByCompositeKey, Connection::PARAM_STR_ARRAY)
+            )
+        );
+        $result = $queryBuilder->executeQuery();
+        while ($row = $result->fetchAssociative()) {
+            $languageId = $languageField ? $row[$languageField] : 0;
+            $sourceRecordId = (string)$row[$uniqueTargetIdentifierField];
+            $keyWithLanguage = sprintf('%s:%d', $sourceRecordId, $languageId);
+            $transformedModel = $modelsByKeyAndLanguage[$keyWithLanguage] ?? null;
+            if ($transformedModel) {
+                $uid = (int)$row['uid'];
                 $transformedModel->setTargetRecordId($uid);
-                $mappedModels[] = $transformedModel;
                 $this->mapping->addProcessed($targetTable, $uid, true, true);
+                $this->mapping->addIdentifierReference($targetTable, $uniqueTargetIdentifierField, $sourceRecordId, $uid, $languageId);
+                $persistData = $transformedModel->getTransformedData();
+                $persistData['uid'] = $uid;
+                $transformedModel->setPersistedData($persistData);
                 if (!empty($mmReferences = $transformedModel->getManyToManyReferences())) {
                     $this->mapping->addManyToManyReference($targetTable, $uid, $mmReferences);
                 }
-            }
-        } else {
-            $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-            $queryBuilder = $connectionPool->getQueryBuilderForTable($targetTable);
-            $fields = ['uid', $uniqueTargetIdentifierField];
-            $languageField = $GLOBALS['TCA'][$targetTable]['ctrl']['languageField'] ?? null;
-            if ($languageField) {
-                $fields[] = $languageField;
-            }
-            $queryBuilder->select(...$fields);
-            $queryBuilder->from($targetTable);
-            $queryBuilder->where(
-                $queryBuilder->expr()->in(
-                    $uniqueTargetIdentifierField,
-                    $queryBuilder->createNamedParameter($importKeyByCompositeKey, Connection::PARAM_STR_ARRAY)
-                )
-            );
-            $result = $queryBuilder->executeQuery();
-            while ($row = $result->fetchAssociative()) {
-                $languageId = $languageField ? $row[$languageField] : 0;
-                $sourceRecordId = (string)$row[$uniqueTargetIdentifierField];
-                $keyWithLanguage = sprintf('%s:%d', $sourceRecordId, $languageId);
-                $transformedModel = $modelsByKeyAndLanguage[$keyWithLanguage] ?? null;
-                if ($transformedModel) {
-                    $uid = (int)$row['uid'];
-                    $transformedModel->setTargetRecordId($uid);
-                    $this->mapping->addProcessed($targetTable, $uid, true, true);
-                    $this->mapping->addIdentifierReference($targetTable, $uniqueTargetIdentifierField, $sourceRecordId, $uid, $languageId);
-                    $persistData = $transformedModel->getTransformedData();
-                    $persistData['uid'] = $uid;
-                    $transformedModel->setPersistedData($persistData);
-                    if (!empty($mmReferences = $transformedModel->getManyToManyReferences())) {
-                        $this->mapping->addManyToManyReference($targetTable, $uid, $mmReferences);
-                    }
-                    $mappedModels[] = $transformedModel;
-                }
+                $mappedModels[] = $transformedModel;
             }
         }
         return $mappedModels;

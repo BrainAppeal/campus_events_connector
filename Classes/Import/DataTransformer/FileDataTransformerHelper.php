@@ -7,7 +7,7 @@ namespace BrainAppeal\CampusEventsConnector\Import\DataTransformer;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportFileMappingModel;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
-use BrainAppeal\CampusEventsConnector\Import\Utility\DataParser;
+use BrainAppeal\CampusEventsConnector\Import\Normalizer\Strategy\NormalizerStrategyRegistry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -68,25 +68,13 @@ class FileDataTransformerHelper
             return [];
         }
         $mapping = [];
-        $parser = new DataParser();
         $importData = $importRecordModel->getImportData();
         foreach ($this->fileImportMap as $fieldMap) {
             $fileUri = $this->rawValueExtractor->getRawValueForMapEntry($importData, $fieldMap);
             if (!empty($fileUri) && $this->baseUri && !str_starts_with($fileUri, 'http')) {
                 $fileUri = rtrim($this->baseUri, '/') . '/' . ltrim($fileUri, '/');
             }
-            $fileModifiedAt = $importData[$fieldMap->get('timestamp_import_field')] ?? '';
-            if (empty($fileModifiedAt)) {
-                $fileModifiedAt = 0;
-            } else {
-                $ccKey = ucwords(str_replace('_', ' ', (string)$fieldMap->get('timestamp_normalizer')));
-                $formatFunction = 'format' . str_replace(' ', '', $ccKey);
-                if (method_exists($parser, $formatFunction)) {
-                    $fileModifiedAt = (int)$parser->$formatFunction($fileModifiedAt);
-                } else {
-                    $fileModifiedAt = (int)$fileModifiedAt;
-                }
-            }
+            $fileModifiedAt = $this->getFileModifiedAtValue($importData, $fieldMap);
             $hasModifiedValue = !empty($fileModifiedAt);
             if (!$fileUri && $hasModifiedValue) {
                 // If the record has no file and a last modified timestamp, we can check an existing file needs to be deleted
@@ -117,6 +105,32 @@ class FileDataTransformerHelper
             );
         }
         return $mapping;
+    }
+
+    /**
+     * Retrieves the file modified timestamp value from the provided import data using the specified field mapping configuration.
+     *
+     * @param array $importData The data set from which to extract the file modified timestamp.
+     * @param ImportFieldConfigurationModel $fieldMap The configuration model that defines how to map and normalize the timestamp field.
+     * @return int The normalized file modified timestamp as an integer.
+     */
+    protected function getFileModifiedAtValue(array $importData, ImportFieldConfigurationModel $fieldMap): int
+    {
+        $fileModifiedAt = null;
+        if ($timestampImportField = $fieldMap->get('timestamp_import_field')) {
+            try {
+                $fileModifiedAt = $this->rawValueExtractor->getRawValueForMapEntry($importData, $fieldMap, $timestampImportField);
+            } catch (\Exception) {
+                return 0;
+            }
+            if (!empty($fileModifiedAt) && $normalizerKey = (string)$fieldMap->get('timestamp_normalizer')) {
+                $normalizer = NormalizerStrategyRegistry::getNormalizerForImportField($normalizerKey, $fieldMap);
+                if ($normalizer) {
+                    $fileModifiedAt = $normalizer->normalize($fileModifiedAt);
+                }
+            }
+        }
+        return (int)$fileModifiedAt;
     }
 
     public function setBaseUri(?string $baseUri): void

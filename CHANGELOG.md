@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## 5.2.3 (2026-01-08)
+
+### Fixed:
+- support utf8mb3 charset (remove mb4 characters if not supported)
+- add waiting time for file importer in case of too many request errors
+
 ## 5.2.2 (2026-01-04)
 - fix return types for TPO3 13.4
 

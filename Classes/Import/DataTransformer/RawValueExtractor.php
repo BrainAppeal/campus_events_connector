@@ -18,14 +18,17 @@ class RawValueExtractor
      * Determines the raw value based on the provided mapping entry configuration and raw data.
      *
      * @param array<string, mixed> $rawData The source data array used for fetching the raw value.
-     * @param \BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel $mapEntry An associative array containing mapping configuration, such as field, attribute, default value, language, and value map.
+     * @param ImportFieldConfigurationModel $mapEntry An associative array containing mapping configuration, such as field, attribute, default value, language, and value map.
+     * @param string|array|null $importField Custom import field to use for fetching the raw value.
      * @return mixed The resolved raw value after applying the mapping rules, or the default value if no specific mappings apply.
      * @throws MappingException
      */
-    public function getRawValueForMapEntry(array $rawData, ImportFieldConfigurationModel $mapEntry): mixed
+    public function getRawValueForMapEntry(array $rawData, ImportFieldConfigurationModel $mapEntry, string|array|null $importField = null): mixed
     {
         $rawValue = $mapEntry->getDefault();
-        $importField = $mapEntry->getFieldOrFieldList();
+        if (empty($importField)) {
+            $importField = $mapEntry->getFieldOrFieldList();
+        }
         if (!empty($importField)) {
             $rawValue = $this->getRawValueForField($importField, $rawData);
         } elseif ($mapEntry->has('attribute')) {

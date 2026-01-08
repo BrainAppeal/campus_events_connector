@@ -55,6 +55,16 @@ readonly class ImportRecordWorkflow
     }
 
     /**
+     * Retrieves the errors grouped by the corresponding database tables.
+     *
+     * @return array<string, string[]> An associative array where the keys represent table names
+     */
+    public function getErrorsByTable(): array
+    {
+        return $this->targetRecordPersister->getErrorsByTable();
+    }
+
+    /**
      * Transforms the collected date for the current import operation.
      * If the current import has a total limit of processed tows set, the given collected row count is used to lower
      * the limit of rows to be transformed. This prevents the import process from running too long

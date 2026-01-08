@@ -49,8 +49,16 @@ class ImportFieldConfigurationModel
         $importItem = $config[$tcaImportKey];
         $importItem['target_field'] = $this->column;
         $importItem = $this->addReferenceMapping($table, $this->column, $importItem, $config);
+        $importItem['filterMultiByte4'] = true;
         if ($columnInfo) {
             $dbType = Type::lookupName($columnInfo->getType());
+            if ($columnInfo->hasPlatformOption('charset')) {
+                $charset = $columnInfo->getPlatformOption('charset');
+                $importItem['charset'] = $charset;
+                if ($charset === 'utf8mb4') {
+                    $importItem['filterMultiByte4'] = false;
+                }
+            }
             if (empty($importItem['normalizer'])) {
                 $importItem['normalizer'] = $dbType;
                 $configType = $config['config']['type'] ?? null;

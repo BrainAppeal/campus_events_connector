@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Writer;
 
-use Doctrine\DBAL\ArrayParameterType;
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\Event\RecordInsertedEvent;
 use BrainAppeal\CampusEventsConnector\Import\Event\RecordUpdatedEvent;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
-use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\TargetResolution\ReferenceResolver;
+use Doctrine\DBAL\ArrayParameterType;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -18,10 +19,24 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Handles the persistence of the target records into the database.
  */
-readonly class TargetRecordWriter
+class TargetRecordWriter
 {
-    public function __construct(protected EventDispatcherInterface $eventDispatcher)
+    /**
+     * @var array<string, string[]>
+     */
+    protected array $errorsByTable = [];
+
+    public function __construct(protected readonly EventDispatcherInterface $eventDispatcher, protected readonly LoggerInterface $logger) {}
+
+    /**
+     * Retrieves the errors grouped by the corresponding database tables.
+     *
+     * @return array<string, string[]> An associative array where the keys represent table names
+     * and the values are arrays containing error details for each table. Returns an empty array if no errors are recorded.
+     */
+    public function getErrorsByTable(): array
     {
+        return $this->errorsByTable;
     }
 
     /**
@@ -54,9 +69,11 @@ readonly class TargetRecordWriter
      */
     protected function createRecords(ImportTableConfigurationModel $importConfiguration, array $importModels, ReferenceResolver $referenceResolver): int
     {
-        $bulkReplaceService = GeneralUtility::makeInstance(AdvancedBulkReplaceService::class);
-        $uniqueTargetIdentifierField = $importConfiguration->getSourceIdentifierField();
         $targetTable = $importConfiguration->getTableName();
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($targetTable);
+        $uniqueTargetIdentifierField = $importConfiguration->getSourceIdentifierField();
         $modelsByKeyAndLanguage = [];
         $importKeyByCompositeKey = [];
         $rowsForInsert = [];
@@ -69,9 +86,15 @@ readonly class TargetRecordWriter
                 $importKeyByCompositeKey[$keyWithLanguage] = $targetIdentifier;
             }
         }
-        $result = $bulkReplaceService->bulkReplace($targetTable, $rowsForInsert);
-        if (!empty($result['errors'])) {
-            throw new \RuntimeException(sprintf('Bulk replace failed: %s; Source type %s', print_r($result['errors'], true), $targetTable));
+        foreach ($rowsForInsert as $row) {
+            try {
+                $queryBuilder->insert($targetTable)
+                    ->values($row)
+                    ->executeStatement();
+            } catch (\Throwable $e) {
+                $this->errorsByTable[$targetTable][] = $e->getMessage();
+                $this->logger->error($e->getMessage(), ['table' => $targetTable, 'row' => $row]);
+            }
         }
         $mappedModels = $referenceResolver->mapInsertedModels($importConfiguration, $modelsByKeyAndLanguage, $importKeyByCompositeKey);
         $insertedRowCount = count($rowsForInsert);
@@ -109,7 +132,12 @@ readonly class TargetRecordWriter
                 continue;
             }
             ++$updatedRowCount;
-            $connection->update($targetTable, $changedData, ['uid' => $uid]);
+            try {
+                $connection->update($targetTable, $changedData, ['uid' => $uid]);
+            } catch (\Throwable $e) {
+                $this->errorsByTable[$targetTable][] = $e->getMessage();
+                $this->logger->error($e->getMessage(), ['table' => $targetTable, 'uid' => $uid, 'row' => $changedData]);
+            }
             $mapping->addProcessed($targetTable, $uid, $model->isUnchanged(), false);
             if (!$model->isUnchanged()) {
                 $events[] = new RecordUpdatedEvent($uid, $targetTable, $model);
@@ -130,8 +158,6 @@ readonly class TargetRecordWriter
      *
      * @param string $table The name of the database table to query.
      * @param ImportRecordModel[] $modelsForUpdate Array of models that need to be hydrated with current database data.
-     *
-     * @return void
      */
     protected function hydrateModelsWithCurrentData(string $table, array $modelsForUpdate): void
     {
@@ -175,7 +201,6 @@ readonly class TargetRecordWriter
      *
      * @param string $table The name of the database table where the flags will be updated.
      * @param ImportRecordModel[] $mappedModels An array of mapped model objects containing persisted data, used to determine which records need to have their flags updated.
-     * @return void
      */
     protected function updateMappedModelDeletedAndHiddenFlags(string $table, array $mappedModels): void
     {

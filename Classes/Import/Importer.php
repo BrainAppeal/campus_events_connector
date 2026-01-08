@@ -160,6 +160,15 @@ class Importer
                 $afterDataTransformationCompletedEvent = new AfterRecordsWrittenEvent($importOptions, $mapping);
                 $this->eventDispatcher->dispatch($afterDataTransformationCompletedEvent);
                 $this->writeCreateOrUpdatedMessage($mapping);
+                $processingErrors = $this->processing->getErrorsByTable();
+                if (!empty($processingErrors)) {
+                    $this->writeOutput('There were errors processing the collected data:');
+                    foreach ($processingErrors as $table => $errorsForTable) {
+                        foreach ($errorsForTable as $error) {
+                            $this->writeOutput($table . ':' . $error);
+                        }
+                    }
+                }
             }
         }
         $stopEvent = new ImportRunCompletedEvent($importOptions, $importEntry);

@@ -366,18 +366,20 @@ class FileWriter
                     $allowedExtensions,
                     $importFileMappingItem->getClientOptions()
                 );
-                $fileReferenceModel->setTablenames($tableName);
-                $fileReferenceModel->setFieldname($targetField);
-                $fileReferenceModel->setUidLocal($file->getUid());
-                $fileReferenceModel->setUidForeign($targetRecordId);
-                $fileReferenceModel->setPid($importFileMappingItem->getPid());
-                FileUtility::saveFileReference($fileReferenceModel);
-                $fileReferenceModel->setValid(true);
+                if ($file) {
+                    $fileReferenceModel->setTablenames($tableName);
+                    $fileReferenceModel->setFieldname($targetField);
+                    $fileReferenceModel->setUidLocal($file->getUid());
+                    $fileReferenceModel->setUidForeign($targetRecordId);
+                    $fileReferenceModel->setPid($importFileMappingItem->getPid());
+                    FileUtility::saveFileReference($fileReferenceModel);
+                    $fileReferenceModel->setValid(true);
+                }
             } catch (FileDownloadFailedException $e) {
                 if ($e->getKeepExistingFile()) {
                     $fileReferenceModel->setValid(true);
                 }
-                $this->log(sprintf('Creating the file reference failed for %s: %s', $uri, $e->getMessage()));
+                $this->log(sprintf('Creating the file reference failed for %s: %s (Code: %d)', $uri, $e->getMessage(), $e->getCode()));
             } catch (\Throwable $e) {
                 // Keep the files for unknown exceptions
                 $fileReferenceModel->setValid(true);

@@ -140,7 +140,8 @@ class FileUtility
      * @param array<string, string>|null $metaData
      * @param string[] $allowedExtensions Optional list of allowed file extensions
      * @param array $clientOptions
-     * @return File The resulting file object created in the FAL storage.
+     * @param int $downloadAttemptCount The number of download attempts in case there are problems
+     * @return ?File The resulting file object created in the FAL storage.
      * @throws ExistingTargetFileNameException
      */
     public static function downloadFileToFal(
@@ -149,8 +150,9 @@ class FileUtility
         string $filenamePrefix,
         ?array $metaData = null,
         array $allowedExtensions = [],
-        array $clientOptions = []
-    ): File
+        array $clientOptions = [],
+        int $downloadAttemptCount = 0
+    ): ?File
     {
         $tempFile = GeneralUtility::tempnam('import_');
 
@@ -159,22 +161,32 @@ class FileUtility
             $response = $client->get($url, ['sink' => $tempFile]);
         } catch (GuzzleException $e) {
             $keepExistingFile = true;
+            $statusCode = $e->getCode();
             // Add detailed information about the Request and Response (if available).
             if (($e instanceof RequestException) && $e->hasResponse()) {
                 $response = $e->getResponse();
+                $statusCode = $response->getStatusCode();
+                if ($downloadAttemptCount < 3 && $response->getStatusCode() === 429) {
+                    $retryAfter = (int)($response->getHeader('Retry-After')[0] ?? 5);
+                    if ($retryAfter < 5) {
+                        $retryAfter = 5;
+                    }
+                    sleep($retryAfter + 3);
+                    return self::downloadFileToFal($targetFolder, $url, $filenamePrefix, $metaData, $allowedExtensions, $clientOptions, $downloadAttemptCount + 1);
+                }
                 $keepExistingFile = $response->getStatusCode() !== 404;
             }
             $message = sprintf('Download of %s failed: %s', $url, $e->getMessage());
-            throw new FileDownloadFailedException($message, $keepExistingFile);
+            throw new FileDownloadFailedException($message, $keepExistingFile, $statusCode, $e);
         } catch (\Throwable $e) {
             $message = sprintf('An unexpected error occurred during attempted file download of %s: %s', $url, $e->getMessage());
-            throw new FileDownloadFailedException($message, true);
+            throw new FileDownloadFailedException($message, true, $e->getCode(), $e);
         }
 
         if ($response->getStatusCode() !== 200) {
             $keepExistingFile = $response->getStatusCode() !== 404;
             $message = sprintf('Download of %s failed: %s', $url, $response->getReasonPhrase());
-            throw new FileDownloadFailedException($message, $keepExistingFile);
+            throw new FileDownloadFailedException($message, $keepExistingFile, $response->getStatusCode());
         }
         $mimeTypes = new MimeTypes();
         $mimeType = $response->getHeader('Content-Type')[0] ?? null;

@@ -4,13 +4,3 @@ parameters:
 			message: "#^Method BrainAppeal\\\\CampusEventsConnector\\\\Domain\\\\Model\\\\Event\\:\\:getTimeRanges\\(\\) should return TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\ObjectStorage\\<BrainAppeal\\\\CampusEventsConnector\\\\Domain\\\\Model\\\\TimeRange\\> but returns TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\ObjectStorage\\<object\\>\\.$#"
 			count: 1
 			path: ../Classes/Domain/Model/Event.php
-
-		-
-			message: "#^Method BrainAppeal\\\\CampusEventsConnector\\\\Import\\\\Writer\\\\AdvancedBulkReplaceService\\:\\:detectParameterType\\(\\) never returns Doctrine\\\\DBAL\\\\ArrayParameterType so it can be removed from the return type\\.$#"
-			count: 1
-			path: ../Classes/Import/Writer/AdvancedBulkReplaceService.php
-
-		-
-			message: "#^Method BrainAppeal\\\\CampusEventsConnector\\\\Import\\\\Writer\\\\AdvancedBulkReplaceService\\:\\:detectParameterType\\(\\) never returns Doctrine\\\\DBAL\\\\ParameterType so it can be removed from the return type\\.$#"
-			count: 1
-			path: ../Classes/Import/Writer/AdvancedBulkReplaceService.php

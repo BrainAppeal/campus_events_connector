@@ -46,7 +46,7 @@ If the --truncate-tables option is set, the tables containing the import entries
 If the --truncate-all-tables option is set, all tables related to the import process are truncated.
 This is useful for testing purposes or a full data refresh.
 ')
-            ->addArgument('import-source', InputArgument::REQUIRED, 'The import source to clean up')
+            ->addArgument('import-source', InputArgument::OPTIONAL, 'The import source to clean up')
             ->addOption(
                 'confirm',
                 'c',
@@ -79,7 +79,23 @@ This is useful for testing purposes or a full data refresh.
     {
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
+        $groupKeys = $this->dataTransformerFactory->getRegisteredGroupKeys();
+        if (count($groupKeys) === 0) {
+            $output->writeln('<error>No import sources are configured!</error>');
+            return Command::INVALID;
+        }
         $importSource = $input->getArgument('import-source');
+        if (!$importSource) {
+            if (count($groupKeys) === 1) {
+                $importSource = current($groupKeys);
+            } else {
+                $output->writeln(sprintf('<error>Please provide the import source argument. Possible values are: %s</error>', implode(', ', $groupKeys)));
+                return Command::INVALID;
+            }
+        } elseif (!in_array($importSource, $groupKeys, true)) {
+            $output->writeln(sprintf('<error>The import source "%s" is not configured! The import source must be one of %s</error>', $importSource, implode(', ', $groupKeys)));
+            return Command::INVALID;
+        }
         $truncateAllTables = (bool)$input->getOption('truncate-all-tables');
         $truncateTables = $truncateAllTables || $input->getOption('truncate-tables');
         $isConfirmationRequired = $truncateAllTables && !$input->getOption('confirm') && !Environment::getContext()->isDevelopment();

@@ -156,8 +156,9 @@ return [
                 ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => ['attachmentFile', 'url'],
                     'custom_process' => 'files', //Field handled separately
-                    'size_field' => ['attachmentFile', 'size'],
                     'alt_text_source_field' => 'name',
+                    'timestamp_import_field' => ['attachmentFile', 'modifiedAt'],
+                    'timestamp_normalizer' => 'datetime_to_tstamp',
                 ],
             ],
             'event' => [

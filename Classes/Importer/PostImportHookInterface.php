@@ -15,6 +15,7 @@ namespace BrainAppeal\CampusEventsConnector\Importer;
 
 /**
  * Interface for post import hooks
+ * @deprecated Use ImportFinishEvent instead
  */
 interface PostImportHookInterface
 {
