@@ -22,22 +22,15 @@ use Psr\Log\LoggerInterface;
 
 class CeApiConnector extends AbstractApiConnector
 {
-    public const DEV_RELATIVE_CACHE_PATH = 'ce-api-test';
-
     public const BASE_PATH = '/api/';
 
     public const ID_FIELD = '@id';
 
     protected string $apiKeyHeaderName = 'X-API-KEY';
 
-    /**
-     * @var array
-     */
-    protected array $apiTypeMapping = [];
-
     public function __construct(private readonly LoggerInterface $logger)
     {
-        parent::__construct($this->logger, null, null, 14, self::DEV_RELATIVE_CACHE_PATH);
+        parent::__construct($this->logger, null, null);
     }
 
     /**

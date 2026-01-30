@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## 5.2.4 (2026-01-30)
+
+### Changed:
+- removed local cache of API data in Development context
+
 ## 5.2.3 (2026-01-08)
 
 ### Fixed:

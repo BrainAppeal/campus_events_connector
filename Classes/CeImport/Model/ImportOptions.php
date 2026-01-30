@@ -37,6 +37,7 @@ class ImportOptions extends AbstractImportOptions
     {
         $importSource = ImportTableConfigurationProvider::getImportGroupKeyForTable(TCAUtility::TABLE_EVENTS);
         parent::__construct($importSource, $extensionConfiguration, $input);
+        $this->developmentLocalCacheAgeInDays = 0;
     }
 
     /**
@@ -72,11 +73,6 @@ class ImportOptions extends AbstractImportOptions
     public function getBaseUri(): ?string
     {
         return $this->baseUri;
-    }
-
-    public function getRelativeLocalCachePath(): ?string
-    {
-        return '/transient/ce-api-test/';
     }
 
     public function getCachePrefix(): string
