@@ -13,6 +13,7 @@ use GuzzleHttp\Exception\RequestException;
 use BrainAppeal\CampusEventsConnector\Import\Event\FileDownloadFailedException;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportFileReferenceModel;
 use Symfony\Component\Mime\MimeTypes;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -296,14 +297,45 @@ class FileUtility
         $isDeleted = false;
         // Check mtime of the local file
         $sysFileUid = $fileReferenceModel->getUidLocal();
+        if (!$sysFileUid) {
+            self::deleteFileReference($fileReferenceModel);
+            return true;
+        }
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $refTable = 'sys_file_reference';
+        $connection = $connectionPool->getConnectionForTable($refTable);
+        // Delete all file references to the given file
+        $connection->delete($refTable, [
+            'uid_local' => $sysFileUid,
+        ]);
+        $file = null;
         try {
             $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
             $file = $resourceFactory->getFileObject($sysFileUid);
             $isDeleted = $file->delete();
-        } catch (FileDoesNotExistException) {
-            // Nothing needs to be done, since we want the file to not exist
+        } catch (\Throwable) {
+            // Hard deletion of the file if normal deletion failed
+            if ($file && ($storage = $file->getStorage()) && $storage->getDriverType() === 'Local') {
+                $publicUrl = $file->getPublicUrl();
+                $absolutePath = Environment::getPublicPath() . '/' . $publicUrl;
+                if (file_exists($absolutePath)) {
+                    @unlink($absolutePath);
+                }
+            }
+            $fileTable = 'sys_file';
+            $connection = $connectionPool->getConnectionForTable($fileTable);
+            // Delete the file reference
+            $connection->delete($fileTable, [
+                'uid' => $sysFileUid,
+            ]);
+            $fileMetaDataTable = 'sys_file_metadata';
+            $connection = $connectionPool->getConnectionForTable($fileMetaDataTable);
+            // Delete the file reference
+            $connection->delete($fileMetaDataTable, [
+                'file' => $sysFileUid,
+            ]);
         }
-        self::deleteFileReference($fileReferenceModel);
         return $isDeleted;
     }
 

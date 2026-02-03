@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## 5.2.5 (2026-02-03)
+
+### Fixed:
+- fix InsufficientUserPermissionsException exception in ce:cleanup command if recycler is used
+
 ## 5.2.4 (2026-01-30)
 
 ### Changed:

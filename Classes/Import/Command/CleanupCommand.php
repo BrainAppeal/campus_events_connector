@@ -12,6 +12,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use TYPO3\CMS\Core\Authentication\CommandLineUserAuthentication;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\Environment;
 
 /**
@@ -68,6 +70,17 @@ This is useful for testing purposes or a full data refresh.
     }
 
     /**
+     * Bootstrap running of upgradeWizards
+     */
+    protected function bootstrap(): void
+    {
+        if (Environment::isCli()) {
+            Bootstrap::initializeBackendUser(CommandLineUserAuthentication::class);
+            Bootstrap::initializeBackendAuthentication();
+        }
+    }
+
+    /**
      * Executes the command to clean up or truncate tables based on the provided options.
      *
      * @param InputInterface $input The input interface to retrieve options and arguments.
@@ -78,6 +91,7 @@ This is useful for testing purposes or a full data refresh.
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $this->bootstrap();
         $io->title($this->getDescription());
         $groupKeys = $this->dataTransformerFactory->getRegisteredGroupKeys();
         if (count($groupKeys) === 0) {
