@@ -1,5 +1,22 @@
 # CHANGELOG.md
 
+## 5.2.6 (2026-03-22)
+
+### Fixed:
+- ensure that existing record references are always loaded into the local mapping cache
+
+### Changed:
+- continue fetching API data after 404 response
+- force update checks of records with file references
+- improve reference handling and logging of file downloads
+- improve error message for API url validation
+- catch ApiUnreachableException when checking if API access is configured correctly in the Scheduler task
+
+### Added:
+- add sponsor properties (public label and logo alternative text)
+- add API fields (event tickets from, event tickets till, event ticket cancellation until, event not orderable message, time range visible until)
+- add getters for event file references (skip access to event image and attachment models)
+
 ## 5.2.5 (2026-02-03)
 
 ### Fixed:

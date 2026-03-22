@@ -8,6 +8,8 @@ use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationProvider;
 use BrainAppeal\CampusEventsConnector\Import\Model\AbstractImportOptions;
 use Symfony\Component\Console\Input\InputInterface;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Represents the options and configuration for importing data.
@@ -56,12 +58,16 @@ class ImportOptions extends AbstractImportOptions
         parent::updateConfiguration($config, $input);
         $this->apiKey = $apiKey;
         $this->baseUri = $baseUri;
-        $importSource = preg_replace("/['\"]/", '', $baseUri);
-        $host = parse_url($importSource, PHP_URL_HOST);
-        if ($host) {
-            $this->targetImportSource = (string)$host;
-        } else {
-            $this->targetImportSource = $importSource;
+        $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(TCAUtility::EXT_NAME);
+        $enableMultipleImportSources = $extConf['enable_multiple_import_sources'] ?? false;
+        if ($enableMultipleImportSources) {
+            $importSource = preg_replace("/['\"]/", '', $baseUri);
+            $host = parse_url($importSource, PHP_URL_HOST);
+            if ($host) {
+                $this->targetImportSource = (string)$host;
+            } else {
+                $this->targetImportSource = $importSource;
+            }
         }
     }
 

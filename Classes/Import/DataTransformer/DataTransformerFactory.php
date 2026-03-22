@@ -154,18 +154,6 @@ class DataTransformerFactory implements SingletonInterface
     }
 
     /**
-     * Get a DataTransformer instance by type
-     *
-     * @param string $type The DataTransformer type (e.g. "Building", "Location")
-     * @return ImportDataTransformerInterface The DataTransformer instance
-     * @throws \InvalidArgumentException If no DataTransformer is registered for the given type
-     */
-    public function getDataTransformerByType(string $type): ImportDataTransformerInterface
-    {
-        return $this->getDataTransformer($type);
-    }
-
-    /**
      * Get a DataTransformer instance by table name
      *
      * @param string $tableName The DataTransformer table name
@@ -177,7 +165,6 @@ class DataTransformerFactory implements SingletonInterface
     {
         return $this->getDataTransformer($tableName, $ignoreGroupKey);
     }
-
 
     /**
      * Initializes the priority of data transformers based on their dependencies and defined priorities.

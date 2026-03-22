@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BrainAppeal\CampusEventsConnector\Import\DataTransformer;
 
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
+use BrainAppeal\CampusEventsConnector\Import\Model\ImportFileMappingModel;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
 use BrainAppeal\CampusEventsConnector\Import\Normalizer\Strategy\NormalizerStrategyInterface;
 use BrainAppeal\CampusEventsConnector\Import\Normalizer\Strategy\NormalizerStrategyRegistry;
@@ -305,7 +306,8 @@ abstract class AbstractDataTransformer implements ImportDataTransformerInterface
         $offset = 0;
         // increase priority if internal references exist, but the import value is empty (record has no references)
         if (!empty($internalDependencies = $this->importConfiguration->getInternalDependencies())) {
-            foreach ($internalDependencies as $importField) {
+            foreach ($internalDependencies as $mapEntry) {
+                $importField = $mapEntry->getSourceField();
                 if (array_key_exists($importField, $importData) && empty($importData[$importField])) {
                     $offset += 10;
                 }
@@ -333,5 +335,42 @@ abstract class AbstractDataTransformer implements ImportDataTransformerInterface
             throw new \RuntimeException('File data transformer helper is not initialized');
         }
         return $this->fileDataTransformerHelper;
+    }
+
+    /**
+     * Initializes the import data by preparing file models, record list, and fields.
+     *
+     * @param array<ImportRecordModel> $importModelList
+     * @return ImportFileMappingModel[]
+     */
+    final public function getImportFileMappingModels(array $importModelList): array
+    {
+        if ($this->fileDataTransformerHelper === null) {
+            return [];
+        }
+        $importFileModels = [];
+        foreach ($importModelList as $importModel) {
+            $targetRecordId = $importModel->getTargetRecordId();
+            if (!$targetRecordId) {
+                continue;
+            }
+            $importFileMappingList = $this->fileDataTransformerHelper->getImportFileMapping($importModel);
+            foreach ($importFileMappingList as $importFileMappingItem) {
+                $this->checkIfForcedFileUpdateIsRequired($importModel, $importFileMappingItem);
+                $importFileModels[] = $importFileMappingItem;
+            }
+        }
+        return $importFileModels;
+    }
+
+    /**
+     * Optionally, set the force update flag for the file import model
+     *
+     * @param ImportRecordModel $model
+     * @param ImportFileMappingModel $fileModel
+     * @return void
+     */
+    protected function checkIfForcedFileUpdateIsRequired(ImportRecordModel $model, ImportFileMappingModel $fileModel): void
+    {
     }
 }

@@ -188,6 +188,11 @@ class ImportFileReferenceModel
         return $this->languageUid;
     }
 
+    public function setLanguageUid(int $languageUid): void
+    {
+        $this->languageUid = $languageUid;
+    }
+
     public function getL10nParent(): int
     {
         return $this->l10nParent;

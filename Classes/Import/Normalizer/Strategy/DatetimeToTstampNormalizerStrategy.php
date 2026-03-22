@@ -19,7 +19,12 @@ readonly class DatetimeToTstampNormalizerStrategy extends AbstractNormalizerStra
             $value = (string)$value;
         }
         if ($value && !str_starts_with($value, '9999-12-31')) {
-            $convertedValue = strtotime($value);
+            $dateTimeObject = date_create($value);
+            if ($dateTimeObject instanceof \DateTimeInterface) {
+                $convertedValue = $dateTimeObject->getTimestamp();
+            } else {
+                $convertedValue = strtotime($value);
+            }
             if ($convertedValue !== false) {
                 return $convertedValue;
             }

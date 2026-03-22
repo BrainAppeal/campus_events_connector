@@ -21,6 +21,7 @@ $defaultColumnsColumns = TCAUtility::getDefaultFieldConfiguration($tableName);
 $importColumns = TCAUtility::getImportFieldConfiguration();
 $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(TCAUtility::EXT_NAME);
 $importFieldsReadOnly = $extConf['tca_fields_read_only'] ?? false;
+$enableMultipleImportSources = $extConf['enable_multiple_import_sources'] ?? false;
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_contactperson',
@@ -35,7 +36,7 @@ return [
         'transOrigDiffSourceField' => 'l10n_diffsource',
         'delete' => 'deleted',
         'enablecolumns' => [
-//            'disabled' => 'hidden',
+            'disabled' => 'hidden',
 //            'starttime' => 'starttime',
 //            'endtime' => 'endtime',
         ],
@@ -48,7 +49,7 @@ return [
         ]
     ],
     'types' => [
-        '1' => ['showitem' => 'title,first_name,last_name,position,department,institution,phone,mail_address,
+        '1' => ['showitem' => '--palette--;;paletteName,position,department,institution,phone,mail_address,
         --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
             --palette--;;paletteLanguage,
         --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access,
@@ -63,6 +64,9 @@ return [
         'access' => [
             'showitem' => 'hidden, starttime, endtime',
         ],
+        'paletteName' => [
+            'showitem' => 'title,first_name,last_name',
+        ],
     ],
     ImportTableConfigurationModel::TCA_IMPORT_KEY => [
         'importField' => 'ContactPerson',
@@ -70,7 +74,7 @@ return [
         'apiEndpoint' => 'contact_persons',
         'apiListItemContainsAllData' => false,
         'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransformer::class,
-        'targetImportSourceField' => 'ce_import_source',
+        'targetImportSourceField' => $enableMultipleImportSources ? 'ce_import_source' : null,
     ],
     'columns' => array_merge(
         $defaultColumnsColumns,
@@ -82,6 +86,7 @@ return [
                 'config' => [
                     'type' => 'input',
                     'size' => 30,
+                    'max' => 255,
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
@@ -97,6 +102,7 @@ return [
                 'config' => [
                     'type' => 'input',
                     'size' => 30,
+                    'max' => 255,
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
@@ -112,6 +118,7 @@ return [
                 'config' => [
                     'type' => 'input',
                     'size' => 30,
+                    'max' => 255,
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
@@ -125,6 +132,7 @@ return [
                 'config' => [
                     'type' => 'input',
                     'size' => 30,
+                    'max' => 255,
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
@@ -138,6 +146,7 @@ return [
                 'config' => [
                     'type' => 'input',
                     'size' => 30,
+                    'max' => 255,
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
@@ -151,6 +160,7 @@ return [
                 'config' => [
                     'type' => 'input',
                     'size' => 30,
+                    'max' => 255,
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
@@ -164,6 +174,7 @@ return [
                 'config' => [
                     'type' => 'input',
                     'size' => 30,
+                    'max' => 255,
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
@@ -179,6 +190,7 @@ return [
                 'config' => [
                     'type' => 'input',
                     'size' => 30,
+                    'max' => 255,
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],

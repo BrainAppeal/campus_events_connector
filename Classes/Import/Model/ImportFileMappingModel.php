@@ -7,55 +7,37 @@ namespace BrainAppeal\CampusEventsConnector\Import\Model;
 /**
  * Import file mapping for ImportDataTransformerInterface
  */
-class ImportFileMappingModel
+class ImportFileMappingModel extends AbstractImportModel
 {
-    public const PROCESS_TYPE_CHECK_DELETE_LOCAL = 'checkDeleteLocal';
-    public const PROCESS_TYPE_CHECK_UPDATE_LOCAL = 'checkUpdateLocal';
-    public const PROCESS_TYPE_FETCH_REMOTE = 'fetchRemote';
+    protected string $targetField;
+    protected string $uri;
 
-    private string $targetField;
-    private int $timestamp;
-    private string $uri;
-    private string $alternative;
-    private string $processType;
+    protected ?ImportFileReferenceModel $fileReferenceModel = null;
+    protected array $clientOptions = [];
+    protected array $metaData = [];
+    protected string $fileName;
 
-    /**
-     * @var int<0, max>|null The id of the page the record is "stored".
-     */
-    protected ?int $pid = null;
+    protected bool $isLocal = false;
 
-    /**
-     * @var int
-     */
-    protected int $targetRecordId = 0;
+    protected bool $isForceUpdate = false;
 
-    /**
-     * @var int The language id
-     */
-    protected int $languageUid = 0;
-
-    private ?ImportFileReferenceModel $fileReferenceModel = null;
-    private array $clientOptions = [];
-    private array $metaData = [];
-    private string $fileName;
+    protected ?array $categoryUidList = null;
 
     public function __construct(
+        string $targetTable,
+        string|int $sourceRecordIdentifier,
         string $targetField,
         int $targetRecordId,
         int $pid,
-        int $timestamp,
+        int $lastUpdated,
         string $fileName,
         string $uri = '',
-        string $alternative = '',
-        string $processType = self::PROCESS_TYPE_CHECK_UPDATE_LOCAL,
         int $languageUid = 0
     ) {
+        parent::__construct($targetTable, $sourceRecordIdentifier);
         $this->targetField = $targetField;
-        $this->timestamp = $timestamp;
+        $this->lastUpdated = $lastUpdated;
         $this->uri = $uri;
-        $this->alternative = $alternative;
-        $this->validateProcessType($processType);
-        $this->processType = $processType;
         $this->targetRecordId = $targetRecordId;
         $this->pid = $pid;
         $this->fileName = $fileName;
@@ -65,31 +47,6 @@ class ImportFileMappingModel
     public function getTargetField(): string
     {
         return $this->targetField;
-    }
-
-    public function getPid(): ?int
-    {
-        return $this->pid;
-    }
-
-    public function getTargetRecordId(): int
-    {
-        return $this->targetRecordId;
-    }
-
-    public function getLanguageUid(): int
-    {
-        return $this->languageUid;
-    }
-
-    public function getTimestamp(): int
-    {
-        return $this->timestamp;
-    }
-
-    public function setTimestamp(int $timestamp): void
-    {
-        $this->timestamp = $timestamp;
     }
 
     public function getFileName(): string
@@ -105,27 +62,6 @@ class ImportFileMappingModel
     public function setUri(string $uri): void
     {
         $this->uri = $uri;
-    }
-
-    public function getAlternative(): string
-    {
-        return $this->alternative;
-    }
-
-    public function setAlternative(string $alternative): void
-    {
-        $this->alternative = $alternative;
-    }
-
-    public function getProcessType(): string
-    {
-        return $this->processType;
-    }
-
-    public function setProcessType(string $processType): void
-    {
-        $this->validateProcessType($processType);
-        $this->processType = $processType;
     }
 
     /**
@@ -145,37 +81,7 @@ class ImportFileMappingModel
      */
     public function hasTimestamp(): bool
     {
-        return $this->timestamp > 0;
-    }
-
-    /**
-     * Check if the file should be processed for deletion.
-     *
-     * @return bool
-     */
-    public function isCheckDeleteProcess(): bool
-    {
-        return $this->processType === self::PROCESS_TYPE_CHECK_DELETE_LOCAL;
-    }
-
-    /**
-     * Check if the file should be processed for update.
-     *
-     * @return bool
-     */
-    public function isCheckUpdateProcess(): bool
-    {
-        return $this->processType === self::PROCESS_TYPE_CHECK_UPDATE_LOCAL;
-    }
-
-    /**
-     * Check if the file should be fetched remotely.
-     *
-     * @return bool
-     */
-    public function isFetchRemoteProcess(): bool
-    {
-        return $this->processType === self::PROCESS_TYPE_FETCH_REMOTE;
+        return $this->lastUpdated > 0;
     }
 
     public function getFileReferenceModel(): ?ImportFileReferenceModel
@@ -183,12 +89,33 @@ class ImportFileMappingModel
         return $this->fileReferenceModel;
     }
 
-    public function setFileReferenceModel(?ImportFileReferenceModel $fileReferenceModel): void
+    public function setFileReferenceModel(ImportFileReferenceModel $fileReferenceModel): void
     {
-        if ($fileReferenceModel && $fileReferenceModel->getPid() !== $this->pid) {
-            $fileReferenceModel->setPid($this->pid);
-        }
+        $fileReferenceModel->setPid($this->pid);
         $this->fileReferenceModel = $fileReferenceModel;
+    }
+
+    /**
+     * Retrieves the synchronized file reference model, initializing it if necessary.
+     *
+     * @return ImportFileReferenceModel The synchronized file reference model.
+     */
+    public function getSynchronizedFileReferenceModel(): ImportFileReferenceModel
+    {
+        if ($this->fileReferenceModel === null) {
+            $this->fileReferenceModel = new ImportFileReferenceModel();
+        }
+        $this->fileReferenceModel->setTablenames($this->targetTable);
+        $this->fileReferenceModel->setFieldname($this->targetField);
+        $this->fileReferenceModel->setPid($this->pid);
+        $this->fileReferenceModel->setUidForeign($this->targetRecordId);
+        $this->fileReferenceModel->setLanguageUid($this->getLanguageUid());
+        return $this->fileReferenceModel;
+    }
+
+    public function hasExistingFileReference(): bool
+    {
+        return $this->fileReferenceModel && $this->fileReferenceModel->getUid() > 0;
     }
 
     /**
@@ -217,35 +144,37 @@ class ImportFileMappingModel
 
     public function getMetaData(): array
     {
-        if (!isset($this->metaData['alternative'])) {
-            $this->metaData['alternative'] = $this->alternative;
-        }
         return $this->metaData;
     }
 
-    /**
-     * Validates the ProcessType against allowed values.
-     *
-     * @param string $processType
-     * @throws \InvalidArgumentException
-     */
-    private function validateProcessType(string $processType): void
+    public function isLocal(): bool
     {
-        $allowedTypes = [
-            self::PROCESS_TYPE_CHECK_DELETE_LOCAL,
-            self::PROCESS_TYPE_CHECK_UPDATE_LOCAL,
-            self::PROCESS_TYPE_FETCH_REMOTE,
-        ];
+        return $this->isLocal;
+    }
 
-        if (!in_array($processType, $allowedTypes, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Invalid processType "%s". Allowed types are: %s',
-                    $processType,
-                    implode(', ', $allowedTypes)
-                )
-            );
-        }
+    public function setIsLocal(bool $isLocal): void
+    {
+        $this->isLocal = $isLocal;
+    }
+
+    public function getCategoryUidList(): ?array
+    {
+        return $this->categoryUidList;
+    }
+
+    public function setCategoryUidList(?array $categoryUidList): void
+    {
+        $this->categoryUidList = $categoryUidList;
+    }
+
+    public function isForceUpdate(): bool
+    {
+        return $this->isForceUpdate;
+    }
+
+    public function setIsForceUpdate(bool $isForceUpdate): void
+    {
+        $this->isForceUpdate = $isForceUpdate;
     }
 
     /**
@@ -256,11 +185,10 @@ class ImportFileMappingModel
     public function __toString(): string
     {
         return sprintf(
-            'ImportFileMappingModel(field: %s, uri: %s, processType: %s, timestamp: %d)',
+            'ImportFileMappingModel(field: %s, uri: %s, timestamp: %d)',
             $this->targetField,
             $this->uri ?: '(empty)',
-            $this->processType,
-            $this->timestamp
+            $this->lastUpdated
         );
     }
 }

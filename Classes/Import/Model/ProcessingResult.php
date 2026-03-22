@@ -45,12 +45,6 @@ class ProcessingResult
 
     private ImportTargetRecordMapping $mapping;
 
-    /**
-     * The list of models that contain unresolved references grouped by their target table.
-     * @var array<string, array<string, ImportRecordModel>>
-     */
-    private array $modelsWithUnresolvedReferences = [];
-
     public function __construct(array $rows, ImportTargetRecordMapping $mapping)
     {
         $this->allRows = $rows;
@@ -60,27 +54,6 @@ class ProcessingResult
     public function getMapping(): ImportTargetRecordMapping
     {
         return $this->mapping;
-    }
-
-    /**
-     * Returns all models that contain unresolved references.
-     * @return array<string, array<string, ImportRecordModel>>
-     */
-    public function getModelsWithUnresolvedReferences(): array
-    {
-        return $this->modelsWithUnresolvedReferences;
-    }
-
-    /**
-     * Adds a model with unresolved references to the internal tracking structure.
-     *
-     * @param ImportRecordModel $model The model containing unresolved references to be added.
-     * @return void
-     */
-    public function addModelWithUnresolvedReferences(ImportRecordModel $model): void
-    {
-        $key = $model->getSourceRecordIdentifier() . ':' . $model->getLanguageUid();
-        $this->modelsWithUnresolvedReferences[$model->getTargetTable()][$key] = $model;
     }
 
     /**

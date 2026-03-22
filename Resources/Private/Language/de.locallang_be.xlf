@@ -9,6 +9,9 @@
             <trans-unit id="additional_language_codes">
 				<target>Durch Kommas getrennte Liste zusätzlicher Sprachcodes für Übersetzungen, die aus der API abgerufen werden. Dies funktioniert nur, wenn die Zielseite für die Zielsprache übersetzt ist.</target>
 			</trans-unit>
+			<trans-unit id="enable_multiple_import_sources">
+				<target>Mehrere Importquellen für die importierten Daten aktivieren. Wenn aktiviert, wird die Importquelle in das Feld ce_import_source geschrieben und nur Datensätze mit derselben Importquelle werden aktualisiert oder gelöscht.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

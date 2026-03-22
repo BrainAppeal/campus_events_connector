@@ -24,7 +24,7 @@ class ImportSlugHelper extends SlugHelper
     public function isUniqueInTable(string $slug, RecordState $state): bool
     {
         $languageId = $state->getContext()->getLanguageId();
-        if (!isset(self::$tableSlugs[$this->tableName][$languageId])) {
+        if (!isset(self::$tableSlugs[$this->tableName][$this->fieldName][$languageId])) {
             $queryBuilder = $this->createPreparedQueryBuilder();
             $this->applyLanguageConstraint($queryBuilder, $languageId);
             $this->applyWorkspaceConstraint($queryBuilder, $state);
@@ -33,16 +33,16 @@ class ImportSlugHelper extends SlugHelper
             $records = $this->resolveVersionOverlays(
                 $statement->fetchAllAssociative()
             );
-            $mapSlugs = array_column($records, 'uid', 'slug');
-            self::$tableSlugs[$this->tableName][$languageId] = $mapSlugs;
+            $mapSlugs = array_column($records, 'uid', $this->fieldName);
+            self::$tableSlugs[$this->tableName][$this->fieldName][$languageId] = $mapSlugs;
         }
         $recordId = $state->getSubject()->getIdentifier();
-        $matchUid = self::$tableSlugs[$this->tableName][$languageId][$slug] ?? null;
+        $matchUid = self::$tableSlugs[$this->tableName][$this->fieldName][$languageId][$slug] ?? null;
         return !$matchUid || (int)$matchUid === (int)$recordId;
     }
 
     public function setTableSlug(int $recordId, string $slug, int $languageId): void
     {
-        self::$tableSlugs[$this->tableName][$languageId][$slug] = $recordId;
+        self::$tableSlugs[$this->tableName][$this->fieldName][$languageId][$slug] = $recordId;
     }
 }

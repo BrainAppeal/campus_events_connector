@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\TargetResolution;
 
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ReferenceNotFoundException;
+use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
 
 /**
  * Handles the mapping between source records and target records during an import process.
@@ -22,6 +24,20 @@ final class ImportTargetRecordMapping
      * @var array<string, array<string, array<int, array<string, int>>>>
      */
     private array $tableIdMap = [];
+
+    /**
+     * Map existing records loading indicators by table and field
+     *
+     * @var array<string, array<string, bool>>
+     */
+    private array $tableIdMapInitialized = [];
+
+    /**
+     * List of records that have unresolved references.
+     *
+     * @var array<array{rawValue: mixed, model: ImportRecordModel, mapEntry: ImportFieldConfigurationModel}>
+     */
+    protected array $unresolvedReferences = [];
 
     /**
      * Map import identifiers to uid value
@@ -60,41 +76,98 @@ final class ImportTargetRecordMapping
     public function addIdentifierReference(
         string $table,
         string $sourceIdentifierField,
-        string $sourceRecordId,
+        int|string $sourceRecordId,
         int    $targetRecordId,
         int    $languageUid = 0
     ): void
     {
-        $this->tableIdMap[$table][$sourceIdentifierField][$languageUid][$sourceRecordId] = $targetRecordId;
+        $this->tableIdMap[$table][$sourceIdentifierField][$languageUid][(string)$sourceRecordId] = $targetRecordId;
     }
 
     /**
-     * Checks if a mapping exists for the specified table and source identifier field.
+     * Adds an unresolved reference to the internal collection for further processing.
+     *
+     * @param mixed $rawValue
+     * @param ImportRecordModel $model The import record model linked to the unresolved reference.
+     * @param ImportFieldConfigurationModel $mapEntry The field configuration for the unresolved reference.
+     *
+     * @return void
+     */
+    public function addUnresolvedReference(
+        mixed $rawValue,
+        ImportRecordModel $model,
+        ImportFieldConfigurationModel $mapEntry,
+    ): void
+    {
+        $this->unresolvedReferences[] = [
+            'rawValue' => $rawValue,
+            'model' => $model,
+            'mapEntry' => $mapEntry,
+        ];
+    }
+
+    /**
+     * Returns the list of unresolved references.
+     * @return array<array{rawValue: mixed, model: ImportRecordModel, mapEntry: ImportFieldConfigurationModel}>
+     */
+    public function getUnresolvedReferences(): array
+    {
+        return $this->unresolvedReferences;
+    }
+
+    /**
+     * Clears all unresolved references.
+     *
+     * @return void
+     */
+    public function clearUnresolvedReferences(): void
+    {
+        $this->unresolvedReferences = [];
+    }
+
+    /**
+     * Checks if the table mapping has been initialized for the specified table and source identifier field.
      *
      * @param string $table The name of the table to check.
      * @param string $sourceIdentifierField The source identifier field to look for within the table.
      * @return bool True if the mapping exists, otherwise false.
      */
-    public function hasTableFieldMap(string $table, string $sourceIdentifierField): bool
+    public function hasTableMappingBeenInitialized(string $table, string $sourceIdentifierField): bool
     {
-        return isset($this->tableIdMap[$table][$sourceIdentifierField]);
+        return $this->tableIdMapInitialized[$table][$sourceIdentifierField] ?? false;
+    }
+
+    /**
+     * Marks a specific table mapping as initialized.
+     *
+     * @param string $table The name of the table to be marked as initialized.
+     * @param string $sourceIdentifierField The identifier field in the table to be marked as initialized.
+     *
+     * @return void
+     */
+    public function setTableMappingInitialized(string $table, string $sourceIdentifierField): void
+    {
+        $this->tableIdMapInitialized[$table][$sourceIdentifierField] = true;
+        if (!isset($this->tableIdMap[$table][$sourceIdentifierField])) {
+            $this->tableIdMap[$table][$sourceIdentifierField] = [];
+        }
     }
 
     /**
      * Retrieves the target record ID for the specified table and source identifier field.
      * @param string $table
      * @param string $sourceIdentifierField
-     * @param string $sourceRecordId
+     * @param int|string $sourceRecordId
      * @param int $languageUid
      * @return int|null
      * @throws ReferenceNotFoundException If the target references for the specified table and field have not been initialized.
      */
-    public function getTargetReferenceId(string $table, string $sourceIdentifierField, string $sourceRecordId, int $languageUid): ?int
+    public function getTargetReferenceId(string $table, string $sourceIdentifierField, int|string $sourceRecordId, int $languageUid): ?int
     {
         if (!isset($this->tableIdMap[$table][$sourceIdentifierField])) {
             throw new ReferenceNotFoundException(sprintf('Target references for table %s and field %s have not been initialized', $table, $sourceIdentifierField));
         }
-        return $this->tableIdMap[$table][$sourceIdentifierField][$languageUid][$sourceRecordId] ?? null;
+        return $this->tableIdMap[$table][$sourceIdentifierField][$languageUid][(string)$sourceRecordId] ?? null;
     }
 
     /**

@@ -15,6 +15,8 @@ CREATE TABLE tx_campuseventsconnector_domain_model_event (
 	learning_objective text,
 	min_participants int(11) DEFAULT NULL,
 	max_participants int(11) DEFAULT NULL,
+    show_available_tickets smallint(5) unsigned DEFAULT '0' NOT NULL,
+    available_tickets int(11) DEFAULT '0' NOT NULL,
 	categories int(11) unsigned DEFAULT '0' NOT NULL,
 	organizer int(11) unsigned DEFAULT '0' NOT NULL,
 	target_groups int(11) unsigned DEFAULT '0' NOT NULL,
@@ -32,6 +34,8 @@ CREATE TABLE tx_campuseventsconnector_domain_model_event (
     event_sessions int(11) unsigned DEFAULT '0' NOT NULL,
     event_ticket_price_variants int(11) unsigned DEFAULT '0' NOT NULL,
     external_order_email_address varchar(255) DEFAULT '' NOT NULL,
+    external_order_email_subject varchar(255) DEFAULT '' NOT NULL,
+    external_order_email_body text,
     external_order_url varchar(255) DEFAULT '' NOT NULL,
 	direct_registration_url varchar(255) DEFAULT '' NOT NULL,
     locations int(11) unsigned DEFAULT '0' NOT NULL,
@@ -39,12 +43,16 @@ CREATE TABLE tx_campuseventsconnector_domain_model_event (
     order_type int(11) unsigned DEFAULT '0' NOT NULL,
     referents int(11) unsigned DEFAULT '0' NOT NULL,
     referents_title varchar(255) DEFAULT '' NOT NULL,
+    not_orderable_message text,
 	seo_description text,
-    seo_title varchar(255) DEFAULT '' NOT NULL,
+    seo_title text,
 	seo_robots_index smallint(5) unsigned DEFAULT '0' NOT NULL,
 	seo_robots_follow smallint(5) unsigned DEFAULT '0' NOT NULL,
     sponsors int(11) unsigned DEFAULT '0' NOT NULL,
     sponsors_title varchar(255) DEFAULT '' NOT NULL,
+    ticket_cancellation_until bigint(20) unsigned DEFAULT '0' NOT NULL,
+    tickets_from bigint(20) unsigned DEFAULT '0' NOT NULL,
+    tickets_till bigint(20) unsigned DEFAULT '0' NOT NULL,
 	slug varchar(2048),
 
 	ce_import_source varchar(255) DEFAULT NULL,
@@ -109,6 +117,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_timerange (
 	end_tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	start_date_is_set smallint(5) unsigned DEFAULT '0' NOT NULL,
 	end_date_is_set smallint(5) unsigned DEFAULT '0' NOT NULL,
+    visible_until bigint(20) unsigned DEFAULT '0' NOT NULL,
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
@@ -212,8 +221,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_contactperson (
 #
 CREATE TABLE tx_campuseventsconnector_domain_model_eventattachment (
 	name varchar(255) DEFAULT '' NOT NULL,
-	file_hash text,
+	file_hash varchar(255) DEFAULT '' NOT NULL,
 	attachment_file int(11) unsigned DEFAULT '0',
+    external_resource_url varchar(255) DEFAULT '' NOT NULL,
 
 	event int(11) unsigned DEFAULT '0' NOT NULL,
 
@@ -232,8 +242,9 @@ CREATE TABLE tx_campuseventsconnector_domain_model_eventattachment (
 CREATE TABLE tx_campuseventsconnector_domain_model_eventimage (
 
 	name varchar(255) DEFAULT '' NOT NULL,
-	file_hash text,
+	file_hash varchar(255) DEFAULT '' NOT NULL,
 	image_file int(11) unsigned DEFAULT '0',
+    external_resource_url varchar(255) DEFAULT '' NOT NULL,
 
 	event int(11) unsigned DEFAULT '0' NOT NULL,
 
@@ -342,9 +353,11 @@ CREATE TABLE tx_campuseventsconnector_domain_model_referent (
 CREATE TABLE tx_campuseventsconnector_domain_model_sponsor (
 
 	name varchar(255) DEFAULT '' NOT NULL,
+    public_label varchar(255) DEFAULT '' NOT NULL,
 	url varchar(255) DEFAULT '' NOT NULL,
-	image_hash text,
+	image_hash varchar(255) DEFAULT '' NOT NULL,
     image_file int(11) unsigned DEFAULT '0',
+    external_resource_url varchar(255) DEFAULT '' NOT NULL,
 
 	ce_import_source varchar(255) DEFAULT NULL,
 	ce_import_id int(11) unsigned DEFAULT NULL ,
@@ -366,7 +379,7 @@ CREATE TABLE tx_campuseventsconnector_domain_model_convertconfiguration (
 	filter_categories int(11) unsigned DEFAULT '0' NOT NULL,
 	view_lists int(11) unsigned DEFAULT '0' NOT NULL,
 
-	type varchar(100) NOT NULL DEFAULT '0',
+	type varchar(100) NOT NULL DEFAULT '0'
 
 );
 
@@ -566,15 +579,6 @@ CREATE TABLE tx_campuseventsconnector_event_sponsor_mm (
 	KEY uid_foreign (uid_foreign)
 );
 
-#
-# Table structure for table 'sys_file_reference'
-#
-CREATE TABLE sys_file_reference (
-	ce_import_source varchar(255) DEFAULT NULL,
-	ce_import_id int(11) unsigned DEFAULT NULL ,
-	ce_imported_at int(11) unsigned DEFAULT NULL ,
-);
-
 
 #
 # Table structure for table 'tx_campuseventsconnector_import'
@@ -621,7 +625,6 @@ CREATE TABLE tx_campuseventsconnector_import_row (
   data_processed tinyint(4) DEFAULT '0' NOT NULL,
   files_processed tinyint(4) DEFAULT '0' NOT NULL,
   import_skipped tinyint(4) DEFAULT '0' NOT NULL,
-	unchanged tinyint(4) DEFAULT '0' NOT NULL,
   data_hash varchar(128) NOT NULL DEFAULT '',
 	last_updated int(11) DEFAULT '0' NOT NULL,
   priority smallint unsigned DEFAULT '0' NOT NULL,

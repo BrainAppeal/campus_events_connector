@@ -45,7 +45,6 @@ class EventAttachment extends AbstractImportedEntity implements BelongsToEventIn
      * Image
      * @var ?FileReference
      */
-    #[\TYPO3\CMS\Extbase\Annotation\ORM\Cascade(['value' => 'remove'])]
     protected $attachmentFile;
 
     /**

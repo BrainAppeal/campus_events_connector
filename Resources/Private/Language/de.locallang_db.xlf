@@ -51,6 +51,15 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.max_participants">
 				<target>Max. Teilnehmer</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.show_available_tickets">
+				<target>Verfügbare Tickets anzeigen</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.available_tickets">
+				<target>Verfügbare Tickets anzeigen</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.not_orderable_message">
+				<target>Nachricht, wenn keine Bestellung möglich</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.speakers">
 				<target>Referenten</target>
 			</trans-unit>
@@ -108,8 +117,23 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.external_order_email_address">
 				<target>Externe E-Mail-Adresse Bestellung</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.external_order_email_subject">
+				<target>Vorgefertigter E-Mail Betreff</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.external_order_email_body">
+				<target>Vorgefertigter E-Mail Text</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.external_order_url">
 				<target>Externe URL Bestellung</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.tickets_from">
+				<target>Registrierung von</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.tickets_till">
+				<target>Registrierung bis</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.ticket_cancellation_until">
+				<target>Stornierung bis</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.direct_registration_url">
 				<target>URL zur Direktbuchung</target>
@@ -122,6 +146,24 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type">
 				<target>Anmeldungs-Typ</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type">
+				<target>Anmeldungs-Typ</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type.detailed.internal">
+				<target>Bestellung mit Warenkorb (für einzelne oder mehrere Teilnehmer)</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type.detailed.registration">
+				<target>Schnellanmeldung für einzelne Teilnehmer (nur kostenlos und ohne Warenkorb)</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type.detailed.external_url">
+				<target>über externe Webseite</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type.detailed.email">
+				<target>per E-Mail</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type.detailed.not_orderable">
+				<target>keine (nur Darstellung des Termins)</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.referents">
 				<target>Moderatoren</target>
@@ -216,6 +258,9 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventattachment.attachment_file">
 				<target>Anhangsdatei</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventimage.external_resource_url">
+				<target>Externe URL Anhang</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventimage">
 				<target>Eventbild</target>
 			</trans-unit>
@@ -227,6 +272,9 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventimage.image_file">
 				<target>Bilddatei</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventimage.external_resource_url">
+				<target>Externe URL Bild</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_speaker">
 				<target>Referent</target>
@@ -260,6 +308,9 @@
             </trans-unit>
             <trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date_is_set">
                 <target>Endzeit ist definiert</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.visible_until">
+				<target>Sichtbar bis</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.event">
 				<target>Veranstaltung</target>
@@ -396,6 +447,9 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.name">
 				<target>Name</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.public_label">
+				<target>Anzeigename (Ausgabe auf der Webseite)</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.url">
 				<target>Url</target>
 			</trans-unit>
@@ -404,6 +458,9 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.image_file">
 				<target>Bild Datei</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.external_resource_url">
+				<target>Externe URL Bild</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory">
 				<target>Filterkategorie</target>

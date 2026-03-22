@@ -54,6 +54,15 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.max_participants">
 				<source>Max Participants</source>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.show_available_tickets">
+				<source>Show available tickets</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.available_tickets">
+				<source>Available tickets</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.not_orderable_message">
+				<source>Message, if no order possible</source>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.location">
 				<source>Location</source>
 			</trans-unit>
@@ -105,11 +114,23 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.event_ticket_price_variants">
 				<source>Event ticket price variants</source>
 			</trans-unit>
-			<trans-unit id="tx_campuseventsconnector_domain_model_event.external_order_email_address">
-				<source>External order email address</source>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.external_order_email_subject">
+				<source>Predefined email subject</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.external_order_email_body">
+				<source>Predefined email text</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.external_order_url">
 				<source>External order url</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.tickets_from">
+				<source>Registration from</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.tickets_till">
+				<source>Registration until</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.ticket_cancellation_until">
+				<source>Cancellation until</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.direct_registration_url">
 				<source>Direct registration url</source>
@@ -122,6 +143,21 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type">
 				<source>Order type</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type.detailed.internal">
+				<source>Order with shopping cart (for single or multiple participants)</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type.detailed.registration">
+				<source>Quick registration for individual participants (only free of charge and without shopping cart)</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type.detailed.external_url">
+				<source>via external website</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type.detailed.email">
+				<source>by email</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.order_type.detailed.not_orderable">
+				<source>none (only presentation of the date)</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.referents">
 				<source>Referents</source>
@@ -216,6 +252,9 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventattachment.attachment_file">
 				<source>Attachment file</source>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventattachment.external_resource_url">
+				<source>External attachment url</source>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventimage">
 				<source>Event Image</source>
 			</trans-unit>
@@ -227,6 +266,9 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_eventimage.image_file">
 				<source>Image file</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_eventimage.external_resource_url">
+				<source>External image url</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_organizer">
 				<source>Organizer</source>
@@ -248,6 +290,9 @@
             </trans-unit>
             <trans-unit id="tx_campuseventsconnector_domain_model_timerange.end_date_is_set">
                 <source>End Date is set</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.visible_until">
+				<source>Visible until</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_timerange.event">
 				<source>Event</source>
@@ -384,6 +429,9 @@
 			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.name">
 				<source>Name</source>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.public_label">
+				<source>Display Name (Website Output)</source>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.url">
 				<source>Url</source>
 			</trans-unit>
@@ -392,6 +440,9 @@
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.image_file">
 				<source>Image file</source>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_sponsor.external_resource_url">
+				<source>External image url</source>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_filtercategory">
 				<source>Filter Category</source>

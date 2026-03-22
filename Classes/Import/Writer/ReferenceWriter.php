@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Writer;
 
-use Doctrine\DBAL\Exception;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationProvider;
@@ -12,6 +11,7 @@ use BrainAppeal\CampusEventsConnector\Import\Exception\ImportOptionsConfiguratio
 use BrainAppeal\CampusEventsConnector\Import\Exception\ReferenceNotFoundException;
 use BrainAppeal\CampusEventsConnector\Import\Repository\AbstractImportRowRepository;
 use BrainAppeal\CampusEventsConnector\Import\TargetResolution\ImportTargetRecordMapping;
+use Doctrine\DBAL\Exception;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -175,6 +175,9 @@ readonly class ReferenceWriter extends AbstractImportRowRepository
                             'sourceIdentifier' => $sourceIdentifier,
                             'foreignMatchField' => $foreignMatchField
                         ]);
+                        continue;
+                    }
+                    if ($uidForeign === null) {
                         continue;
                     }
                 }

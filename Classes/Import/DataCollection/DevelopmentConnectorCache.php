@@ -32,9 +32,10 @@ class DevelopmentConnectorCache
      * Retrieves the cached API response from a local file if it exists and is still valid.
      *
      * @param string|null $localCacheFilePath The path to the local cache file, or null if no cache file is used.
-     * @return array|null The decoded response content as an associative array if the cached file is valid and readable, or null otherwise.
+     * @param bool $isJsonResponse
+     * @return array|string|null The decoded response content as an associative array if the cached file is valid and readable, or null otherwise.
      */
-    public function getLocalResponseCachedFile(?string $localCacheFilePath): ?array
+    public function getLocalResponseCachedFile(?string $localCacheFilePath, bool $isJsonResponse = true): array|string|null
     {
         if (!$localCacheFilePath || $this->developmentLocalCacheAgeInDays === 0 || !file_exists($localCacheFilePath)) {
             return null;
@@ -48,8 +49,8 @@ class DevelopmentConnectorCache
             $this->logger->warning(sprintf('Failed to read local cache file: %s', $localCacheFilePath));
             // Proceed to API call
         } else {
-            $localResponse = json_decode($responseContent, true);
-            if (empty($localResponse) || array_key_exists('error', $localResponse)) {
+            $localResponse = $isJsonResponse ? json_decode($responseContent, true) : $responseContent;
+            if (empty($localResponse) || ($isJsonResponse && array_key_exists('error', $localResponse))) {
                 unlink($localCacheFilePath);
                 return null;
             }

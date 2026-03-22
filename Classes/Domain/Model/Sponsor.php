@@ -31,6 +31,13 @@ class Sponsor extends AbstractImportedEntity
     protected $name = '';
 
     /**
+     * name
+     *
+     * @var string
+     */
+    protected $publicLabel = '';
+
+    /**
      * url
      *
      * @var ?string
@@ -75,6 +82,16 @@ class Sponsor extends AbstractImportedEntity
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    public function getPublicLabel(): string
+    {
+        return $this->publicLabel ? : $this->name;
+    }
+
+    public function setPublicLabel(string $publicLabel): void
+    {
+        $this->publicLabel = $publicLabel;
     }
 
     /**

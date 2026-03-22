@@ -21,6 +21,7 @@ $defaultColumnsColumns = TCAUtility::getDefaultFieldConfiguration($tableName, fa
 $importColumns = TCAUtility::getImportFieldConfiguration();
 $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(TCAUtility::EXT_NAME);
 $importFieldsReadOnly = $extConf['tca_fields_read_only'] ?? false;
+$enableMultipleImportSources = $extConf['enable_multiple_import_sources'] ?? false;
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange',
@@ -31,6 +32,8 @@ return [
         'crdate' => 'crdate',
         'versioningWS' => true,
         'languageField' => 'sys_language_uid',
+        'transOrigPointerField' => 'l10n_parent',
+        'transOrigDiffSourceField' => 'l10n_diffsource',
         'delete' => 'deleted',
         'enablecolumns' => [
             'disabled' => 'hidden',
@@ -47,6 +50,7 @@ return [
     ],
     'types' => [
         '1' => ['showitem' => '--palette--;;paletteTimespan,
+        visible_until,
         event, event_session,
         --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
         --palette--;;paletteLanguage,
@@ -73,7 +77,7 @@ return [
         'apiEndpoint' => 'session_time_periods',
         'apiListItemContainsAllData' => true,
         'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransformer::class,
-        'targetImportSourceField' => 'ce_import_source',
+        'targetImportSourceField' => $enableMultipleImportSources ? 'ce_import_source' : null,
     ],
     'columns' => array_merge(
         $defaultColumnsColumns,
@@ -137,6 +141,22 @@ return [
                 ],
                 ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'endDateTimeIsSet',
+                ],
+            ],
+            'visible_until' => [
+                'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_timerange.visible_until',
+                'config' => [
+                    'type' => 'datetime',
+                    'size' => 12,
+                    'default' => 0,
+                    'readOnly' => $importFieldsReadOnly,
+                ],
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                    'field' => 'visibleUntil',
+                    'normalizer' => 'datetime_to_tstamp',
                 ],
             ],
             'event' => [

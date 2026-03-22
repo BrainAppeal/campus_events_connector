@@ -21,6 +21,7 @@ $defaultColumnsColumns = TCAUtility::getDefaultFieldConfiguration($tableName);
 $importColumns = TCAUtility::getImportFieldConfiguration();
 $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(TCAUtility::EXT_NAME);
 $importFieldsReadOnly = $extConf['tca_fields_read_only'] ?? false;
+$enableMultipleImportSources = $extConf['enable_multiple_import_sources'] ?? false;
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant',
@@ -33,7 +34,7 @@ return [
         'transOrigDiffSourceField' => 'l10n_diffsource',
         'delete' => 'deleted',
         'enablecolumns' => [
-//            'disabled' => 'hidden',
+            'disabled' => 'hidden',
 //            'starttime' => 'starttime',
 //            'endtime' => 'endtime',
         ],
@@ -68,12 +69,26 @@ return [
         'apiEndpoint' => 'event_ticket_price_variants',
         'apiListItemContainsAllData' => false,
         'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransformer::class,
-        'targetImportSourceField' => 'ce_import_source',
+        'targetImportSourceField' => $enableMultipleImportSources ? 'ce_import_source' : null,
     ],
     'columns' => array_merge(
         $defaultColumnsColumns,
         $importColumns,
         [
+            'name' => [
+                'exclude' => true,
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.name',
+                'config' => [
+                    'type' => 'input',
+                    'size' => 50,
+                    'max' => 255,
+                    'eval' => 'trim',
+                    'readOnly' => $importFieldsReadOnly,
+                ],
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                    'field' => 'name',
+                ],
+            ],
             'bookable_from' => [
                 'exclude' => true,
                 'l10n_mode' => 'exclude',
@@ -121,19 +136,6 @@ return [
                 ],
                 ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'quota',
-                ],
-            ],
-            'name' => [
-                'exclude' => true,
-                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventticketpricevariant.name',
-                'config' => [
-                    'type' => 'input',
-                    'size' => 30,
-                    'eval' => 'trim',
-                    'readOnly' => $importFieldsReadOnly,
-                ],
-                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
-                    'field' => 'name',
                 ],
             ],
             'pv_price' => [

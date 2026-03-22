@@ -11,7 +11,7 @@ use BrainAppeal\CampusEventsConnector\Import\DataTransformer\ImportDataTransform
  *
  * Represents a model for importing records, providing properties and methods to manage and manipulate the imported data.
  */
-class ImportRecordModel
+class ImportRecordModel extends AbstractImportModel
 {
     public const UNIQUE_SOURCE_IDENTIFIER_FIELD_INT = 'source_record_uid';
     public const UNIQUE_SOURCE_IDENTIFIER_FIELD_STRING = 'source_record_identifier';
@@ -22,16 +22,6 @@ class ImportRecordModel
     protected ?int $uid = null;
 
     /**
-     * @var int The language id
-     */
-    protected int $languageUid = 0;
-
-    /**
-     * @var int<0, max>|null The id of the page the record is "stored".
-     */
-    protected ?int $pid = null;
-
-    /**
      * @var int<0, max>|null The id of the import record this row belongs to
      */
     protected ?int $importId = null;
@@ -40,11 +30,6 @@ class ImportRecordModel
      * @var int
      */
     protected int $crdate = 0;
-
-    /**
-     * @var int
-     */
-    protected int $lastUpdated = 0;
 
     /**
      * @var int
@@ -67,28 +52,11 @@ class ImportRecordModel
     protected string $internalImportData;
 
     /**
-     * @var string
-     */
-    protected string $targetTable;
-
-    /**
-     * Some import types have string identifiers, so we need to separate ID fields for string and int identifiers
-     * This ensures the type compatibility of the fields in SQL queries
-     * @var string
-     */
-    protected string $sourceRecordIdentifier;
-
-    /**
      * Identifier field used for integer identifiers
      * This ensures the type compatibility of the fields in SQL queries
      * @var int
      */
     protected int $sourceRecordUid = 0;
-
-    /**
-     * @var int
-     */
-    protected int $targetRecordId = 0;
 
     /**
      * Internal flag to prevent saving of import records
@@ -117,11 +85,6 @@ class ImportRecordModel
     protected bool $importSkipped = false;
 
     /**
-     * @var bool
-     */
-    protected bool $unchanged = false;
-
-    /**
      * @var string
      */
     protected string $dataHash = '';
@@ -137,11 +100,9 @@ class ImportRecordModel
     protected ?array $persistedData = null;
 
     /**
-     * Unresolved reference mapping
-     *
-     * @var array<string, array<string, mixed>>
+     * @var ?array<string, mixed> The changed data compared to the previously persisted data.
      */
-    protected array $unresolvedReferences = [];
+    protected ?array $changedValuesBeforeUpdate = null;
 
     /**
      * Unresolved value mapping
@@ -160,18 +121,17 @@ class ImportRecordModel
      *
      * @param string|array $importData The data to be imported.
      * @param string $targetTable The target table for the import source
-     * @param int|string $sourceRecordIdentifier The identifier of the source record.
+     * @param string|int $sourceRecordIdentifier The identifier of the source record.
      * @param string|null $dataHash An optional hash of the data.
      */
-    public function __construct(string|array $importData, string $targetTable, int|string $sourceRecordIdentifier, ?string $dataHash = null)
+    public function __construct(string|array $importData, string $targetTable, string|int $sourceRecordIdentifier, ?string $dataHash = null)
     {
+        parent::__construct($targetTable, (string)$sourceRecordIdentifier);
         $this->targetTable = $targetTable;
         if (is_int($sourceRecordIdentifier)) {
             $this->sourceRecordUid = $sourceRecordIdentifier;
-            $this->sourceRecordIdentifier = (string)$sourceRecordIdentifier;
         } else {
             $this->sourceRecordUid = 0;
-            $this->sourceRecordIdentifier = $sourceRecordIdentifier;
         }
         if ($dataHash) {
             $this->dataHash = $dataHash;
@@ -202,39 +162,6 @@ class ImportRecordModel
     }
 
     /**
-     * Retrieves a list of unresolved references.
-     *
-     * @return array<string, array<string, mixed>> The list of unresolved references.
-     */
-    public function getUnresolvedReferences(): array
-    {
-        return $this->unresolvedReferences;
-    }
-
-    /**
-     * Adds an unresolved reference to the internal collection for later resolution.
-     *
-     * @param string $table The name of the table associated with the unresolved reference.
-     * @param string $targetField The field in the table that the reference targets.
-     * @param mixed $rawValue The raw value of the unresolved reference.
-     * @return void
-     */
-    public function addUnresolvedReference(string $table, string $targetField, mixed $rawValue): void
-    {
-        $this->unresolvedReferences[$table][$targetField] = $rawValue;
-    }
-
-    /**
-     * Checks if there are any unresolved references.
-     *
-     * @return bool True if unresolved references exist; otherwise, false.
-     */
-    public function hasUnresolvedReferences(): bool
-    {
-        return count($this->unresolvedReferences) > 0;
-    }
-
-    /**
      * Determines and returns the unique source identifier field based on the provided identifier type.
      *
      * @param bool $useIntegerIdentifiers Indicates whether to use integer identifiers.
@@ -250,26 +177,6 @@ class ImportRecordModel
     public function getUid(): ?int
     {
         return $this->uid;
-    }
-
-    public function getPid(): ?int
-    {
-        return $this->pid;
-    }
-
-    public function setPid(?int $pid): void
-    {
-        $this->pid = $pid;
-    }
-
-    public function getLanguageUid(): int
-    {
-        return $this->languageUid;
-    }
-
-    public function setLanguageUid(int $languageUid): void
-    {
-        $this->languageUid = $languageUid;
     }
 
     public function getImportId(): ?int
@@ -295,16 +202,6 @@ class ImportRecordModel
     public function setCrdate(int $crdate): void
     {
         $this->crdate = $crdate;
-    }
-
-    public function getLastUpdated(): int
-    {
-        return $this->lastUpdated;
-    }
-
-    public function setLastUpdated(int $lastUpdated): void
-    {
-        $this->lastUpdated = $lastUpdated;
     }
 
     public function getPriority(): int
@@ -345,27 +242,6 @@ class ImportRecordModel
     }
 
     /**
-     * Get sourceType
-     *
-     * @return string
-     */
-    public function getTargetTable(): string
-    {
-        return $this->targetTable;
-    }
-
-    /**
-     * Get source record identifier. Only used if the identifier is a string. Otherwise, getSourceRecordUid is used
-     * This is used internally, so we have consistent identifier types
-     *
-     * @return string
-     */
-    public function getSourceRecordIdentifier(): string
-    {
-        return $this->sourceRecordIdentifier;
-    }
-
-    /**
      * Get source record uid. Return 0 if the identifier is a string.
      * This is only used for SQL queries
      *
@@ -374,26 +250,6 @@ class ImportRecordModel
     public function getSourceRecordUid(): int
     {
         return $this->sourceRecordUid;
-    }
-
-    /**
-     * Get targetRecordId
-     *
-     * @return int
-     */
-    public function getTargetRecordId(): int
-    {
-        return $this->targetRecordId;
-    }
-
-    /**
-     * Set targetRecordId
-     *
-     * @param int $targetRecordId
-     */
-    public function setTargetRecordId(int $targetRecordId): void
-    {
-        $this->targetRecordId = $targetRecordId;
     }
 
     /**
@@ -461,11 +317,6 @@ class ImportRecordModel
         return $this->importSkipped;
     }
 
-    public function isUnchanged(): bool
-    {
-        return $this->unchanged;
-    }
-
     /**
      * Get data hash
      *
@@ -510,6 +361,16 @@ class ImportRecordModel
         $this->persistedData = $persistedData;
     }
 
+    public function getChangedValuesBeforeUpdate(): ?array
+    {
+        return $this->changedValuesBeforeUpdate;
+    }
+
+    public function setChangedValuesBeforeUpdate(?array $changedValuesBeforeUpdate): void
+    {
+        $this->changedValuesBeforeUpdate = $changedValuesBeforeUpdate;
+    }
+
     /**
      * Converts the object data into an associative array with various properties and metadata.
      *
@@ -529,7 +390,6 @@ class ImportRecordModel
             'data_processed' => $this->getDataProcessed(),
             'files_processed' => $this->getFilesProcessed(),
             'import_skipped' => $this->isImportSkipped(),
-            'unchanged' => $this->isUnchanged(),
             'data_hash' => $this->getDataHash(),
             'priority' => $this->getPriority(),
             'sys_language_uid' => $this->languageUid,
@@ -571,7 +431,6 @@ class ImportRecordModel
         $this->filesProcessed = (bool)$row['files_processed'];
         $this->dataFullyLoaded = (bool)$row['data_fully_loaded'];
         $this->importSkipped = (bool)$row['import_skipped'];
-        $this->unchanged = (bool)$row['unchanged'];
         $this->targetRecordId = (int)$row['target_record_uid'];
         $this->lastUpdated = (int)$row['last_updated'];
         if (isset($row['sys_language_uid'])) {
@@ -590,7 +449,7 @@ class ImportRecordModel
     {
         if (is_array($importData)) {
             $this->importData = $importData;
-            $this->internalImportData = json_encode($importData);
+            $this->internalImportData = json_encode($importData, JSON_THROW_ON_ERROR);
         } else {
             $this->importData = json_decode($importData, true);
             $this->internalImportData = $importData;

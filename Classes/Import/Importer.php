@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import;
 
+use BrainAppeal\CampusEventsConnector\Import\Event\BeforeImportStartedEvent;
 use Doctrine\DBAL\Exception;
 use BrainAppeal\CampusEventsConnector\Import\DataCollection\AbstractDataCollection;
 use BrainAppeal\CampusEventsConnector\Import\Event\AfterDataCollectionCompletedEvent;
@@ -68,15 +69,15 @@ class Importer
      */
     public function run(AbstractDataCollection $dataCollection, AbstractImportOptions $importOptions): int
     {
+        $event = new BeforeImportStartedEvent($importOptions);
+        $this->eventDispatcher->dispatch($event);
         $importSource = $importOptions->getImportSource();
         $startTime = microtime(true);
         $this->checkImportSourceAvailability($dataCollection, $importSource);
-        if ($importOptions->isForceUpdate()) {
+        if ($importOptions->isForceUpdate() || !$importOptions->supportsContinuedImport()) {
             $this->importEntryManager->forceStartOfNewImportEntry($importSource);
-            $forced = ' forced';
-        } else {
-            $forced = '';
         }
+        $forced = $importOptions->isForceUpdate() ? ' forced' : '';
         $this->writeOutput(sprintf('Starting%s import for source %s', $forced, $importSource));
         $dataSourceLastModified = $importOptions->isForceUpdate() ? time() : $dataCollection->getDataSourceLastModified();
         $importEntry = $this->importEntryManager->getCurrentImportEntry($importSource, $importOptions->getPid(), $dataSourceLastModified);

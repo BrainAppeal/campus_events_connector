@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Workflow;
 
+use BrainAppeal\CampusEventsConnector\Import\Exception\RecordInvalidException;
 use Doctrine\DBAL\Exception;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DataTransformerFactory;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\ImportDataTransformerInterface;
@@ -187,9 +188,7 @@ readonly class ImportRecordWorkflow
             $this->processNewRows($processingResult);
             // 4. Now update the existing rows with changes
             $this->processUpdatedRows($processingResult);
-            // 5. Process records with unresolved references
-            $this->referenceResolver->logUnresolvedReferences($processingResult);
-            // 6. Dispatch events post-processing
+            // 5. Dispatch events post-processing
             $event = new PostProcessBatchEvent($processingResult, $importOptions, $importEntry);
             $this->eventDispatcher->dispatch($event);
             // Update the processed import rows according to their current processing state
@@ -275,7 +274,16 @@ readonly class ImportRecordWorkflow
     {
         foreach ($processingResult->getDataTypesProcessed() as $targetTable) {
             $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($targetTable);
-            $dependenciesToOtherTables = $dataTransformer->getImportConfiguration()->getDependenciesToOtherTables();
+            $importConfiguration = $dataTransformer->getImportConfiguration();
+            $dependenciesToOtherTables = $importConfiguration->getDependenciesToOtherTables();
+            $internalDependencies = $importConfiguration->getInternalDependencies();
+            if (!empty($internalDependencies)) {
+                foreach ($internalDependencies as $mapEntry) {
+                    $matchField = $mapEntry->get('foreign_match_field');
+                    $dependenciesToOtherTables[$targetTable][] = $matchField;
+                }
+                $dependenciesToOtherTables[$targetTable] = array_unique($dependenciesToOtherTables[$targetTable]);
+            }
             if (!empty($dependenciesToOtherTables)) {
                 $this->referenceResolver->mapDependencies($dependenciesToOtherTables);
             }
@@ -306,7 +314,7 @@ readonly class ImportRecordWorkflow
             $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($targetTable);
             $importConfiguration = $dataTransformer->getImportConfiguration();
             if (empty($importConfiguration->getDependenciesToOtherTables())) {
-                $this->processImportModels($processingResult, $targetTable, $importModels, true);
+                $this->processNewImportModels($processingResult, $targetTable, $importModels);
             }
         }
         /*
@@ -319,7 +327,7 @@ readonly class ImportRecordWorkflow
             $importConfiguration = $dataTransformer->getImportConfiguration();
             $dependenciesToOtherTables = $importConfiguration->getDependenciesToOtherTables();
             if (!empty($dependenciesToOtherTables)) {
-                $this->processImportModels($processingResult, $targetTable, $importModels, true);
+                $this->processNewImportModels($processingResult, $targetTable, $importModels);
             }
         }
         // Update the target record IDs for newly added rows; this is only needed if the import rows are loaded again
@@ -345,7 +353,20 @@ readonly class ImportRecordWorkflow
     {
         $groupedRowsUpdate = $processingResult->getGroupedRowsUpdate();
         foreach ($groupedRowsUpdate as $targetTable => $importModels) {
-            $this->processImportModels($processingResult, $targetTable, $importModels, false);
+            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($targetTable);
+            $processingResult->incrementProcessedRowCount(count($importModels));
+            $modelsWithTransformedData = [];
+            foreach ($importModels as $model) {
+                if ($modelWithTransformedData = $this->runDataTransformation($dataTransformer, $model)) {
+                    $modelsWithTransformedData[] = $modelWithTransformedData;
+                }
+            }
+            $writtenRecordCount = $this->targetRecordPersister->updateRecords(
+                $dataTransformer->getImportConfiguration(),
+                $modelsWithTransformedData,
+                $this->referenceResolver
+            );
+            $processingResult->incrementRecordCount($writtenRecordCount, false);
         }
     }
 
@@ -355,24 +376,33 @@ readonly class ImportRecordWorkflow
      * @param ImportRecordModel[] $importModels
      * @return void
      */
-    protected function processImportModels(ProcessingResult $processingResult, string $table, array $importModels, bool $doCreateRecords): void
+    protected function processNewImportModels(ProcessingResult $processingResult, string $table, array $importModels): void
     {
         $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($table);
         $processingResult->incrementProcessedRowCount(count($importModels));
-        $this->runDataTransformation($processingResult, $dataTransformer, $importModels);
-        $writtenRecordCount = $this->targetRecordPersister->writeRecords($dataTransformer->getImportConfiguration(), $importModels, $this->referenceResolver, $doCreateRecords);
-        $processingResult->incrementRecordCount($writtenRecordCount, $doCreateRecords);
+        $writtenRecordCount = 0;
+        // Each model is inserted immediately, so the internal references can be resolved
+        foreach ($importModels as $model) {
+            if ($modelWithTransformedData = $this->runDataTransformation($dataTransformer, $model)) {
+                $this->targetRecordPersister->createRecord(
+                    $dataTransformer->getImportConfiguration(),
+                    $modelWithTransformedData,
+                    $this->referenceResolver
+                );
+                ++$writtenRecordCount;
+            }
+        }
+        $processingResult->incrementRecordCount($writtenRecordCount, true);
     }
 
     /**
-     * Executes the data transformation process for the provided grouped rows. Each group of models is processed based on its source type,
-     * converting raw import data into a normalized format and enriching it with additional metadata.
+     * Executes the data transformation process for the provided model.
      *
      * @param ImportDataTransformerInterface $dataTransformer
-     * @param ImportRecordModel[] $importModels
-     * @return void
+     * @param ImportRecordModel $model
+     * @return ?ImportRecordModel Model with transformed data or null if transformation failed
      */
-    protected function runDataTransformation(ProcessingResult $processingResult, ImportDataTransformerInterface $dataTransformer, array $importModels): void
+    protected function runDataTransformation(ImportDataTransformerInterface $dataTransformer, ImportRecordModel $model): ?ImportRecordModel
     {
         $table = $dataTransformer->getTable();
         $importConfiguration = $dataTransformer->getImportConfiguration();
@@ -381,35 +411,35 @@ readonly class ImportRecordWorkflow
         $deletedField = $importConfiguration->getDeletedField();
         $languageField = $importConfiguration->getLanguageField();
         $transOrigPointerField = $importConfiguration->getTransOrigPointerField();
-        $targetSourceValue = $this->getImportOptions()->getTargetImportSource();
         $targetSourceField = $importConfiguration->getTargetImportSourceField();
-        foreach ($importModels as $model) {
+        try {
             $data = $rawDataConverter->convert($model, $this->referenceResolver);
-            if ($deletedField) {
-                $data[$deletedField] = 0;
-            }
-            $data = $dataTransformer->postProcessConvertedData($model, $data);
-            // The default language records are processed first, so the language parent should exist here
-            if ($languageField && $transOrigPointerField && $model->getLanguageUid() > 0) {
-                $identifier = $rawDataConverter->getImportIdentifier($model->getImportData());
-                $referenceId = (int)$this->mapping->getTargetReferenceId($table, $uniqueTargetIdentifierField, (string)$identifier, 0);
-                $data[$transOrigPointerField] = $referenceId;
-            }
-            if ($targetSourceField && $targetSourceValue) {
-                $data[$targetSourceField] = $targetSourceValue;
-            }
-            $model->setTransformedData($data);
-            if ($model->getFilesProcessed()) {
-                $model->clearRawData();
-            }
-            if ($model->hasUnresolvedReferences()) {
-                $processingResult->addModelWithUnresolvedReferences($model);
-            }
-            if ($unresolvedValues = $model->getUnresolvedValues()) {
-                $combinedMessage = implode('; ', $unresolvedValues);
-                $this->logger->error($combinedMessage, ['uid' => $model->getTargetRecordId(), 'import_identifier' => $model->getSourceRecordIdentifier()]);
-            }
+        } catch (RecordInvalidException $e) {
+            $this->logger->warning(sprintf('Skipping record %s: %s because the record is invalid: %s', $model->getTargetTable(), $model->getSourceRecordIdentifier(), $e->getMessage()));
+            return null;
         }
+        if ($deletedField) {
+            $data[$deletedField] = 0;
+        }
+        $data = $dataTransformer->postProcessConvertedData($model, $data);
+        // The default language records are processed first, so the language parent should exist here
+        if ($languageField && $transOrigPointerField && $model->getLanguageUid() > 0) {
+            $identifier = $rawDataConverter->getImportIdentifier($model->getImportData());
+            $referenceId = (int)$this->mapping->getTargetReferenceId($table, $uniqueTargetIdentifierField, (string)$identifier, 0);
+            $data[$transOrigPointerField] = $referenceId;
+        }
+        if ($targetSourceField && ($targetSourceValue = $this->getImportOptions()->getTargetImportSource())) {
+            $data[$targetSourceField] = $targetSourceValue;
+        }
+        $model->setTransformedData($data);
+        if ($model->getFilesProcessed()) {
+            $model->clearRawData();
+        }
+        if ($unresolvedValues = $model->getUnresolvedValues()) {
+            $combinedMessage = implode('; ', $unresolvedValues);
+            $this->logger->error($combinedMessage, ['uid' => $model->getTargetRecordId(), 'import_identifier' => $model->getSourceRecordIdentifier()]);
+        }
+        return $model;
     }
 
     /**
@@ -420,6 +450,7 @@ readonly class ImportRecordWorkflow
      */
     protected function postProcessAfterTransformationCompleted(): void
     {
+        $this->referenceResolver->tryResolvingUnresolvedReferences($this->mapping);
         foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
             $table = $dataTransformer->getTable();
             $this->referenceWriter->updateManyToOneReferences($table);

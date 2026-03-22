@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BrainAppeal\CampusEventsConnector\Import\DataTransformer;
 
 use BrainAppeal\CampusEventsConnector\Import\Exception\MappingException;
+use BrainAppeal\CampusEventsConnector\Import\Exception\RecordInvalidException;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ValidationException;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
@@ -131,6 +132,7 @@ class RawDataToTcaNormalizer
      * @param ImportRecordModel $model The import record model containing the raw data to be transformed.
      * @param ReferenceResolver $referenceResolver The import target record mapping used to resolve references.
      * @return array The transformed data mapped to the specified target fields.
+     * @throws RecordInvalidException
      */
     public function convert(ImportRecordModel $model, ReferenceResolver $referenceResolver): array
     {
@@ -189,41 +191,67 @@ class RawDataToTcaNormalizer
      * If the value is too long, it is either trimmed or a validation exception is thrown, depending on the configuration.
      *
      * @param string $val The value to be validated and possibly cropped.
-     * @param \BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel $mapEntry Configuration containing length constraints and field-specific settings.
+     * @param ImportFieldConfigurationModel $mapEntry Configuration containing length constraints and field-specific settings.
      * @return string The processed value, trimmed to the allowed length if necessary.
      * @throws ValidationException If the value exceeds the maximum allowed length in strict mode.
      */
     private function ensureMaxLengthInBounds(string $val, ImportFieldConfigurationModel $mapEntry): string
     {
-        if ($mapEntry->getLength() > 0 && !is_numeric($val) && ($valLength = mb_strlen($val)) > $mapEntry->getLength()) {
+        if (is_numeric($val) || $mapEntry->getLength() === 0) {
+            return $val;
+        }
+        $maxBytes = $mapEntry->getLength();
+        if (strlen($val) > $maxBytes) {
             $targetField = $mapEntry->getTargetField();
             if ($mapEntry->get('strict_length')) {
                 throw new ValidationException(sprintf('Field "%s" exceeds maximum length of %d', $targetField, $mapEntry->getLength()), 1735485460);
             }
             $cropFieldInfo = $this->croppedFieldInfo[$targetField] ?? [];
             $prevMaxLength = $cropFieldInfo['maxLength'] ?? 0;
-            if ($valLength > $prevMaxLength) {
+            $charLength    = mb_strlen($val, 'UTF-8');
+            if ($charLength > $maxBytes && $charLength > $prevMaxLength) {
                 $croppedValueCount = (int)($cropFieldInfo['croppedValueCount'] ?? 0);
                 $this->croppedFieldInfo[$targetField] = [
                     'targetField' => $targetField,
-                    'maxLength' => $valLength,
+                    'maxLength' => $charLength,
                     'allowedLength' => $mapEntry->getLength(),
                     'croppedValueCount' => $croppedValueCount + 1,
                     'valueBeforeCrop' => $val,
                 ];
             }
-            $val = trim(mb_substr($val, 0, $mapEntry->getLength()));
+            $val = trim($this->truncateBytes($val, $maxBytes));
         }
         return $val;
     }
 
     /**
-     * Decodes escaped UTF-8 characters in the given string.
+     * Truncates a UTF-8 string to ensure its byte length does not exceed the specified maximum.
      *
-     * @param string $value The string containing escaped UTF-8 sequences to decode.
-     * @return string The decoded string, or an empty string if the input is null or decoding fails.
+     * @param string $val The input string to be truncated.
+     * @param int $maxBytes The maximum allowable byte length for the string.
+     * @return string The truncated string with a byte length less than or equal to the specified limit.
      */
-    private function decodeEscapedUtf8(string $value, bool $filterMultiByte4 = true): string
+    private function truncateBytes(string $val, int $maxBytes): string
+    {
+        if (strlen($val) <= $maxBytes) {
+            return $val;
+        }
+
+        while (strlen($val) > $maxBytes) {
+            $val = mb_substr($val, 0, -1, 'UTF-8');
+        }
+
+        return $val;
+    }
+
+    /**
+     * Decodes a string with escaped UTF-8 sequences and optionally filters multibyte Unicode characters above a certain range.
+     *
+     * @param string $value The input string containing escaped UTF-8 sequences to decode.
+     * @param bool $filterMultiByte4 Optional flag to filter out multibyte characters in the Unicode range U+10000 to U+10FFFF.
+     * @return string The decoded string with optional filtering applied.
+     */
+    private function decodeEscapedUtf8(string $value, bool $filterMultiByte4 = false): string
     {
         // Decode escaped UTF-8 characters
         $decodedValue = preg_replace_callback(

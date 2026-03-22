@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\DataTransformer;
 
-use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
+use BrainAppeal\CampusEventsConnector\Import\Model\ImportFileMappingModel;
+use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
 
 /**
  * Interface defining the structure and behaviour for data transformation during an import process.
@@ -134,4 +135,12 @@ interface ImportDataTransformerInterface
     public function hasFileTransformations(): bool;
 
     public function getFileDataTransformerHelper(): FileDataTransformerHelper;
+
+    /**
+     * Initializes the import data by preparing file models, record list, and fields.
+     *
+     * @param array<ImportRecordModel> $importModelList
+     * @return ImportFileMappingModel[]
+     */
+    public function getImportFileMappingModels(array $importModelList): array;
 }

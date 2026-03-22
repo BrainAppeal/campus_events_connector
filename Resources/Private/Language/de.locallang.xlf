@@ -63,6 +63,14 @@
 				<source>Participants</source>
 				<target>Teilnehmer</target>
 			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.show_available_tickets">
+				<source>Show available tickets</source>
+				<target>Verfügbare Tickets anzeigen</target>
+			</trans-unit>
+			<trans-unit id="tx_campuseventsconnector_domain_model_event.available_tickets">
+				<source>Available tickets</source>
+				<target>Verfügbare Tickets anzeigen</target>
+			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_domain_model_event.speakers">
 				<target>Referenten</target>
 			</trans-unit>
@@ -208,7 +216,7 @@
 				<target>Pfad innerhalb des gewählten Storage für importierte Bilder und Anhänge</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_base_uri">
-                <target>Ungültige Basis URL. Bitte geben Sie die URL Ihrer Campus Events Instanz ein.</target>
+                <target>Ungültige Basis URL. Bitte geben Sie die URL Ihrer Campus Events Instanz ein (z.B. https://ihre-domain.campus-events.com/).</target>
 			</trans-unit>
 			<trans-unit id="tx_campuseventsconnector_task_eventimporttask.error.invalid_api_key">
                 <target>Ungültiger API Key</target>

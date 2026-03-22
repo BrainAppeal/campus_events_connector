@@ -70,9 +70,7 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
             $connection->bulkInsert($table, $data, $fields);
         }
         // Cleans up import rows that have an unchanged data hash from the current import entry
-        if ($importOptions->isForceUpdate()) {
-            $this->markUnchangedRows($importId);
-        } else {
+        if (!$importOptions->isForceUpdate()) {
             $this->markRowsToBeSkipped($importId);
         }
     }
@@ -311,29 +309,29 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
         return $queryBuilder;
     }
 
-
     /**
-     * Marks rows as unchanged if they were already imported in the previous import entry
-     * and have not changed since. This helps avoid re-importing unchanged rows.
+     * Mark all rows as finished that were already imported in the previous import entry and have not changed since
+     * This prevents imported unchanged rows over and over again
      *
-     * @param int $importId The ID of the current import process to identify relevant rows.
-     *
-     * @return void
+     * @param int $importId
      */
-    protected function markUnchangedRows(int $importId): void
+    protected function markRowsToBeSkipped(int $importId): void
     {
         $connection = $this->getDatabaseConnection();
+        $dataString = json_encode(['skipped' => 1]);
         $currentTime = time();
         foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
             $importConfiguration = $dataTransformer->getImportConfiguration();
             $uniqueKeyField = $importConfiguration->getSourceIdentifierField();
+            $importRowTable = AbstractImportRowRepository::TABLE_IMPORT_ROW;
             $targetTable = $dataTransformer->getTable();
             $sourceIdField = ImportRecordModel::getUniqueSourceIdentifierField($importConfiguration->hasIntegerIdentifiers());
             $sql = sprintf(
-                'UPDATE tx_campuseventsconnector_import_row a, %s p
-                SET a.unchanged = 1, a.tstamp = :currentTime, a.target_record_uid = p.uid
+                'UPDATE %s a, %s p
+                SET a.data_processed = 1, a.files_processed = 1, a.import_skipped = 1, a.tstamp = :currentTime, a.import_data = :dataString, a.target_record_uid = p.uid
                 WHERE a.import_id = :importId AND a.source_type = :targetTable AND a.import_skipped = 0
                 AND p.%s = a.%s',
+                $connection->quoteIdentifier($importRowTable),
                 $connection->quoteIdentifier($targetTable),
                 $connection->quoteIdentifier($uniqueKeyField),
                 $connection->quoteIdentifier($sourceIdField),
@@ -349,61 +347,6 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
                 );
             } else {
                 $sql .= ' AND a.data_hash = p.data_hash';
-            }
-
-            $params = [
-                'importId' => $importId,
-                'targetTable' => $targetTable,
-                'currentTime' => $currentTime,
-            ];
-
-            $types = [
-                'importId' => Connection::PARAM_INT,
-                'targetTable' => Connection::PARAM_STR,
-                'currentTime' => Connection::PARAM_INT,
-            ];
-            if (($targetSourceField = $importConfiguration->getTargetImportSourceField()) && $targetSourceValue = $this->getImportOptions()->getTargetImportSource()) {
-                $sql .= sprintf(' AND p.%s = :targetSourceValue', $connection->quoteIdentifier($targetSourceField));
-                $params['targetSourceValue'] = $targetSourceValue;
-                $types['targetSourceValue'] = Connection::PARAM_STR;
-            }
-
-            try {
-                $connection->executeStatement($sql, $params, $types);
-            } catch (Exception $e) {
-                $this->logger->error(sprintf('Marking import records as skipped import entry %d: %s', $importId, $e->getMessage()));
-            }
-        }
-    }
-
-    /**
-     * Mark all rows as finished that were already imported in the previous import entry and have not changed since
-     * This prevents imported unchanged rows over and over again
-     *
-     * @param int $importId
-     */
-    protected function markRowsToBeSkipped(int $importId): void
-    {
-        $connection = $this->getDatabaseConnection();
-        $dataString = json_encode(['skipped' => 1]);
-        $currentTime = time();
-        foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
-            $importConfiguration = $dataTransformer->getImportConfiguration();
-            $uniqueKeyField = $importConfiguration->getSourceIdentifierField();
-            $targetTable = $dataTransformer->getTable();
-            $sourceIdField = ImportRecordModel::getUniqueSourceIdentifierField($importConfiguration->hasIntegerIdentifiers());
-            $sql = sprintf(
-                'UPDATE tx_campuseventsconnector_import_row a, %s p
-                SET a.data_processed = 1, a.files_processed = 1, a.import_skipped = 1, a.unchanged = 1, a.tstamp = :currentTime, a.import_data = :dataString, a.target_record_uid = p.uid
-                WHERE a.import_id = :importId AND a.source_type = :targetTable AND a.import_skipped = 0
-                AND p.%s = a.%s AND a.data_hash = p.data_hash',
-                $connection->quoteIdentifier($targetTable),
-                $connection->quoteIdentifier($uniqueKeyField),
-                $connection->quoteIdentifier($sourceIdField),
-            );
-            $languageField = $importConfiguration->getLanguageField();
-            if ($languageField) {
-                $sql .= sprintf(' AND p.%s = a.sys_language_uid', $languageField);
             }
 
             $params = [
@@ -442,16 +385,18 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
      */
     public function updateTargetRecordIdsForType(int $importId, ImportTableConfigurationModel $importConfiguration): void
     {
+        $importRowTable = AbstractImportRowRepository::TABLE_IMPORT_ROW;
         $targetTable = $importConfiguration->getTableName();
         $connection = $this->getDatabaseConnection();
         $sourceIdField = ImportRecordModel::getUniqueSourceIdentifierField($importConfiguration->hasIntegerIdentifiers());
         $sql = sprintf(
-            'UPDATE tx_campuseventsconnector_import_row a, %s p
+            'UPDATE %s a, %s p
      SET a.target_record_uid = p.uid
      WHERE a.target_record_uid = 0
        AND a.import_id = :importId
        AND a.source_type = :targetTable
        AND p.%s = a.%s',
+            $connection->quoteIdentifier($importRowTable),
             $connection->quoteIdentifier($targetTable),
             $connection->quoteIdentifier($importConfiguration->getSourceIdentifierField()),
             $connection->quoteIdentifier($sourceIdField),
@@ -480,13 +425,14 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
         // Set target record id's for manually translated records
         if ($languageField && $transOrigPointerField = $importConfiguration->getTransOrigPointerField()) {
             $sqlTranslations = sprintf(
-                'UPDATE tx_campuseventsconnector_import_row a, %s p1, %s p2
+                'UPDATE %s a, %s p1, %s p2
      SET a.target_record_uid = p2.uid
      WHERE a.target_record_uid = 0
        AND a.import_id = :importId
        AND a.source_type = :targetTable
        AND a.sys_language_uid > 0
        AND p1.%s = a.%s AND p1.sys_language_uid = 0 AND p2.sys_language_uid = a.sys_language_uid AND p2.%s = p1.uid',
+                $connection->quoteIdentifier($importRowTable),
                 $connection->quoteIdentifier($targetTable),
                 $connection->quoteIdentifier($targetTable),
                 $connection->quoteIdentifier($importConfiguration->getSourceIdentifierField()),

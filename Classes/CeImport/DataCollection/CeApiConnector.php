@@ -18,10 +18,13 @@ use BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransf
 use BrainAppeal\CampusEventsConnector\Import\Exception\ApiLimitReachedException;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ApiRecordNotFoundException;
 use BrainAppeal\CampusEventsConnector\Import\DataCollection\AbstractApiConnector;
+use BrainAppeal\CampusEventsConnector\Import\Exception\ApiUnreachableException;
 use Psr\Log\LoggerInterface;
 
 class CeApiConnector extends AbstractApiConnector
 {
+    //private const DEV_RELATIVE_CACHE_PATH = 'ce-api-test';
+
     public const BASE_PATH = '/api/';
 
     public const ID_FIELD = '@id';
@@ -30,7 +33,7 @@ class CeApiConnector extends AbstractApiConnector
 
     public function __construct(private readonly LoggerInterface $logger)
     {
-        parent::__construct($this->logger, null, null);
+        parent::__construct($this->logger, null, null);//14, self::DEV_RELATIVE_CACHE_PATH
     }
 
     /**
@@ -62,6 +65,7 @@ class CeApiConnector extends AbstractApiConnector
      * @return array
      * @throws ApiLimitReachedException
      * @throws ApiRecordNotFoundException
+     * @throws ApiUnreachableException
      */
     public function getApiResponse(string $relativeUrl, array $additionalParams = [], ?string $languageCode = null): array
     {
@@ -80,7 +84,11 @@ class CeApiConnector extends AbstractApiConnector
      */
     public function checkApiAccess(): bool
     {
-        $response = $this->getApiResponse('events');
+        try {
+            $response = $this->getApiResponse('events');
+        } catch (ApiUnreachableException $e) {
+            return false;
+        }
         return !empty($response) && !empty($response['@id']);
     }
 

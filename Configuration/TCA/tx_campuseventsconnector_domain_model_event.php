@@ -13,6 +13,9 @@
 
 use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
+use BrainAppeal\EventManagementBundle\Entity\EventArticleInterface;
+use BrainAppeal\EventManagementBundle\Entity\TicketCancellationCondition;
+use Doctrine\Common\Collections\Collection;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -20,6 +23,7 @@ $importColumns = TCAUtility::getImportFieldConfiguration();
 $defaultColumnsColumns = TCAUtility::getDefaultFieldConfiguration(TCAUtility::TABLE_EVENTS);
 $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(TCAUtility::EXT_NAME);
 $importFieldsReadOnly = $extConf['tca_fields_read_only'] ?? false;
+$enableMultipleImportSources = $extConf['enable_multiple_import_sources'] ?? false;
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event',
@@ -37,7 +41,7 @@ return [
             'starttime' => 'starttime',
             'endtime' => 'endtime',
         ],
-        'searchFields' => 'status,canceled,url,name,subtitle,description,short_description,learning_objective,min_participants,max_participants,participants,categories,organizer,target_groups,view_lists,filter_categories',
+        'searchFields' => 'status,canceled,url,name,subtitle,description,short_description,learning_objective,min_participants,max_participants,available_tickets,categories,organizer,target_groups,view_lists,filter_categories',
         'typeicon_classes' => [
             'default' => 'campus-events-event',
         ],
@@ -55,14 +59,16 @@ return [
             seo_title, seo_description, seo_robots_index, seo_robots_follow,
             learning_objective,
             event_attendance_mode, event_number,
-            order_type,
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.event_times,
             --palette--;;eventTimespan,
             event_sessions,
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.registration,
+            order_type,
             --palette--;;eventParticipants,
             event_ticket_price_variants,
-            direct_registration_url, external_order_email_address, external_order_url,
+            --palette--;;ticketBookingDates,
+            direct_registration_url, external_order_email_address, external_order_email_subject, external_order_email_body, external_order_url,
+            not_orderable_message,
         --div--;LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tabs.relations,
             organizer,
             alternative_events, contact_persons, event_attachments, event_images, locations,
@@ -79,7 +85,7 @@ return [
     ],
     'palettes' => [
         'eventTimespan' => ['showitem' => 'start_tstamp, end_tstamp'],
-        'eventParticipants' => ['showitem' => 'min_participants, max_participants'],
+        'eventParticipants' => ['showitem' => 'min_participants, max_participants, show_available_tickets, available_tickets'],
         'paletteReferents' => ['showitem' => 'referents_title,
             --linebreak--,referents'],
         'paletteSponsors' => ['showitem' => 'sponsors_title,
@@ -88,6 +94,9 @@ return [
             'showitem' => '
                 status, canceled, published, completed, archived,
             ',
+        ],
+        'ticketBookingDates' => [
+            'showitem' => 'ticket_cancellation_until,tickets_from,tickets_till,',
         ],
         'paletteLanguage' => [
             'showitem' => '
@@ -104,10 +113,80 @@ return [
         'apiEndpoint' => 'events',
         'apiListItemContainsAllData' => false,
         'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\EventDataTransformer::class,
-        'targetImportSourceField' => 'ce_import_source',
+        'targetImportSourceField' => $enableMultipleImportSources ? 'ce_import_source' : null,
     ],
     'columns' => array_merge($defaultColumnsColumns, [
-
+        'name' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.name',
+            'config' => [
+                'type' => 'input',
+                'size' => 50,
+                'max' => 255,
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'name',
+            ],
+        ],
+        'subtitle' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.subtitle',
+            'config' => [
+                'type' => 'input',
+                'size' => 50,
+                'max' => 255,
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'subtitle',
+            ],
+        ],
+        'url' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.url',
+            'config' => [
+                'type' => 'input',
+                'size' => 50,
+                'max' => 255,
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => ['@urls', 'eventUrl'],
+            ],
+        ],
+        'description' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.description',
+            'config' => [
+                'type' => 'text',
+                'cols' => 40,
+                'rows' => 15,
+                'eval' => 'trim',
+                'enableRichtext' => true,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'description',
+                'normalizer' => 'html_for_rte',
+            ],
+        ],
+        'short_description' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.short_description',
+            'config' => [
+                'type' => 'text',
+                'cols' => 60,
+                'rows' => 3,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'shortDescription',
+            ],
+        ],
         'status' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.status',
@@ -169,74 +248,6 @@ return [
                 'field' => 'archived',
             ],
         ],
-        'url' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.url',
-            'config' => [
-                'type' => 'input',
-                'size' => 30,
-                'eval' => 'trim',
-                'readOnly' => $importFieldsReadOnly,
-            ],
-            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
-                'field' => ['@urls', 'eventUrl'],
-            ],
-        ],
-        'name' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.name',
-            'config' => [
-                'type' => 'input',
-                'size' => 30,
-                'eval' => 'trim',
-                'readOnly' => $importFieldsReadOnly,
-            ],
-            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
-                'field' => 'name',
-            ],
-        ],
-        'subtitle' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.subtitle',
-            'config' => [
-                'type' => 'input',
-                'size' => 30,
-                'eval' => 'trim',
-                'readOnly' => $importFieldsReadOnly,
-            ],
-            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
-                'field' => 'subtitle',
-            ],
-        ],
-        'description' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.description',
-            'config' => [
-                'type' => 'text',
-                'cols' => 40,
-                'rows' => 15,
-                'eval' => 'trim',
-                'enableRichtext' => true,
-                'readOnly' => $importFieldsReadOnly,
-            ],
-            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
-                'field' => 'description',
-                'normalizer' => 'html_for_rte',
-            ],
-        ],
-        'short_description' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.short_description',
-            'config' => [
-                'type' => 'text',
-                'cols' => 60,
-                'rows' => 3,
-                'readOnly' => $importFieldsReadOnly,
-            ],
-            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
-                'field' => 'shortDescription',
-            ],
-        ],
         'learning_objective' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.learning_objective',
@@ -256,6 +267,7 @@ return [
         'min_participants' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.min_participants',
+            'displayCond' => 'FIELD:order_type:IN:0,4',
             'config' => [
                 'type' => 'number',
                 'size' => 4,
@@ -268,6 +280,7 @@ return [
         'max_participants' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.max_participants',
+            'displayCond' => 'FIELD:order_type:IN:0,4',
             'config' => [
                 'type' => 'number',
                 'size' => 4,
@@ -275,6 +288,33 @@ return [
             ],
             ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'maxParticipants',
+            ],
+        ],
+        'show_available_tickets' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.show_available_tickets',
+            'displayCond' => 'FIELD:order_type:IN:0,4',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 0,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'showAvailableTickets',
+            ],
+        ],
+        'available_tickets' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.available_tickets',
+            'displayCond' => 'FIELD:order_type:IN:0,4',
+            'config' => [
+                'type' => 'number',
+                'size' => 4,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'availableTickets',
             ],
         ],
         'categories' => [
@@ -568,8 +608,14 @@ return [
                 'appearance' => [
                     'collapseAll' => true,
                     'levelLinksPosition' => 'top',
+                    'showPossibleLocalizationRecords' => true,
+                    'showAllLocalizationLink' => true,
+                    'showSynchronizationLink' => true,
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
         ],
         'event_images' => [
@@ -583,8 +629,14 @@ return [
                 'appearance' => [
                     'collapseAll' => true,
                     'levelLinksPosition' => 'top',
+                    'showPossibleLocalizationRecords' => true,
+                    'showAllLocalizationLink' => true,
+                    'showSynchronizationLink' => true,
                 ],
                 'readOnly' => $importFieldsReadOnly,
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ],
             ],
         ],
 
@@ -634,9 +686,11 @@ return [
         'external_order_email_address' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.external_order_email_address',
+            'displayCond' => 'FIELD:order_type:=:3',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
+                'max' => 255,
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
@@ -644,12 +698,44 @@ return [
                 'field' => 'externalOrderEmailAddress',
             ],
         ],
-        'external_order_url' => [
+        'external_order_email_subject' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.external_order_url',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.external_order_email_subject',
+            'displayCond' => 'FIELD:order_type:=:3',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
+                'max' => 255,
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'externalOrderEmailSubject',
+            ],
+        ],
+        'external_order_email_body' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.external_order_email_body',
+            'displayCond' => 'FIELD:order_type:=:3',
+            'config' => [
+                'type' => 'text',
+                'cols' => 40,
+                'rows' => 5,
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'externalOrderEmailBody',
+            ],
+        ],
+        'external_order_url' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.external_order_url',
+            'displayCond' => 'FIELD:order_type:=:2',
+            'config' => [
+                'type' => 'input',
+                'size' => 50,
+                'max' => 255,
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
@@ -662,7 +748,8 @@ return [
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.direct_registration_url',
             'config' => [
                 'type' => 'input',
-                'size' => 30,
+                'size' => 50,
+                'max' => 255,
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],
@@ -716,13 +803,102 @@ return [
         'order_type' => [
             'exclude' => true,
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.order_type',
+            'onChange' => 'reload',
             'config' => [
-                'type' => 'number',
-                'size' => 4,
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'items' => [
+                    [
+                        'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.order_type.detailed.not_orderable',
+                        'value' => \BrainAppeal\CampusEventsConnector\Domain\Model\Event::ORDER_TYPE_NOT_ORDERABLE,
+                    ],
+                    [
+                        'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.order_type.detailed.registration',
+                        'value' => \BrainAppeal\CampusEventsConnector\Domain\Model\Event::ORDER_TYPE_CAMPUS_EVENTS_REGISTRATION,
+                    ],
+                    [
+                        'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.order_type.detailed.internal',
+                        'value' => \BrainAppeal\CampusEventsConnector\Domain\Model\Event::ORDER_TYPE_CAMPUS_EVENTS_ORDER,
+                    ],
+                    [
+                        'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.order_type.detailed.email',
+                        'value' => \BrainAppeal\CampusEventsConnector\Domain\Model\Event::ORDER_TYPE_EXTERNAL_EMAIL,
+                    ],
+                    [
+                        'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.order_type.detailed.external_url',
+                        'value' => \BrainAppeal\CampusEventsConnector\Domain\Model\Event::ORDER_TYPE_EXTERNAL_URL,
+                    ],
+                ],
+                'default' => 0,
                 'readOnly' => $importFieldsReadOnly,
             ],
             ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                 'field' => 'orderType',
+            ],
+        ],
+        'not_orderable_message' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.not_orderable_message',
+            'config' => [
+                'type' => 'text',
+                'cols' => 40,
+                'rows' => 15,
+                'eval' => 'trim',
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'notOrderableMessage',
+            ],
+        ],
+        'ticket_cancellation_until' => [
+            'exclude' => true,
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.ticket_cancellation_until',
+            'displayCond' => 'FIELD:order_type:IN:0,4',
+            'config' => [
+                'type' => 'datetime',
+                'size' => 12,
+                'default' => 0,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'ticketCancellationUntil',
+                'normalizer' => 'datetime_to_tstamp',
+            ],
+        ],
+        'tickets_from' => [
+            'exclude' => true,
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tickets_from',
+            'displayCond' => 'FIELD:order_type:IN:2,3,4',
+            'config' => [
+                'type' => 'datetime',
+                'size' => 12,
+                'default' => 0,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'ticketsFrom',
+                'normalizer' => 'datetime_to_tstamp',
+            ],
+        ],
+        'tickets_till' => [
+            'exclude' => true,
+            'l10n_mode' => 'exclude',
+            'l10n_display' => 'defaultAsReadonly',
+            'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.tickets_till',
+            'displayCond' => 'FIELD:order_type:IN:2,3,4',
+            'config' => [
+                'type' => 'datetime',
+                'size' => 12,
+                'default' => 0,
+                'readOnly' => $importFieldsReadOnly,
+            ],
+            ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                'field' => 'ticketsTill',
+                'normalizer' => 'datetime_to_tstamp',
             ],
         ],
         'referents' => [
@@ -826,7 +1002,8 @@ return [
             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.sponsors_title',
             'config' => [
                 'type' => 'input',
-                'size' => 30,
+                'size' => 50,
+                'max' => 255,
                 'eval' => 'trim',
                 'readOnly' => $importFieldsReadOnly,
             ],

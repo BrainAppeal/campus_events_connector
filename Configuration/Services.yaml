@@ -43,6 +43,11 @@ services:
   BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationProvider:
     shared: true
 
+  BrainAppeal\CampusEventsConnector\Import\EventListener\CheckConsistencyEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'ce/before-start/check-consistency'
+
   BrainAppeal\CampusEventsConnector\Import\EventListener\ClearCacheAfterImportEventListener:
     tags:
       - name: event.listener

@@ -31,14 +31,14 @@ class FileDataTransformerHelper
     /**
      * @param ImportFieldConfigurationModel[] $fileImportMap
      */
-    public function __construct(private array $fileImportMap)
+    public function __construct(private readonly array $fileImportMap)
     {
         $this->rawValueExtractor = GeneralUtility::makeInstance(RawValueExtractor::class);
     }
 
     /**
      * Determines if file processing is required based on the provided import data.
-     *  If no import data is provided, the method will return true if the import configuration contains any file import fields.
+     * If no import data is provided, the method will return true if the import configuration contains any file import fields.
      *
      * @param ?array $importData An array containing the data to be imported.
      * @return bool Returns true if file processing is required, otherwise false.
@@ -46,7 +46,11 @@ class FileDataTransformerHelper
     public function requiresFileProcessing(?array $importData): bool
     {
         foreach ($this->fileImportMap as $fieldMap) {
-            if (!empty($importData[$fieldMap->getSourceField()]) || !empty($importData[$fieldMap->get('timestamp_import_field')])) {
+            if (!empty($importData[$fieldMap->getSourceField()]) || $fieldMap->get('force_processing')) {
+                return true;
+            }
+            $fileModifiedAt = $this->getFileModifiedAtValue($importData, $fieldMap);
+            if (!empty($fileModifiedAt)) {
                 return true;
             }
         }
@@ -63,8 +67,8 @@ class FileDataTransformerHelper
      */
     public function getImportFileMapping(ImportRecordModel $importRecordModel): array
     {
-        $targetRecordsId = $importRecordModel->getTargetRecordId();
-        if (!$targetRecordsId) {
+        $targetRecordId = $importRecordModel->getTargetRecordId();
+        if (!$targetRecordId) {
             return [];
         }
         $mapping = [];
@@ -75,42 +79,78 @@ class FileDataTransformerHelper
                 $fileUri = rtrim($this->baseUri, '/') . '/' . ltrim($fileUri, '/');
             }
             $fileModifiedAt = $this->getFileModifiedAtValue($importData, $fieldMap);
-            $hasModifiedValue = !empty($fileModifiedAt);
-            if (!$fileUri && $hasModifiedValue) {
-                // If the record has no file and a last modified timestamp, we can check an existing file needs to be deleted
-                $processType = ImportFileMappingModel::PROCESS_TYPE_CHECK_DELETE_LOCAL;
-            } elseif ($fileUri && $hasModifiedValue) {
-                // If the record has a file and a last modified timestamp, we can check if the file needs to be updated
-                $processType = ImportFileMappingModel::PROCESS_TYPE_CHECK_UPDATE_LOCAL;
-            } elseif ($fileUri) {
-                // Otherwise we need to retrieve the file
-                $processType = ImportFileMappingModel::PROCESS_TYPE_FETCH_REMOTE;
-            } else {
-                // This should not occur since we have the timestamp values in the import data.
-                // But since we need to load the person data anyway, we might as well check all fields for this record
-                // Records without any image uri or change timestamp will not be processed (see requiresFileProcessing)
-                $processType = ImportFileMappingModel::PROCESS_TYPE_CHECK_DELETE_LOCAL;
-            }
-            $targetField = $fieldMap->getTargetField();
-            $mapping[] = new ImportFileMappingModel(
-                $targetField,
-                $targetRecordsId,
+            $fileName = $this->getFileName($importRecordModel, $fieldMap);
+            $importFileModel = new ImportFileMappingModel(
+                $importRecordModel->getTargetTable(),
+                $importRecordModel->getSourceRecordIdentifier(),
+                $fieldMap->getTargetField(),
+                $targetRecordId,
                 $importRecordModel->getPid(),
                 $fileModifiedAt,
-                $importRecordModel->getTargetTable() . '-' . $targetField,
+                $fileName,
                 trim((string)$fileUri),
-                (string)$fieldMap->get('alt_text_source_field'),
-                $processType,
                 $importRecordModel->getLanguageUid(),
             );
+            $this->addImportFileMetaData($importFileModel, $importRecordModel, $fieldMap);
+            $mapping[] = $importFileModel;
         }
         return $mapping;
+    }
+
+    protected function addImportFileMetaData(ImportFileMappingModel $importFileModel, ImportRecordModel $importRecordModel, ImportFieldConfigurationModel $fieldMap): void
+    {
+        $metaDataImportFields = $fieldMap->get('file_meta_data_fields');
+        if (empty($metaDataImportFields)) {
+            $metaDataImportFields = [];
+        }
+        $alternativeImportField = $fieldMap->get('alt_text_source_field');
+        if (!empty($alternativeImportField)) {
+            $metaDataImportFields['alternative'] = $alternativeImportField;
+        }
+        if (empty($metaDataImportFields)) {
+            return;
+        }
+        $importData = $importRecordModel->getImportData();
+        foreach ($metaDataImportFields as $metaKey => $importField) {
+            try {
+                $rawValue = $this->rawValueExtractor->getRawValueForMapEntry($importData, $fieldMap, $importField);
+                if (!empty($rawValue) && is_scalar($rawValue)) {
+                    $importFileModel->addMetaData($metaKey, (string)$rawValue);
+                }
+            } catch (\Exception) {
+            }
+        }
+    }
+
+    /**
+     * Generates the file name based on the provided import record and field mapping configuration.
+     *
+     * @param ImportRecordModel $importRecordModel The import record model containing the target table and associated data.
+     * @param ImportFieldConfigurationModel $fieldMap The configuration model that defines how to map and optionally extract the name from import data.
+     * @return string The generated file name as a string.
+     */
+    protected function getFileName(ImportRecordModel $importRecordModel, ImportFieldConfigurationModel $fieldMap): string
+    {
+        $targetField = $fieldMap->getTargetField();
+        $fileName = $importRecordModel->getTargetTable() . '-' . $targetField;
+        if ($nameImportField = $fieldMap->get('name_import_field')) {
+            $importData = $importRecordModel->getImportData();
+            try {
+                $rawValue = $this->rawValueExtractor->getRawValueForMapEntry($importData, $fieldMap, $nameImportField);
+                if (!empty($rawValue) && is_scalar($rawValue)) {
+                    $lastDotPos = strrpos($rawValue, '.');
+                    $fileName = $lastDotPos > 0 ? substr($rawValue, 0, $lastDotPos) : $rawValue;
+                }
+            } catch (\Exception) {
+            }
+        }
+        return $fileName;
     }
 
     /**
      * Retrieves the file modified timestamp value from the provided import data using the specified field mapping configuration.
      *
-     * @param array $importData The data set from which to extract the file modified timestamp.
+     * @param array<string, mixed> $importData The import data, where keys represent identifiers and values represent the associated data.
      * @param ImportFieldConfigurationModel $fieldMap The configuration model that defines how to map and normalize the timestamp field.
      * @return int The normalized file modified timestamp as an integer.
      */
@@ -131,6 +171,11 @@ class FileDataTransformerHelper
             }
         }
         return (int)$fileModifiedAt;
+    }
+
+    public function getBaseUri(): ?string
+    {
+        return $this->baseUri;
     }
 
     public function setBaseUri(?string $baseUri): void

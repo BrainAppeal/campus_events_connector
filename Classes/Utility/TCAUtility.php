@@ -14,6 +14,8 @@
 namespace BrainAppeal\CampusEventsConnector\Utility;
 
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TCAUtility
 {
@@ -113,16 +115,6 @@ class TCAUtility
     public static function getImportFieldConfiguration(): array
     {
         $tcaColumns = [
-            'ce_import_source' => [
-                'exclude' => true,
-                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.name',
-                'config' => [
-                    'type' => 'input',
-                    'size' => 30,
-                    'eval' => 'trim',
-                    'readOnly' => 1,
-                ],
-            ],
             self::IMPORT_ID_FIELD => [
                 'exclude' => true,
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.ce_import_id',
@@ -151,6 +143,20 @@ class TCAUtility
                 ],
             ],
         ];
+        $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXT_NAME);
+        $enableMultipleImportSources = $extConf['enable_multiple_import_sources'] ?? false;
+        if ($enableMultipleImportSources) {
+            $tcaColumns['ce_import_source'] = [
+                'exclude' => true,
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_event.name',
+                'config' => [
+                    'type' => 'input',
+                    'size' => 30,
+                    'eval' => 'trim',
+                    'readOnly' => 1,
+                ],
+            ];
+        }
         return $tcaColumns;
     }
 }

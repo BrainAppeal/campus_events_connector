@@ -185,6 +185,16 @@ abstract class AbstractImportOptions
         return $this->forceUpdate;
     }
 
+    public function enableForceUpdate(): void
+    {
+        $this->forceUpdate = true;
+    }
+
+    public function supportsContinuedImport(): bool
+    {
+        return false;
+    }
+
     public function isCompleteUpdate(): bool
     {
         return $this->completeUpdate;
@@ -283,5 +293,10 @@ abstract class AbstractImportOptions
             throw new ImportOptionsConfigurationException('Missing configuration values: ' . implode(',', $missingValues));
         }
         return !$hasMissingConfiguration;
+    }
+
+    public function useDataHandlerForSlugUpdates(): bool
+    {
+        return true;
     }
 }

@@ -9,6 +9,9 @@
             <trans-unit id="additional_language_codes">
 				<source>Comma separated list of additional language codes for translations that will be fetched from the API. This only works, if the target page is translated for the target language</source>
 			</trans-unit>
+            <trans-unit id="enable_multiple_import_sources">
+                <source>Enable multiple import sources for the imported data. If enabled, the import source will be written to the field ce_import_source and only records with the same import source will be updated or deleted.</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

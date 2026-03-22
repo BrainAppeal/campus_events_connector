@@ -21,6 +21,7 @@ $defaultColumnsColumns = TCAUtility::getDefaultFieldConfiguration($tableName, fa
 $importColumns = TCAUtility::getImportFieldConfiguration();
 $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(TCAUtility::EXT_NAME);
 $importFieldsReadOnly = $extConf['tca_fields_read_only'] ?? false;
+$enableMultipleImportSources = $extConf['enable_multiple_import_sources'] ?? false;
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventsession',
@@ -31,6 +32,8 @@ return [
         'crdate' => 'crdate',
         'versioningWS' => true,
         'languageField' => 'sys_language_uid',
+        'transOrigPointerField' => 'l10n_parent',
+        'transOrigDiffSourceField' => 'l10n_diffsource',
         'delete' => 'deleted',
         'enablecolumns' => [
             'disabled' => 'hidden',
@@ -71,7 +74,7 @@ return [
         'apiEndpoint' => 'event_sessions',
         'apiListItemContainsAllData' => true,
         'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransformer::class,
-        'targetImportSourceField' => 'ce_import_source',
+        'targetImportSourceField' => $enableMultipleImportSources ? 'ce_import_source' : null,
     ],
     'columns' => array_merge(
         $defaultColumnsColumns,

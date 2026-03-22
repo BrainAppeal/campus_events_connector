@@ -69,7 +69,15 @@ class EventImportTask extends AbstractTask
             $config['importTargetResourceIdentifier'] = $this->storageId . ':' . trim($this->storageFolder, '/') . '/';
         }
         $importRunner = GeneralUtility::makeInstance(ImportRunner::class);
-        $importRunner->run($pid, $config);
+        try {
+            $importRunner->run($pid, $config);
+        } catch (\Exception $e) {
+            $this->logException($e);
+            return false;
+        } catch (\Throwable $e) {
+            $this->logger->error('Event import task failed: ' . $e->getMessage(), ['exception' => $e]);
+            return false;
+        }
 
         return true;
     }

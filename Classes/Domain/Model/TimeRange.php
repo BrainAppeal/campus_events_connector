@@ -46,6 +46,13 @@ class TimeRange extends AbstractImportedEntity implements BelongsToEventInterfac
     protected ?bool $endDateIsSet = false;
 
     /**
+     * Visible until
+     *
+     * @var ?\DateTime
+     */
+    protected ?\DateTime $visibleUntil = null;
+
+    /**
      * @return ?Event
      */
     public function getEvent(): ?Event
@@ -114,4 +121,16 @@ class TimeRange extends AbstractImportedEntity implements BelongsToEventInterfac
     {
         $this->endDateIsSet = (bool)$endDateIsSet;
     }
+
+    public function getVisibleUntil(): ?\DateTime
+    {
+        return $this->visibleUntil;
+    }
+
+    public function setVisibleUntil(?\DateTime $visibleUntil): void
+    {
+        $this->visibleUntil = $visibleUntil;
+    }
+
+
 }

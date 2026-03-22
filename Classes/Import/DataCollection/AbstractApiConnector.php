@@ -51,14 +51,17 @@ abstract class AbstractApiConnector
      */
     protected function getClientOptions(?array $additionalHeaders = null): array
     {
-        $headers = [
-            $this->apiKeyHeaderName => $this->apiKey,
-        ];
+        $headers = [];
+        if ($this->apiKeyHeaderName) {
+            $headers[$this->apiKeyHeaderName] = $this->apiKey;
+        }
         if (!empty($additionalHeaders)) {
             $headers = array_merge($headers, $additionalHeaders);
         }
         $clientOptions = [];
-        $clientOptions['headers'] = $headers;
+        if (!empty($headers)) {
+            $clientOptions['headers'] = $headers;
+        }
         return $clientOptions;
     }
 
@@ -89,14 +92,14 @@ abstract class AbstractApiConnector
      * Retrieves data from an external API based on the specified api url path
      *
      * @param string $apiUrlPath The relative path for the API endpoint
-     *
-     * @return array|null The API response data as an associative array, or null if no response is available.
+     * @param array|null $additionalHeaders
+     * @param bool $isJsonResponse
+     * @return array|string|null The API response data as an associative array, or null if no response is available.
      *
      * @throws ApiLimitReachedException If the maximum number of API calls per run is exceeded.
      * @throws ApiRecordNotFoundException If the response contains an error message.
-     * @throws ApiUnreachableException If the API request fails.
      */
-    protected function getApiResponseForPath(string $apiUrlPath, ?array $additionalHeaders = null): ?array
+    protected function getApiResponseForPath(string $apiUrlPath, ?array $additionalHeaders = null, bool $isJsonResponse = true): array|string|null
     {
         if ($this->maxApiCallsPerRun > 0 && $this->countApiCalls >= $this->maxApiCallsPerRun) {
             throw new ApiLimitReachedException(sprintf('Maximum number of API calls reached (%d).', $this->maxApiCallsPerRun));
@@ -109,7 +112,7 @@ abstract class AbstractApiConnector
         // Use locally cache files in development environment to prevent excessive API usage
         if ($this->developmentConnectorCache) {
             $localCacheFilePath = $this->developmentConnectorCache->getLocalCachePathForDevelopment($apiUrlPath, $additionalHeaders);
-            if ($localResponse = $this->developmentConnectorCache->getLocalResponseCachedFile($localCacheFilePath)) {
+            if ($localResponse = $this->developmentConnectorCache->getLocalResponseCachedFile($localCacheFilePath, $isJsonResponse)) {
                 ++$this->countCachedApiCalls;
                 return $localResponse;
             }
@@ -119,7 +122,11 @@ abstract class AbstractApiConnector
             $response = $this->sendRequest($apiUrl, $additionalHeaders);
             if ($response->getStatusCode() === 200) {
                 $responseContent = $response->getBody()->getContents();
-                $result = json_decode($responseContent, true);
+                if ($isJsonResponse) {
+                    $result = json_decode($responseContent, true);
+                } else {
+                    $result = $responseContent;
+                }
                 if (!$result) {
                     $this->logger->error(sprintf(
                         'API request for URL "%s" returned status code %d but was empty or invalid JSON',
@@ -128,7 +135,7 @@ abstract class AbstractApiConnector
                     ));
                     return null;
                 }
-                if (array_key_exists('error', $result)) {
+                if ($isJsonResponse && array_key_exists('error', $result)) {
                     $errorMessage = sprintf(
                         'API request for URL "%s" returned status code %d but was invalid: %s',
                         $apiUrl,
@@ -162,6 +169,9 @@ abstract class AbstractApiConnector
                 $e->getMessage()
             );
             $this->logger->error($message);
+            if (($response = $e->getResponse()) && $response->getStatusCode() === 404) {
+                return null;
+            }
             throw new ApiUnreachableException($message, 1735485432, $e);
         } catch (\Throwable $e) {
             // Catch any other potential errors during the API call or processing

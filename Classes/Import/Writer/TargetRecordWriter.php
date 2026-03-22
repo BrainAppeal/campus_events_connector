@@ -40,81 +40,48 @@ class TargetRecordWriter
     }
 
     /**
-     * Insert or update the target records with the transformed import data
+     * Create a new target record for the import model
      *
-     * @param \BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel $importConfiguration
-     * @param ImportRecordModel[] $importModels
+     * @param ImportTableConfigurationModel $importConfiguration
+     * @param ImportRecordModel $model
      * @param ReferenceResolver $referenceResolver
-     * @param bool $doCreateRecords Indicates if new or updated rows are written
-     * @return int The number of newly inserted rows.
+     * @return void
      */
-    public function writeRecords(ImportTableConfigurationModel $importConfiguration, array $importModels, ReferenceResolver $referenceResolver, bool $doCreateRecords): int
-    {
-        if (empty($importModels)) {
-            return 0;
-        }
-        if ($doCreateRecords) {
-            return $this->createRecords($importConfiguration, $importModels, $referenceResolver);
-        }
-        return $this->updateRecords($importConfiguration, $importModels, $referenceResolver);
-    }
-
-    /**
-     * Create new target records for the import models
-     *
-     * @param \BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel $importConfiguration
-     * @param ImportRecordModel[] $importModels
-     * @param ReferenceResolver $referenceResolver
-     * @return int The number of newly inserted rows.
-     */
-    protected function createRecords(ImportTableConfigurationModel $importConfiguration, array $importModels, ReferenceResolver $referenceResolver): int
+    public function createRecord(ImportTableConfigurationModel $importConfiguration, ImportRecordModel $model, ReferenceResolver $referenceResolver): void
     {
         $targetTable = $importConfiguration->getTableName();
         /** @var ConnectionPool $connectionPool */
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         $queryBuilder = $connectionPool->getQueryBuilderForTable($targetTable);
-        $uniqueTargetIdentifierField = $importConfiguration->getSourceIdentifierField();
-        $modelsByKeyAndLanguage = [];
-        $importKeyByCompositeKey = [];
-        $rowsForInsert = [];
-        foreach ($importModels as $model) {
-            $data = $model->getTransformedData();
-            $rowsForInsert[] = $data;
-            if ($targetIdentifier = (string)($data[$uniqueTargetIdentifierField] ?? null)) {
-                $keyWithLanguage = sprintf('%s:%d', $targetIdentifier, $model->getLanguageUid());
-                $modelsByKeyAndLanguage[$keyWithLanguage] = $model;
-                $importKeyByCompositeKey[$keyWithLanguage] = $targetIdentifier;
+        $data = $model->getTransformedData();
+        try {
+            $queryBuilder->insert($targetTable)
+                ->values($data)
+                ->executeStatement();
+            $uid = (int)$queryBuilder->getConnection()->lastInsertId();
+            if ($uid > 0) {
+                $data['uid'] = $uid;
+                $model->setPersistedData($data);
+                $model->setTargetRecordId($uid);
+                $referenceResolver->addMappingForModel($importConfiguration, $model);
+                $event = new RecordInsertedEvent($uid, $targetTable, $model);
+                $this->eventDispatcher->dispatch($event);
             }
+        } catch (\Throwable $e) {
+            $this->errorsByTable[$targetTable][] = $e->getMessage();
+            $this->logger->error($e->getMessage(), ['table' => $targetTable, 'row' => $data]);
         }
-        foreach ($rowsForInsert as $row) {
-            try {
-                $queryBuilder->insert($targetTable)
-                    ->values($row)
-                    ->executeStatement();
-            } catch (\Throwable $e) {
-                $this->errorsByTable[$targetTable][] = $e->getMessage();
-                $this->logger->error($e->getMessage(), ['table' => $targetTable, 'row' => $row]);
-            }
-        }
-        $mappedModels = $referenceResolver->mapInsertedModels($importConfiguration, $modelsByKeyAndLanguage, $importKeyByCompositeKey);
-        $insertedRowCount = count($rowsForInsert);
-        foreach ($mappedModels as $mappedModel) {
-            $id = $mappedModel->getTargetRecordId();
-            $event = new RecordInsertedEvent($id, $targetTable, $mappedModel);
-            $this->eventDispatcher->dispatch($event);
-        }
-        return $insertedRowCount;
     }
 
     /**
      * Update the target records for the import models
      *
-     * @param \BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel $importConfiguration The import table configuration model containing table information.
+     * @param ImportTableConfigurationModel $importConfiguration The import table configuration model containing table information.
      * @param ImportRecordModel[] $importModels An array of import model objects to be processed for updates.
      * @param ReferenceResolver $referenceResolver A mapping object used to track processed records and their statuses.
      * @return int The total number of rows successfully updated.
      */
-    protected function updateRecords(ImportTableConfigurationModel $importConfiguration, array $importModels, ReferenceResolver $referenceResolver): int
+    public function updateRecords(ImportTableConfigurationModel $importConfiguration, array $importModels, ReferenceResolver $referenceResolver): int
     {
         $mapping = $referenceResolver->getMapping();
         $targetTable = $importConfiguration->getTableName();
@@ -138,10 +105,8 @@ class TargetRecordWriter
                 $this->errorsByTable[$targetTable][] = $e->getMessage();
                 $this->logger->error($e->getMessage(), ['table' => $targetTable, 'uid' => $uid, 'row' => $changedData]);
             }
-            $mapping->addProcessed($targetTable, $uid, $model->isUnchanged(), false);
-            if (!$model->isUnchanged()) {
-                $events[] = new RecordUpdatedEvent($uid, $targetTable, $model);
-            }
+            $mapping->addProcessed($targetTable, $uid, true, false);
+            $events[] = new RecordUpdatedEvent($uid, $targetTable, $model);
         }
         foreach ($events as $event) {
             $this->eventDispatcher->dispatch($event);
@@ -253,11 +218,13 @@ class TargetRecordWriter
         $filtered = array_diff_key($transformedData, array_flip($compareIgnoreFields));
         $persistedData = $hydratedModel->getPersistedData();
         $changed = [];
+        $changedValuesBeforeUpdate = [];
         foreach ($filtered as $field => $value) {
             $existingValue = $persistedData[$field] ?? null;
             // Normalize to string for comparison to avoid int/string mismatch issues from DBAL
             if ((string)$existingValue !== (string)$value) {
                 $changed[$field] = $value;
+                $changedValuesBeforeUpdate[$field] = $existingValue;
             }
         }
         if (!empty($changed)) {
@@ -266,6 +233,8 @@ class TargetRecordWriter
             if (isset($changed['data_hash']) && count($changed) === 1) {
                 $connection->update($table, ['data_hash' => $changed['data_hash']], ['uid' => $uid]);
             } else {
+                $hydratedModel->setChangedValuesBeforeUpdate($changedValuesBeforeUpdate);
+
                 // Always include these meta-fields if present in the import row
                 foreach ($includeOnChange as $alwaysField) {
                     if ($alwaysField === 'uid') {

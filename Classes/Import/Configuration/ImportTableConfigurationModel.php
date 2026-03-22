@@ -36,7 +36,7 @@ class ImportTableConfigurationModel
      * The array contains the import source field names with the raw reference values.
      * This is used to determine the priority of a given import record.
      *
-     * @var ?string[]
+     * @var ?ImportFieldConfigurationModel[]
      */
     protected ?array $internalDependencies = null;
 
@@ -309,7 +309,7 @@ class ImportTableConfigurationModel
                 if ($referenceTable !== $this->tableName) {
                     $this->dependenciesToOtherTables[$referenceTable][$matchField] = $matchField;
                 } else {
-                    $this->internalDependencies[] = $mapEntry->getSourceField();
+                    $this->internalDependencies[] = $mapEntry;
                 }
             }
         }
@@ -328,6 +328,10 @@ class ImportTableConfigurationModel
         return $this->dependenciesToOtherTables;
     }
 
+    /**
+     * Returns the list of internal dependencies within the current table.
+     * @return ImportFieldConfigurationModel[]
+     */
     public function getInternalDependencies(): array
     {
         if (null === $this->internalDependencies) {

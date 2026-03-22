@@ -17,16 +17,19 @@ readonly class PostProcessRecordSlugsEventListener
 
     public function __invoke(AfterRecordsWrittenEvent $event): void
     {
-        if ($event->getImportOptions()->isForceUpdate()) {
+        $importOptions = $event->getImportOptions();
+        $useDataHandlerForSlugUpdates = $importOptions->useDataHandlerForSlugUpdates();
+        if ($importOptions->isForceUpdate()) {
             foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
-                if ($this->slugGenerator->hasSlugField($dataTransformer->getTable())) {
-                    $this->slugGenerator->populateSlugs($dataTransformer->getTable());
+                $targetTable = $dataTransformer->getTable();
+                if ($this->slugGenerator->hasSlugField($targetTable)) {
+                    $this->slugGenerator->populateSlugs($targetTable, [], $useDataHandlerForSlugUpdates);
                 }
             }
         } else {
             foreach ($event->getTargetUidMapping()->getAllCreatedOrUpdated() as $targetTable => $recordIdMap) {
                 if ($this->slugGenerator->hasSlugField($targetTable)) {
-                    $this->slugGenerator->populateSlugs($targetTable, array_keys($recordIdMap));
+                    $this->slugGenerator->populateSlugs($targetTable, array_keys($recordIdMap), $useDataHandlerForSlugUpdates);
                 }
             }
         }

@@ -21,6 +21,7 @@ $defaultColumnsColumns = TCAUtility::getDefaultFieldConfiguration($tableName);
 $importColumns = TCAUtility::getImportFieldConfiguration();
 $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(TCAUtility::EXT_NAME);
 $importFieldsReadOnly = $extConf['tca_fields_read_only'] ?? false;
+$enableMultipleImportSources = $extConf['enable_multiple_import_sources'] ?? false;
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventimage',
@@ -33,7 +34,7 @@ return [
         'transOrigDiffSourceField' => 'l10n_diffsource',
         'delete' => 'deleted',
         'enablecolumns' => [
-//            'disabled' => 'hidden',
+            'disabled' => 'hidden',
 //            'starttime' => 'starttime',
 //            'endtime' => 'endtime',
         ],
@@ -46,7 +47,7 @@ return [
         ]
     ],
     'types' => [
-        '1' => ['showitem' => 'name, file_hash, image_file,event,
+        '1' => ['showitem' => 'name, external_resource_url, image_file,event,file_hash,
         --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
             --palette--;;paletteLanguage,
         --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access,
@@ -68,7 +69,7 @@ return [
         'apiEndpoint' => 'event_images',
         'apiListItemContainsAllData' => true,
         'dataTransformerClass' => \BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransformer::class,
-        'targetImportSourceField' => 'ce_import_source',
+        'targetImportSourceField' => $enableMultipleImportSources ? 'ce_import_source' : null,
     ],
     'columns' => array_merge(
         $defaultColumnsColumns,
@@ -80,7 +81,8 @@ return [
                 'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventimage.name',
                 'config' => [
                     'type' => 'input',
-                    'size' => 30,
+                    'size' => 50,
+                    'max' => 255,
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
@@ -88,20 +90,20 @@ return [
                     'field' => 'name',
                 ],
             ],
-            'file_hash' => [
+            'external_resource_url' => [
                 'exclude' => true,
                 'l10n_mode' => 'exclude',
                 'l10n_display' => 'defaultAsReadonly',
-                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventimage.file_hash',
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventimage.external_resource_url',
                 'config' => [
-                    'type' => 'text',
-                    'cols' => 40,
-                    'rows' => 2,
+                    'type' => 'input',
+                    'size' => 50,
+                    'max' => 255,
                     'eval' => 'trim',
                     'readOnly' => $importFieldsReadOnly,
                 ],
                 ImportTableConfigurationModel::TCA_IMPORT_KEY => [
-                    'field' => 'fileHash',
+                    'field' => ['imageFile', 'url'],
                 ],
             ],
             'image_file' => [
@@ -158,7 +160,9 @@ return [
                     'field' => ['imageFile', 'url'],
                     'custom_process' => 'files', //Field handled separately
                     'size_field' => ['imageFile', 'size'],
-                    'alt_text_source_field' => 'name',
+                    'alt_text_source_field' => 'imageAlt',
+                    'name_import_field' => ['imageFile', 'name'],
+                    'force_processing' => true,
                     'timestamp_import_field' => ['imageFile', 'modifiedAt'],
                     'timestamp_normalizer' => 'datetime_to_tstamp',
                 ],
@@ -177,6 +181,22 @@ return [
                 ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'event',
                     'foreign_match_field' => 'ce_import_id',
+                ],
+            ],
+            'file_hash' => [
+                'exclude' => true,
+                'l10n_mode' => 'exclude',
+                'l10n_display' => 'defaultAsReadonly',
+                'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_eventimage.file_hash',
+                'config' => [
+                    'type' => 'input',
+                    'size' => 50,
+                    'max' => 255,
+                    'eval' => 'trim',
+                    'readOnly' => $importFieldsReadOnly,
+                ],
+                ImportTableConfigurationModel::TCA_IMPORT_KEY => [
+                    'field' => 'fileHash',
                 ],
             ],
         ]

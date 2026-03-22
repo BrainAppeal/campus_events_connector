@@ -236,7 +236,11 @@ class EventImportAdditionalFieldProvider implements AdditionalFieldProviderInter
             $this->addTranslatableMessage(self::LL_PREFIX . '.error.invalid_base_uri');
             $validData = false;
         }
-
+        $uriInfo = parse_url($baseUri);
+        if (!$uriInfo || empty($uriInfo['host']) || !empty(trim($uriInfo['path'] ?? '', '/')) || !in_array($uriInfo['scheme'] ?? null, ['http', 'https'])) {
+            $this->addTranslatableMessage(self::LL_PREFIX . '.error.invalid_base_uri');
+            return false;
+        }
         $apiKey = $submittedData['campusEventsConnector_eventImport_apiKey'];
         if (empty($apiKey) || preg_match('/^[\w]{8}-[\w]{16}-[\w]{8}$/', (string) $apiKey) !== 1) {
             $this->addTranslatableMessage(self::LL_PREFIX . '.error.invalid_api_key');

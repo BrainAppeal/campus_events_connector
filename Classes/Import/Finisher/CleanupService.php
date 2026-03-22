@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Finisher;
 
-use Doctrine\DBAL\Exception;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DataTransformerFactory;
-use BrainAppeal\CampusEventsConnector\Import\Model\ImportFileReferenceModel;
 use BrainAppeal\CampusEventsConnector\Import\Repository\AbstractImportRowRepository;
+use BrainAppeal\CampusEventsConnector\Import\Repository\FileReferenceRepository;
 use BrainAppeal\CampusEventsConnector\Import\Repository\ImportEntryManager;
-use BrainAppeal\CampusEventsConnector\Import\Utility\FileUtility;
+use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -22,6 +21,7 @@ class CleanupService
 {
     public function __construct(
         protected DataTransformerFactory $dataTransformerFactory,
+        protected readonly FileReferenceRepository $fileReferenceRepository,
     ) {}
 
     /**
@@ -39,8 +39,8 @@ class CleanupService
     {
         $connection = $this->getDatabaseConnection();
         $tables = [AbstractImportRowRepository::TABLE_IMPORT_ROW, ImportEntryManager::TABLE_IMPORT];
+        $fileReferenceTables = [];
         if ($clearAllTables) {
-            $fileReferenceTables = [];
             foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
                 $tables[] = $dataTransformer->getTable();
                 foreach ($dataTransformer->getImportConfiguration()->getImportFieldMap() as $mapEntry) {
@@ -52,15 +52,6 @@ class CleanupService
                     $fileReferenceTables[] = $dataTransformer->getTable();
                 }
             }
-            // Delete all file references and the referenced files for this table
-            foreach ($fileReferenceTables as $table) {
-                $fileRefResult = FileUtility::getFileReferencesForTableRecordList($table, []);
-                while ($refRow = $fileRefResult->fetchAssociative()) {
-                    $fileReferenceModel = new ImportFileReferenceModel($refRow);
-                    FileUtility::deleteFileAndFileReference($fileReferenceModel);
-                }
-                $fileRefResult->free();
-            }
         } elseif ($resetDataHashes) {
             // Reset all hashes to force update of imported records
             foreach ($this->dataTransformerFactory->getRegisteredTableNames() as $table) {
@@ -69,6 +60,10 @@ class CleanupService
         }
         foreach ($tables as $table) {
             $connection->executeStatement('TRUNCATE TABLE ' . $table);
+        }
+        // Clear file references after truncating tables
+        if (!empty($fileReferenceTables)) {
+            $this->fileReferenceRepository->cleanupFileReferences($fileReferenceTables);
         }
         return $tables;
     }

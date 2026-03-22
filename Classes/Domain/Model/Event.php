@@ -14,7 +14,9 @@
 
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
+use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Extbase\Annotation\ORM\Lazy;
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
@@ -23,6 +25,16 @@ use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 class Event extends AbstractImportedEntity
 {
     use DatePeriodTrait;
+    public const ORDER_TYPE_CAMPUS_EVENTS_ORDER = 0;
+    public const ORDER_TYPE_CAMPUS_EVENTS_REGISTRATION = 4;
+    public const ORDER_TYPE_NOT_ORDERABLE = 1;
+    public const ORDER_TYPE_EXTERNAL_URL = 2;
+    public const ORDER_TYPE_EXTERNAL_EMAIL = 3;
+
+    public const EVENT_ATTENDANCE_MODE_UNKNOWN = null;
+    public const EVENT_ATTENDANCE_MODE_MIXED = 'mixed';
+    public const EVENT_ATTENDANCE_MODE_OFFLINE = 'offline';
+    public const EVENT_ATTENDANCE_MODE_ONLINE = 'online';
 
     /**
      * status
@@ -86,6 +98,20 @@ class Event extends AbstractImportedEntity
      * @var ?string
      */
     protected $externalOrderEmailAddress = '';
+
+    /**
+     * External order email address
+     *
+     * @var ?string
+     */
+    protected $externalOrderEmailSubject = '';
+
+    /**
+     * External order email address
+     *
+     * @var ?string
+     */
+    protected $externalOrderEmailBody = '';
 
     /**
      * Direct registration url
@@ -207,40 +233,74 @@ class Event extends AbstractImportedEntity
     protected ?ObjectStorage $alternativeEvents = null;
 
     /**
-     * eventAttachments
+     * Event attachments
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment>
      */
     #[Lazy]
     protected ?ObjectStorage $eventAttachments = null;
 
     /**
-     * eventImages
+     * Event images
      * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventImage>
      */
     #[Lazy]
     protected ?ObjectStorage $eventImages = null;
 
     /**
-     * minParticipants
+     * Min participants
      *
-     * @var int
+     * @var ?int
      */
     protected ?int $minParticipants = 0;
 
     /**
-     * maxParticipants
+     * Max participants
      *
-     * @var int
+     * @var ?int
      */
     protected ?int $maxParticipants = 0;
 
     /**
-     * participants
+     * Show available tickets
      *
-     * @var int
-     * @deprecated
+     * @var bool
      */
-    protected $participants = 0;
+    protected ?bool $showAvailableTickets = false;
+
+    /**
+     * Available tickets
+     *
+     * @var ?int
+     */
+    protected ?int $availableTickets = 0;
+
+    /**
+     * ticketCancellationUntil
+     *
+     * @var ?\DateTime
+     */
+    protected ?\DateTime $ticketCancellationUntil= null;
+
+    /**
+     * Tickets available from
+     *
+     * @var ?\DateTime
+     */
+    protected ?\DateTime $ticketsFrom = null;
+
+    /**
+     * Tickets available until
+     *
+     * @var ?\DateTime
+     */
+    protected ?\DateTime $ticketsTill = null;
+
+    /**
+     * Not orderable message
+     *
+     * @var ?string
+     */
+    protected $notOrderableMessage = '';
 
     /**
      * referents
@@ -579,7 +639,7 @@ class Event extends AbstractImportedEntity
     /**
      * Returns the images
      *
-     * @return ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference> images
+     * @return ObjectStorage<EventImage> images
      */
     public function getImages()
     {
@@ -589,7 +649,7 @@ class Event extends AbstractImportedEntity
     /**
      * Returns the attachments
      *
-     * @return ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference> attachments
+     * @return ObjectStorage<EventAttachment> attachments
      */
     public function getAttachments()
     {
@@ -656,6 +716,56 @@ class Event extends AbstractImportedEntity
     public function setMaxParticipants(?int $maxParticipants): void
     {
         $this->maxParticipants = (int)$maxParticipants;
+    }
+
+    public function getShowAvailableTickets(): ?bool
+    {
+        return $this->showAvailableTickets;
+    }
+
+    public function setShowAvailableTickets(?bool $showAvailableTickets): void
+    {
+        $this->showAvailableTickets = $showAvailableTickets;
+    }
+
+    public function getAvailableTickets(): ?int
+    {
+        return $this->availableTickets;
+    }
+
+    public function setAvailableTickets(?int $availableTickets): void
+    {
+        $this->availableTickets = $availableTickets;
+    }
+
+    public function getTicketCancellationUntil(): ?\DateTime
+    {
+        return $this->ticketCancellationUntil;
+    }
+
+    public function setTicketCancellationUntil(?\DateTime $ticketCancellationUntil): void
+    {
+        $this->ticketCancellationUntil = $ticketCancellationUntil;
+    }
+
+    public function getTicketsFrom(): ?\DateTime
+    {
+        return $this->ticketsFrom;
+    }
+
+    public function setTicketsFrom(?\DateTime $ticketsFrom): void
+    {
+        $this->ticketsFrom = $ticketsFrom;
+    }
+
+    public function getTicketsTill(): ?\DateTime
+    {
+        return $this->ticketsTill;
+    }
+
+    public function setTicketsTill(?\DateTime $ticketsTill): void
+    {
+        $this->ticketsTill = $ticketsTill;
     }
 
     /**
@@ -964,6 +1074,26 @@ class Event extends AbstractImportedEntity
         $this->externalOrderEmailAddress = $externalOrderEmailAddress;
     }
 
+    public function getExternalOrderEmailSubject(): ?string
+    {
+        return $this->externalOrderEmailSubject;
+    }
+
+    public function setExternalOrderEmailSubject(?string $externalOrderEmailSubject): void
+    {
+        $this->externalOrderEmailSubject = $externalOrderEmailSubject;
+    }
+
+    public function getExternalOrderEmailBody(): ?string
+    {
+        return $this->externalOrderEmailBody;
+    }
+
+    public function setExternalOrderEmailBody(?string $externalOrderEmailBody): void
+    {
+        $this->externalOrderEmailBody = $externalOrderEmailBody;
+    }
+
     /**
      * @return ?string
      */
@@ -1129,7 +1259,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @return ObjectStorage
+     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Event>
      */
     public function getAlternativeEvents(): ObjectStorage
     {
@@ -1140,7 +1270,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @param ObjectStorage $alternativeEvents
+     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Event> $alternativeEvents
      */
     public function setAlternativeEvents($alternativeEvents)
     {
@@ -1170,7 +1300,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @return ObjectStorage
+     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment>
      */
     public function getEventAttachments(): ObjectStorage
     {
@@ -1181,7 +1311,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @param ObjectStorage $eventAttachments
+     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment> $eventAttachments
      */
     public function setEventAttachments($eventAttachments)
     {
@@ -1211,7 +1341,30 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @return ObjectStorage
+     * @return ObjectStorage<FileReference>
+     */
+    public function getAttachmentFileReferences(): ObjectStorage
+    {
+        /** @var ObjectStorage<FileReference> $fileReferences */
+        $fileReferences = new ObjectStorage();
+        foreach ($this->getEventAttachments() as $eventAttachment) {
+            /** @var EventAttachment $eventAttachment */
+            $fileReference = $eventAttachment->getAttachmentFile();
+            try {
+                if (($fileReference instanceof FileReference)) {
+                    $fileReference->getOriginalResource();
+                    $fileReferences->attach($fileReference);
+                }
+            } catch (ResourceDoesNotExistException $e) {
+                // File reference is broken, do not add it to the list of file references
+                continue;
+            }
+        }
+        return $fileReferences;
+    }
+
+    /**
+     * @return ObjectStorage<EventImage>
      */
     public function getEventImages(): ObjectStorage
     {
@@ -1222,7 +1375,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @param ObjectStorage $eventImages
+     * @param ObjectStorage<EventImage> $eventImages
      */
     public function setEventImages($eventImages)
     {
@@ -1249,6 +1402,29 @@ class Event extends AbstractImportedEntity
     public function removeEventImage(\BrainAppeal\CampusEventsConnector\Domain\Model\EventImage $eventImageToRemove)
     {
         $this->getEventImages()->detach($eventImageToRemove);
+    }
+
+    /**
+     * @return ObjectStorage<FileReference>
+     */
+    public function getImageFileReferences(): ObjectStorage
+    {
+        /** @var ObjectStorage<FileReference> $fileReferences */
+        $fileReferences = new ObjectStorage();
+        foreach ($this->getEventImages() as $eventImage) {
+            /** @var EventImage $eventImage */
+            $fileReference = $eventImage->getImageFile();
+            try {
+                if (($fileReference instanceof FileReference)) {
+                    $fileReference->getOriginalResource();
+                    $fileReferences->attach($fileReference);
+                }
+            } catch (ResourceDoesNotExistException $e) {
+                // File reference is broken, do not add it to the list of file references
+                continue;
+            }
+        }
+        return $fileReferences;
     }
 
     /**
@@ -1304,7 +1480,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @return ObjectStorage
+     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor>
      */
     public function getSponsors(): ObjectStorage
     {
@@ -1315,7 +1491,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @param ObjectStorage $sponsors
+     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor> $sponsors
      */
     public function setSponsors($sponsors)
     {
@@ -1356,7 +1532,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @param ObjectStorage $contactPersons
+     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ContactPerson> $contactPersons
      */
     public function setContactPersons($contactPersons): void
     {
@@ -1397,7 +1573,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @param ObjectStorage $eventSessions
+     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventSession> $eventSessions
      */
     public function setEventSessions($eventSessions)
     {
@@ -1438,7 +1614,7 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @param ObjectStorage $eventTicketPriceVariants
+     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventTicketPriceVariant> $eventTicketPriceVariants
      */
     public function setEventTicketPriceVariants($eventTicketPriceVariants): void
     {
@@ -1485,6 +1661,16 @@ class Event extends AbstractImportedEntity
             $this->locations = new ObjectStorage();
         }
         return $this->locations;
+    }
+
+    public function getNotOrderableMessage(): ?string
+    {
+        return $this->notOrderableMessage;
+    }
+
+    public function setNotOrderableMessage(?string $notOrderableMessage): void
+    {
+        $this->notOrderableMessage = $notOrderableMessage;
     }
 
     /**

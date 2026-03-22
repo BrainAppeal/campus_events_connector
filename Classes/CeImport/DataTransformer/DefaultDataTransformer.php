@@ -8,6 +8,7 @@ use BrainAppeal\CampusEventsConnector\CeImport\DataCollection\CeApiConnector;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\AbstractDataTransformer;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel;
+use BrainAppeal\CampusEventsConnector\Import\Model\ImportFileMappingModel;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
 
 class DefaultDataTransformer extends AbstractDataTransformer
@@ -79,6 +80,16 @@ class DefaultDataTransformer extends AbstractDataTransformer
         return $this->importConfiguration->isApiListItemContainsAllData();
     }
 
+    public function postProcessConvertedData(ImportRecordModel $model, array $data): array
+    {
+        $externalResourceUrl = $data['external_resource_url'] ?? null;
+        if ($externalResourceUrl && !str_starts_with($externalResourceUrl, 'http')
+            && $this->hasFileTransformations() && $baseUri = $this->getFileDataTransformerHelper()->getBaseUri()) {
+            $data['external_resource_url'] = rtrim($baseUri, '/') . '/' . ltrim($externalResourceUrl, '/');
+        }
+        return $data;
+    }
+
     public function getApiEndpoint(): ?string
     {
         $apiEndpoint = $this->importConfiguration->getApiEndpoint();
@@ -100,5 +111,26 @@ class DefaultDataTransformer extends AbstractDataTransformer
     public static function getApiField(): ?string
     {
         return '@id';
+    }
+
+    /**
+     * Optionally, set the force update flag for the file import model
+     *
+     * @param ImportRecordModel $model
+     * @param ImportFileMappingModel $fileModel
+     * @return void
+     */
+    protected function checkIfForcedFileUpdateIsRequired(ImportRecordModel $model, ImportFileMappingModel $fileModel): void
+    {
+        // Check if the external resource url for event images and attachments and sponsor images has changed
+        $changedValuesBeforeUpdate = $model->getChangedValuesBeforeUpdate();
+        $oldExternalResourceUrl = $changedValuesBeforeUpdate['external_resource_url'] ?? null;
+        if (!empty($oldExternalResourceUrl)) {
+            $transformedData = $model->getTransformedData();
+            $currentExternalResourceUrl = $transformedData['external_resource_url'] ?? null;
+            if ($oldExternalResourceUrl !== $currentExternalResourceUrl) {
+                $fileModel->setIsForceUpdate(true);
+            }
+        }
     }
 }
