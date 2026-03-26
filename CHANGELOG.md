@@ -1,5 +1,13 @@
 # CHANGELOG.md
 
+## 5.2.7 (2026-03-26)
+
+### Fixed:
+- prevent deletion of many-to-many relations for skipped records
+
+### Changed:
+- improve the performance of import by skipping processing of records that have not been changed on the remote system since the last import (based on timestamp and data hash)
+
 ## 5.2.6 (2026-03-22)
 
 ### Fixed:

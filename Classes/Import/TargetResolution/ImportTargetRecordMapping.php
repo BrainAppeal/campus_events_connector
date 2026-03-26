@@ -26,6 +26,11 @@ final class ImportTargetRecordMapping
     private array $tableIdMap = [];
 
     /**
+     * The uids of the records that have been skipped during the import process grouped by table
+     * @var array<string, int[]>
+     */
+    private $skippedRowsByTable = [];
+    /**
      * Map existing records loading indicators by table and field
      *
      * @var array<string, array<string, bool>>
@@ -218,16 +223,27 @@ final class ImportTargetRecordMapping
     /**
      * Adds many-to-many relationship references for a specified target table and record.
      *
-     * @param int|string $targetTable The name or identifier of the target table.
+     * @param string $targetTable The name or identifier of the target table.
      * @param int $targetRecordId The ID of the target record in the specified table.
      * @param array<string, int[]> $mmReferences An associative array of references where keys are field names and values are the references to be added.
      * @return void
      */
-    public function addManyToManyReference(int|string $targetTable, int $targetRecordId, array $mmReferences): void
+    public function addManyToManyReference(string $targetTable, int $targetRecordId, array $mmReferences): void
     {
         if (!isset($this->manyToManyReferences[$targetTable])) {
             $this->manyToManyReferences[$targetTable] = new ManyToManyRelationMapping($targetTable);
         }
         $this->manyToManyReferences[$targetTable]->addManyToManyReference($targetRecordId, $mmReferences);
     }
+
+    public function getSkippedRowsByTable(string $table): array
+    {
+        return $this->skippedRowsByTable[$table] ?? [];
+    }
+
+    public function addSkippedUidForTable(string $table, int $uid): void
+    {
+        $this->skippedRowsByTable[$table][$uid] = true;
+    }
+
 }

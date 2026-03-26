@@ -152,7 +152,7 @@ class RawDataToTcaNormalizer
                 $model->addUnresolvedValue($targetField, sprintf('Raw value no found for %s.%s in source field %s. Message: %s', $this->table, $targetField, $mapEntry->getSourceField(), $e->getMessage()));
                 continue;
             }
-            if ($rawValue && $mapEntry->isReference()) {
+            if ($mapEntry->isReference()) {
                 $rawValue = $referenceResolver->resolve($model, $rawValue, $mapEntry);
             }
             if ($strategy = $this->fieldStrategies[$targetField] ?? null) {

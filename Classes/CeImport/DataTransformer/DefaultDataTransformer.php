@@ -16,9 +16,13 @@ class DefaultDataTransformer extends AbstractDataTransformer
     /**
      * References to other records can either be an array with @id set ot a reference uri to a single record.
      * We pre-process these to only have ID values in the array.
-     * @var array<string, ImportFieldConfigurationModel[]>
+     * @var array<string, ImportFieldConfigurationModel>
      */
     private array $mapFieldsWithReferences = [];
+
+    private array $validEventSourceIds = [];
+
+    private bool $hasSingleEventReference = false;
 
     public function __construct(protected ImportTableConfigurationModel $importConfiguration)
     {
@@ -28,10 +32,36 @@ class DefaultDataTransformer extends AbstractDataTransformer
             foreach ($fieldMap as $mapEntry) {
                 if ($mapEntry->isReference()) {
                     $fieldName = $mapEntry->getSourceField();
+                    if ($fieldName === 'event') {
+                        $this->hasSingleEventReference = true;
+                    }
                     $this->mapFieldsWithReferences[$fieldName] = $mapEntry;
                 }
             }
         }
+    }
+
+    public function initializeImportRecord(array $importData): ?ImportRecordModel
+    {
+        $model = parent::initializeImportRecord($importData);
+        // Skip records that have invalid references to events
+        if ($model && $this->hasSingleEventReference && !empty($this->mapFieldsWithReferences)) {
+            $importData = $model->getImportData();
+            $value = $importData['event']??null;
+            $mapEntry = $this->mapFieldsWithReferences['event'];
+            if ($value && $mapEntry instanceof ImportFieldConfigurationModel) {
+                $eventSourceId = $this->filterReferenceValue($value, $mapEntry);
+                if (!in_array($eventSourceId, $this->validEventSourceIds)) {
+                    return null;
+                }
+            }
+        }
+        return $model;
+    }
+
+    public function setValidEventSourceIds(array $validEventSourceIds): void
+    {
+        $this->validEventSourceIds = $validEventSourceIds;
     }
 
     public function postProcessAfterModelAdded(ImportRecordModel $model): void
@@ -45,34 +75,37 @@ class DefaultDataTransformer extends AbstractDataTransformer
             if (!array_key_exists($fieldName, $importData)) {
                 throw new \InvalidArgumentException(sprintf('Missing required field in import data: %s for table %s', $fieldName, $this->getTable()));
             }
-            /** @var ImportFieldConfigurationModel $mapEntry */
             $value = $importData[$fieldName]??null;
-            $procVal = null;
-            if (is_array($value)) {
-                if (!empty($value['@id'])) {
-                    $procVal = CeApiConnector::filterId($value['@id']);
-                } else {
-                    $procVal = [];
-                    foreach ($value as $item) {
-                        if (is_array($item) && !empty($item['@id'])) {
-                            $procVal[] = CeApiConnector::filterId($item['@id']);
-                        } elseif (is_scalar($item)) {
-                            $procVal[] = CeApiConnector::filterId($item);
-                        }
-                    }
-                    $procVal = array_filter($procVal);
-                    $mmTable = $mapEntry->get('mm_table');
-                    if (!$mmTable) {
-                        $procVal = implode(',', $procVal);
-                    }
-                }
-            } elseif($value !== null) {
-                $procVal = CeApiConnector::filterId((string)$value);
-            }
-            $importData[$fieldName] = $procVal;
+            $importData[$fieldName] = $this->filterReferenceValue($value, $mapEntry);
         }
         // No post-processing required
         $model->updateImportData($importData);
+    }
+
+    protected function filterReferenceValue(mixed $value, ImportFieldConfigurationModel $mapEntry): mixed
+    {
+        $procVal = null;
+        if (is_array($value)) {
+            if (!empty($value['@id'])) {
+                $procVal = CeApiConnector::filterId($value['@id']);
+            } else {
+                $procVal = [];
+                foreach ($value as $item) {
+                    if (is_array($item) && !empty($item['@id'])) {
+                        $procVal[] = CeApiConnector::filterId($item['@id']);
+                    } elseif (is_scalar($item)) {
+                        $procVal[] = CeApiConnector::filterId($item);
+                    }
+                }
+                $procVal = array_filter($procVal);
+                if (!$mapEntry->isManyToManyRelation()) {
+                    $procVal = implode(',', $procVal);
+                }
+            }
+        } elseif($value !== null) {
+            $procVal = CeApiConnector::filterId((string)$value);
+        }
+        return $procVal;
     }
 
     public function isApiListItemContainsAllData(): bool

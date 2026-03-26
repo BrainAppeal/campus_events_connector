@@ -83,8 +83,9 @@ readonly class ReferenceResolver extends AbstractImportRowRepository
         $targetTable = $importConfiguration->getTableName();
         $sourceIdField = $importConfiguration->getSourceIdentifierField();
         // Load the updated target record ID for existing records
-        $queryBuilder = $this->createQueryBuilderForImportRowTable($importId);
-        $queryBuilder->select(ImportRecordModel::UNIQUE_SOURCE_IDENTIFIER_FIELD_STRING, 'sys_language_uid', 'target_record_uid')
+        $includeSkipped = true;
+        $queryBuilder = $this->createQueryBuilderForImportRowTable($importId, $includeSkipped);
+        $queryBuilder->select(ImportRecordModel::UNIQUE_SOURCE_IDENTIFIER_FIELD_STRING, 'sys_language_uid', 'target_record_uid', 'import_skipped')
             ->andWhere(
                 $queryBuilder->expr()->eq(
                     'source_type',
@@ -104,6 +105,9 @@ readonly class ReferenceResolver extends AbstractImportRowRepository
             $targetRecordId = (int)$row['target_record_uid'];
             $languageId = (int)$row['sys_language_uid'];
             $this->mapping->addIdentifierReference($targetTable, $sourceIdField, $sourceRecordId, $targetRecordId, $languageId);
+            if ($row['import_skipped']) {
+                $this->mapping->addSkippedUidForTable($targetTable, $targetRecordId);
+            }
         }
         $result->free();
     }
@@ -121,6 +125,14 @@ readonly class ReferenceResolver extends AbstractImportRowRepository
      */
     public function resolve(ImportRecordModel $model, mixed $rawValue, ImportFieldConfigurationModel $mapEntry): ?int
     {
+        if (!$rawValue) {
+            // Add empty many-to-many references to the model so that they can be processed later if a target record ID exists.
+            // This is necessary because for many-to-many relations so we can resolve deleted references for updated records.
+            if ($mapEntry->isManyToManyRelation() && $model->getTargetRecordId()) {
+                $model->addManyToManyReferences($mapEntry->getTargetField(), []);
+            }
+            return null;
+        }
         try {
             $rawValue = $this->resolveReference($model, $rawValue, $mapEntry);
         } catch (ReferenceNotFoundException $e) {
@@ -151,7 +163,7 @@ readonly class ReferenceResolver extends AbstractImportRowRepository
         if (is_array($rawValue)) {
             // Many-to-many references can only be created after all records have been processed, so we can't resolve them here.
             // Only the number of resolved references is returned.
-            if ($mapEntry->has('mm_table')) {
+            if ($mapEntry->isManyToManyRelation()) {
                 $mapResolved = [];
                 $countResolved = 0;
                 foreach ($rawValue as $refId) {

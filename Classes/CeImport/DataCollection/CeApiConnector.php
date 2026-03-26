@@ -100,9 +100,11 @@ class CeApiConnector extends AbstractApiConnector
      */
     public function fetchItemListForType(DefaultDataTransformer $dataTransformer, ?string $languageCode = null): array
     {
-        $itemType = $dataTransformer->getEntityName();
         $path = $dataTransformer->getApiEndpoint();
-        $apiResponse = $this->getApiResponse($path, [], $languageCode);
+        $pageParamPrefix = '?page=';
+        $paramPerPage = '&itemsPerPage=200';
+        $addParams = $pageParamPrefix . '1' . $paramPerPage;
+        $apiResponse = $this->getApiResponse($path . $addParams, [], $languageCode);
         $allListItems = [];
         if (!empty($apiResponse['hydra:member'])) {
             $this->addListItemsFromResponse($allListItems, $apiResponse);
@@ -111,7 +113,6 @@ class CeApiConnector extends AbstractApiConnector
                 $maxPageCount = 9999;
                 $page = 1;
                 $nextPage = null;
-                $pageParamPrefix = '?page=';
                 while ($importMore && $page < $maxPageCount) {
                     $importMore = false;
                     $nextPageUri = $apiResponse['hydra:view']['hydra:next'];
@@ -120,7 +121,8 @@ class CeApiConnector extends AbstractApiConnector
                         $nextPage = (int)$pageMatches[1];
                     }
                     if ($nextPage > $page) {
-                        $apiResponse = $this->getApiResponse($path . $pageParamPrefix . $nextPage, [], $languageCode);
+                        $addParams = $pageParamPrefix . $nextPage . $paramPerPage;
+                        $apiResponse = $this->getApiResponse($path . $addParams, [], $languageCode);
                         $this->addListItemsFromResponse($allListItems, $apiResponse);
                         $page = $nextPage;
                         if (!empty($apiResponse['hydra:view']['hydra:next'])) {

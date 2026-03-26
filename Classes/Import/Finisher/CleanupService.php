@@ -44,7 +44,7 @@ class CleanupService
             foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
                 $tables[] = $dataTransformer->getTable();
                 foreach ($dataTransformer->getImportConfiguration()->getImportFieldMap() as $mapEntry) {
-                    if ($mapEntry->isReference() && $mmTable = $mapEntry->get('mm_table')) {
+                    if ($mapEntry->isReference() && $mmTable = $mapEntry->getManyToManyTable()) {
                         $tables[] = $mmTable;
                     }
                 }

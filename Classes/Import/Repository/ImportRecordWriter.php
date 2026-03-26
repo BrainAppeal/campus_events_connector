@@ -48,10 +48,12 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
         $fields = null;
         $data = [];
         $insertOffset = 0;
+        $importedTables = [];
         foreach ($importRows as $model) {
             if ($model->isInvalidated()) {
                 continue;
             }
+            $importedTables[$model->getTargetTable()] = true;
             $dbRow = $model->toArray();
             $dbRow['import_id'] = $importId;
             $dbRow['pid'] = $pid;
@@ -71,7 +73,7 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
         }
         // Cleans up import rows that have an unchanged data hash from the current import entry
         if (!$importOptions->isForceUpdate()) {
-            $this->markRowsToBeSkipped($importId);
+            $this->markRowsToBeSkipped($importId, array_keys($importedTables));
         }
     }
 
@@ -315,16 +317,19 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
      *
      * @param int $importId
      */
-    protected function markRowsToBeSkipped(int $importId): void
+    protected function markRowsToBeSkipped(int $importId, array $importedTables): void
     {
         $connection = $this->getDatabaseConnection();
         $dataString = json_encode(['skipped' => 1]);
         $currentTime = time();
         foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
+            $targetTable = $dataTransformer->getTable();
+            if (!in_array($targetTable, $importedTables, true)) {
+                continue;
+            }
             $importConfiguration = $dataTransformer->getImportConfiguration();
             $uniqueKeyField = $importConfiguration->getSourceIdentifierField();
             $importRowTable = AbstractImportRowRepository::TABLE_IMPORT_ROW;
-            $targetTable = $dataTransformer->getTable();
             $sourceIdField = ImportRecordModel::getUniqueSourceIdentifierField($importConfiguration->hasIntegerIdentifiers());
             $sql = sprintf(
                 'UPDATE %s a, %s p

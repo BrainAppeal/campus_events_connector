@@ -129,7 +129,7 @@ readonly class ReferenceWriter extends AbstractImportRowRepository
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         $foreignTable = $mapEntry->getReferenceTable();
         $foreignMatchField = $mapEntry->get('foreign_match_field');
-        $mmTable = $mapEntry->get('mm_table');
+        $mmTable = $mapEntry->getManyToManyTable();
         $connection = $connectionPool->getConnectionForTable($mmTable);
         $tableColumnNames = $this->importTableConfigurationProvider->getTableColumnNames($mmTable);
         $localField = 'uid_local';
@@ -219,6 +219,13 @@ readonly class ReferenceWriter extends AbstractImportRowRepository
                 ->where(
                     $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uidLocal, Connection::PARAM_INT)),
                 )->executeStatement();
+        }
+        if (!empty($existingRowsByUidLocal)) {
+            foreach ($mapping->getSkippedRowsByTable($table) as $uid => $skipped) {
+                if (isset($existingRowsByUidLocal[$uid])) {
+                    unset($existingRowsByUidLocal[$uid]);
+                }
+            }
         }
         // Delete all rows that are not referenced anymore
         if (!empty($existingRowsByUidLocal)) {

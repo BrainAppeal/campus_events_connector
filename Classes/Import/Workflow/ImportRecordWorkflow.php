@@ -85,10 +85,10 @@ readonly class ImportRecordWorkflow
             $this->referenceResolver->refreshTargetRecordIdMapping($importId, $dataTransformer->getImportConfiguration());
         }
         $totalProcessedRowCount = 0;
-        $sumRows = $this->importEntryManager->getImportRecordReader()->countRowsForProcessingByLanguage($importId);
+        $sumRowsByLanguage = $this->importEntryManager->getImportRecordReader()->countRowsForProcessingByLanguage($importId);
         if (!$maxRowsToProcess) {
             $limit = 0;
-            foreach ($sumRows as $sumRow) {
+            foreach ($sumRowsByLanguage as $sumRow) {
                 $limit += $sumRow['sum_data_not_processed'] + $sumRow['sum_files_not_processed'];
             }
         } else {
@@ -96,7 +96,7 @@ readonly class ImportRecordWorkflow
         }
         $memoryBefore = memory_get_usage();
         $startTime = microtime(true);
-        foreach ($sumRows as $sumRow) {
+        foreach ($sumRowsByLanguage as $sumRow) {
             $language = (int)$sumRow['sys_language_uid'];
             $countUnmappedRows = $sumRow['sum_unmapped'];
             $countMappedRows = $sumRow['sum_mapped'];

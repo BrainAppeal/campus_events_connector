@@ -52,29 +52,7 @@ readonly class ImportRecordReader extends AbstractImportRowRepository
         $queryBuilder->addOrderBy('priority', 'DESC');
         $queryBuilder->addOrderBy('target_record_uid', 'ASC');
         $queryBuilder->addOrderBy('source_record_uid', 'ASC');
-        $importResult = $queryBuilder->executeQuery();
-        $importRows = [];
-        $emptyRows = [];
-        while ($row = $importResult->fetchAssociative()) {
-            $typedIdentifier = !empty($row['source_record_uid']) ? (int)$row['source_record_uid'] : (string)$row['source_record_identifier'];
-            $model = new ImportRecordModel(
-                (string)$row['import_data'],
-                (string)$row['source_type'],
-                $typedIdentifier,
-                (string)$row['data_hash'],
-            );
-            $model->updateFromArray($row);
-            if (!$model->hasData()) {
-                $emptyRows[] = $model;
-            } else {
-                $importRows[] = $model;
-            }
-        }
-        $importResult->free();
-        if (!empty($emptyRows)) {
-            $this->markRowsAsFinished(null, $emptyRows);
-        }
-        return $importRows;
+        return $this->getImportRowsWithQueryBuilder($queryBuilder);
     }
 
     /**

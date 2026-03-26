@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BrainAppeal\CampusEventsConnector\Import;
 
 use BrainAppeal\CampusEventsConnector\Import\Event\BeforeImportStartedEvent;
+use BrainAppeal\CampusEventsConnector\Import\Exception\StopImportException;
 use Doctrine\DBAL\Exception;
 use BrainAppeal\CampusEventsConnector\Import\DataCollection\AbstractDataCollection;
 use BrainAppeal\CampusEventsConnector\Import\Event\AfterDataCollectionCompletedEvent;
@@ -83,6 +84,7 @@ class Importer
         $importEntry = $this->importEntryManager->getCurrentImportEntry($importSource, $importOptions->getPid(), $dataSourceLastModified);
         $importOptions->setImportId($importEntry->getUid());
         $importEntry->setImportLimit($importOptions->getLimit());
+        $processedRecordCount = 0;
         try {
             $processedRecordCount = $this->executeDataImport($dataCollection, $importEntry, $importOptions);
             $duration = round(microtime(true) - $startTime, 3);
@@ -104,6 +106,15 @@ class Importer
                     $importSource
                 ));
             }
+        } catch (StopImportException $exception) {
+            if ($exception->isErrorCode()) {
+                $this->logger->error(sprintf('Error during import: %s', $exception->getMessage()), ['exception' => $exception]);
+                throw $exception;
+            }
+            $this->writeOutput('No data have been changed on the remote system. Import stopped.');
+            $importEntry->setRunning(false);
+            $importEntry->markAsFinished();
+            $this->importEntryManager->updateActiveEntry($importEntry);
         } catch (\Exception $exception) {
             $this->logger->error(sprintf('Error during import: %s', $exception->getMessage()), ['exception' => $exception]);
             throw $exception;

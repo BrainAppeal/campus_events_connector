@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Configuration;
 
+use BrainAppeal\CampusEventsConnector\Import\Exception\ImportTcaConfigurationException;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
-use BrainAppeal\CampusEventsConnector\Import\Exception\ImportTcaConfigurationException;
-use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 
 /**
  * Model for import field configuration
@@ -158,6 +157,26 @@ class ImportFieldConfigurationModel
     public function has(string $key): bool
     {
         return isset($this->configuration[$key]);
+    }
+
+    /**
+     * Determines if the current configuration represents a many-to-many relationship.
+     *
+     * @return bool True if a many-to-many relationship is defined, otherwise false.
+     */
+    public function isManyToManyRelation(): bool
+    {
+        return !empty($this->configuration['mm_table']);
+    }
+
+    /**
+     * Retrieves the name of the many-to-many relation table, if defined in the configuration.
+     *
+     * @return ?string The name of the many-to-many table or null if not configured.
+     */
+    public function getManyToManyTable(): ?string
+    {
+        return $this->configuration['mm_table'] ?? null;
     }
 
     /**
