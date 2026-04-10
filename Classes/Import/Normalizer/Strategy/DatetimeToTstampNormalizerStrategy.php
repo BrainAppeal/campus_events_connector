@@ -25,7 +25,7 @@ readonly class DatetimeToTstampNormalizerStrategy extends AbstractNormalizerStra
             } else {
                 $convertedValue = strtotime($value);
             }
-            if ($convertedValue !== false) {
+            if ((int)$convertedValue > 0) {
                 return $convertedValue;
             }
         }

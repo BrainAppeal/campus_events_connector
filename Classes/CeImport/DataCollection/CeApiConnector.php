@@ -116,7 +116,7 @@ class CeApiConnector extends AbstractApiConnector
                 while ($importMore && $page < $maxPageCount) {
                     $importMore = false;
                     $nextPageUri = $apiResponse['hydra:view']['hydra:next'];
-                    preg_match('/' . preg_quote($pageParamPrefix, '/') . '(\d+)/', (string)$nextPageUri, $pageMatches);
+                    preg_match('/page=(\d+)/', (string)$nextPageUri, $pageMatches);
                     if (!empty($pageMatches[1])) {
                         $nextPage = (int)$pageMatches[1];
                     }

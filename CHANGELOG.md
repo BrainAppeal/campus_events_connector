@@ -1,5 +1,14 @@
 # CHANGELOG.md
 
+## 5.2.8 (2026-04-10)
+
+### Fixed:
+- fix event API list pagination calls
+- prevent import of out-of-bounds timestamps
+
+### Changed:
+- make sponsor field public_label optional for import to prevent unnecessary log messages
+
 ## 5.2.7 (2026-03-26)
 
 ### Fixed:

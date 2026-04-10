@@ -149,7 +149,9 @@ class RawDataToTcaNormalizer
             try {
                 $rawValue = $this->getRawValueForMapEntry($rawData, $mapEntry);
             } catch (MappingException $e) {
-                $model->addUnresolvedValue($targetField, sprintf('Raw value no found for %s.%s in source field %s. Message: %s', $this->table, $targetField, $mapEntry->getSourceField(), $e->getMessage()));
+                if (!$mapEntry->get('is_optional')) {
+                    $model->addUnresolvedValue($targetField, sprintf('Raw value not found for %s.%s in source field %s. Message: %s', $this->table, $targetField, $mapEntry->getSourceField(), $e->getMessage()));
+                }
                 continue;
             }
             if ($mapEntry->isReference()) {
@@ -272,7 +274,7 @@ class RawDataToTcaNormalizer
      * Processes and transforms data based on the provided field mapping configuration.
      *
      * @param array<string, mixed> $data The input data array that needs post-processing.
-     * @param array<string, \BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel> $postProcessingFieldMap An associative array defining post-processing rules for specific fields. Each key is a target field and the value contains configuration such as normalization rules.
+     * @param array<string, ImportFieldConfigurationModel> $postProcessingFieldMap An associative array defining post-processing rules for specific fields. Each key is a target field and the value contains configuration such as normalization rules.
      * @return array<string, mixed> The updated data array after applying the post-processing rules.
      */
     protected function postProcessData(array $data, array $postProcessingFieldMap): array
@@ -309,7 +311,7 @@ class RawDataToTcaNormalizer
      * Determines the raw value based on the provided mapping entry configuration and raw data.
      *
      * @param array<string, mixed> $rawData The source data array used for fetching the raw value.
-     * @param \BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel $mapEntry An associative array containing mapping configuration, such as field, attribute, default value, language, and value map.
+     * @param ImportFieldConfigurationModel $mapEntry An associative array containing mapping configuration, such as field, attribute, default value, language, and value map.
      * @param bool $normalizeValue Whether to apply formatting functions to the raw value.
      * @return mixed The resolved raw value after applying the mapping rules, or the default value if no specific mappings apply.
      */

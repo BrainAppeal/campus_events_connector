@@ -103,6 +103,7 @@ return [
                 ],
                 ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'publicLabel',
+                    'is_optional' => true,
                 ],
             ],
             'url' => [
@@ -211,6 +212,7 @@ return [
                 ],
                 ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'imageHash',
+                    'is_optional' => true,
                 ],
             ],
         ]
