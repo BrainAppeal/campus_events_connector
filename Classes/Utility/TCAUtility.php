@@ -1,10 +1,13 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2020 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2020 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
@@ -122,7 +125,7 @@ class TCAUtility
                     'type' => 'number',
                     'size' => 2,
                     'readOnly' => true,
-                    'default' => 0
+                    'default' => 0,
                 ],
                 ImportTableConfigurationModel::TCA_IMPORT_KEY => [
                     'field' => 'id',

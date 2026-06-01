@@ -1,21 +1,19 @@
 <?php
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
  * @link      https://www.campus-events.com/
  */
 
-use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
-use BrainAppeal\EventManagementBundle\Entity\EventArticleInterface;
-use BrainAppeal\EventManagementBundle\Entity\TicketCancellationCondition;
-use Doctrine\Common\Collections\Collection;
+use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -47,7 +45,7 @@ return [
         ],
         'security' => [
             'ignoreRootLevelRestriction' => true,
-        ]
+        ],
     ],
     'types' => [
         '1' => ['showitem' => 'name, subtitle, url,
@@ -333,11 +331,11 @@ return [
                 'multiple' => 0,
                 'fieldControl' => [
                     'editPopup' => [
-                        'disabled' => false
+                        'disabled' => false,
                     ],
                     'addRecord' => [
                         'disabled' => false,
-                    ]
+                    ],
                 ],
                 'readOnly' => $importFieldsReadOnly,
                 // Allow language synchronization so that relations can be localized via DataHandler
@@ -367,11 +365,11 @@ return [
                 'multiple' => 0,
                 'fieldControl' => [
                     'editPopup' => [
-                        'disabled' => false
+                        'disabled' => false,
                     ],
                     'addRecord' => [
                         'disabled' => false,
-                    ]
+                    ],
                 ],
                 'readOnly' => $importFieldsReadOnly,
             ],
@@ -397,11 +395,11 @@ return [
                 'multiple' => 0,
                 'fieldControl' => [
                     'editPopup' => [
-                        'disabled' => false
+                        'disabled' => false,
                     ],
                     'addRecord' => [
                         'disabled' => false,
-                    ]
+                    ],
                 ],
                 'readOnly' => $importFieldsReadOnly,
             ],
@@ -427,11 +425,11 @@ return [
                 'multiple' => 0,
                 'fieldControl' => [
                     'editPopup' => [
-                        'disabled' => false
+                        'disabled' => false,
                     ],
                     'addRecord' => [
                         'disabled' => false,
-                    ]
+                    ],
                 ],
                 'readOnly' => $importFieldsReadOnly,
             ],
@@ -456,11 +454,11 @@ return [
                 'multiple' => 0,
                 'fieldControl' => [
                     'editPopup' => [
-                        'disabled' => false
+                        'disabled' => false,
                     ],
                     'addRecord' => [
                         'disabled' => false,
-                    ]
+                    ],
                 ],
                 'readOnly' => $importFieldsReadOnly,
             ],
@@ -486,11 +484,11 @@ return [
                 'multiple' => 0,
                 'fieldControl' => [
                     'editPopup' => [
-                        'disabled' => false
+                        'disabled' => false,
                     ],
                     'addRecord' => [
                         'disabled' => false,
-                    ]
+                    ],
                 ],
                 'readOnly' => $importFieldsReadOnly,
                 // Allow language synchronization so that relations can be localized via DataHandler
@@ -520,11 +518,11 @@ return [
                 'multiple' => 0,
                 'fieldControl' => [
                     'editPopup' => [
-                        'disabled' => false
+                        'disabled' => false,
                     ],
                     'addRecord' => [
                         'disabled' => false,
-                    ]
+                    ],
                 ],
                 'readOnly' => $importFieldsReadOnly,
             ],
@@ -773,11 +771,11 @@ return [
                 'multiple' => 0,
                 'fieldControl' => [
                     'editPopup' => [
-                        'disabled' => false
+                        'disabled' => false,
                     ],
                     'addRecord' => [
                         'disabled' => false,
-                    ]
+                    ],
                 ],
                 'readOnly' => $importFieldsReadOnly,
             ],
@@ -917,11 +915,11 @@ return [
                 'multiple' => 0,
                 'fieldControl' => [
                     'editPopup' => [
-                        'disabled' => false
+                        'disabled' => false,
                     ],
                     'addRecord' => [
                         'disabled' => false,
-                    ]
+                    ],
                 ],
                 'readOnly' => $importFieldsReadOnly,
             ],
@@ -1025,11 +1023,11 @@ return [
                 'multiple' => 0,
                 'fieldControl' => [
                     'editPopup' => [
-                        'disabled' => false
+                        'disabled' => false,
                     ],
                     'addRecord' => [
                         'disabled' => false,
-                    ]
+                    ],
                 ],
                 'readOnly' => $importFieldsReadOnly,
                 // Allow language synchronization so that relations can be localized via DataHandler

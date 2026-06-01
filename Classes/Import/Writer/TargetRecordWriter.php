@@ -9,50 +9,35 @@ use BrainAppeal\CampusEventsConnector\Import\Event\RecordInsertedEvent;
 use BrainAppeal\CampusEventsConnector\Import\Event\RecordUpdatedEvent;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
 use BrainAppeal\CampusEventsConnector\Import\TargetResolution\ReferenceResolver;
-use Doctrine\DBAL\ArrayParameterType;
+use BrainAppeal\CampusEventsConnector\Import\Workflow\ImportContext;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Handles the persistence of the target records into the database.
  */
-class TargetRecordWriter
+readonly class TargetRecordWriter
 {
-    /**
-     * @var array<string, string[]>
-     */
-    protected array $errorsByTable = [];
-
-    public function __construct(protected readonly EventDispatcherInterface $eventDispatcher, protected readonly LoggerInterface $logger) {}
-
-    /**
-     * Retrieves the errors grouped by the corresponding database tables.
-     *
-     * @return array<string, string[]> An associative array where the keys represent table names
-     * and the values are arrays containing error details for each table. Returns an empty array if no errors are recorded.
-     */
-    public function getErrorsByTable(): array
-    {
-        return $this->errorsByTable;
-    }
+    public function __construct(
+        protected EventDispatcherInterface $eventDispatcher,
+        protected LoggerInterface $logger,
+        protected ConnectionPool $connectionPool,
+    ) {}
 
     /**
      * Create a new target record for the import model
      *
+     * @param ImportContext $context
      * @param ImportTableConfigurationModel $importConfiguration
      * @param ImportRecordModel $model
      * @param ReferenceResolver $referenceResolver
-     * @return void
      */
-    public function createRecord(ImportTableConfigurationModel $importConfiguration, ImportRecordModel $model, ReferenceResolver $referenceResolver): void
+    public function createRecord(ImportContext $context, ImportTableConfigurationModel $importConfiguration, ImportRecordModel $model, ReferenceResolver $referenceResolver): void
     {
         $targetTable = $importConfiguration->getTableName();
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        $queryBuilder = $connectionPool->getQueryBuilderForTable($targetTable);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($targetTable);
         $data = $model->getTransformedData();
         try {
             $queryBuilder->insert($targetTable)
@@ -63,12 +48,12 @@ class TargetRecordWriter
                 $data['uid'] = $uid;
                 $model->setPersistedData($data);
                 $model->setTargetRecordId($uid);
-                $referenceResolver->addMappingForModel($importConfiguration, $model);
+                $referenceResolver->addMappingForModel($context, $importConfiguration, $model);
                 $event = new RecordInsertedEvent($uid, $targetTable, $model);
                 $this->eventDispatcher->dispatch($event);
             }
         } catch (\Throwable $e) {
-            $this->errorsByTable[$targetTable][] = $e->getMessage();
+            $context->addTableError($targetTable, $e->getMessage());
             $this->logger->error($e->getMessage(), ['table' => $targetTable, 'row' => $data]);
         }
     }
@@ -76,19 +61,19 @@ class TargetRecordWriter
     /**
      * Update the target records for the import models
      *
+     * @param ImportContext $context
      * @param ImportTableConfigurationModel $importConfiguration The import table configuration model containing table information.
      * @param ImportRecordModel[] $importModels An array of import model objects to be processed for updates.
-     * @param ReferenceResolver $referenceResolver A mapping object used to track processed records and their statuses.
      * @return int The total number of rows successfully updated.
      */
-    public function updateRecords(ImportTableConfigurationModel $importConfiguration, array $importModels, ReferenceResolver $referenceResolver): int
+    public function updateRecords(ImportContext $context, ImportTableConfigurationModel $importConfiguration, array $importModels): int
     {
-        $mapping = $referenceResolver->getMapping();
+        $mapping = $context->getTargetRecordMapping();
         $targetTable = $importConfiguration->getTableName();
         $updatedRowCount = 0;
         $events = [];
         $this->hydrateModelsWithCurrentData($targetTable, $importModels);
-        $connection = $this->getDatabaseConnection($targetTable);
+        $connection = $this->connectionPool->getConnectionForTable($targetTable);
         foreach ($importModels as $model) {
             $uid = $model->getTargetRecordId();
             $changedData = $this->computeChangedData($importConfiguration, $model);
@@ -102,7 +87,7 @@ class TargetRecordWriter
             try {
                 $connection->update($targetTable, $changedData, ['uid' => $uid]);
             } catch (\Throwable $e) {
-                $this->errorsByTable[$targetTable][] = $e->getMessage();
+                $context->addTableError($targetTable, $e->getMessage());
                 $this->logger->error($e->getMessage(), ['table' => $targetTable, 'uid' => $uid, 'row' => $changedData]);
             }
             $mapping->addProcessed($targetTable, $uid, true, false);
@@ -141,13 +126,11 @@ class TargetRecordWriter
         }
 
         // Fetch existing rows from DB for comparison
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        $connection = $connectionPool->getConnectionForTable($table);
+        $connection = $this->connectionPool->getConnectionForTable($table);
         $existingRows = $connection->fetchAllAssociative(
             'SELECT * FROM ' . $table . ' WHERE uid IN (:uidList)',
             ['uidList' => $uidList],
-            ['uidList' => ArrayParameterType::INTEGER]
+            ['uidList' => Connection::PARAM_INT_ARRAY]
         );
 
         // Index existing rows by uid for O(1) lookup
@@ -169,7 +152,7 @@ class TargetRecordWriter
      */
     protected function updateMappedModelDeletedAndHiddenFlags(string $table, array $mappedModels): void
     {
-        $connection = $this->getDatabaseConnection($table);
+        $connection = $this->connectionPool->getConnectionForTable($table);
 
         $undeleteUids = [];
         $enableUids = [];
@@ -210,7 +193,7 @@ class TargetRecordWriter
         }
         $table = $importConfiguration->getTableName();
 
-        $connection = $this->getDatabaseConnection($table);
+        $connection = $this->connectionPool->getConnectionForTable($table);
         $compareIgnoreFields = $importConfiguration->getCompareIgnoreFields();
         // Always-include these fields once a change is detected
         $includeOnChange = ['uid', 'tstamp'];
@@ -249,21 +232,5 @@ class TargetRecordWriter
         }
         // If no changes detected, skip this row entirely
         return $changed;
-    }
-
-    /**
-     * Retrieves a database connection for the specified table.
-     *
-     * This method uses the ConnectionPool to fetch a database connection
-     * that matches the given table's configuration.
-     *
-     * @param string $table The name of the database table for which the connection is required.
-     * @return Connection The database connection associated with the specified table.
-     */
-    protected function getDatabaseConnection(string $table): Connection
-    {
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        return $connectionPool->getConnectionForTable($table);
     }
 }

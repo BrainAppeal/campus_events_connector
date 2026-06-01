@@ -6,6 +6,7 @@ namespace BrainAppeal\CampusEventsConnector\Import\Command;
 
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DataTransformerFactory;
 use BrainAppeal\CampusEventsConnector\Import\Finisher\CleanupService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,6 +21,10 @@ use TYPO3\CMS\Core\Core\Environment;
  * Represents a command to clean up imported data from an import source.
  * Provides options to either delete old records or truncate tables based on user input.
  */
+#[AsCommand(
+    name: 'ce:cleanup',
+    description: 'Campus Events: Cleanup for imported data',
+)]
 class CleanupCommand extends Command
 {
     public function __construct(
@@ -118,10 +123,8 @@ This is useful for testing purposes or a full data refresh.
             return Command::INVALID;
         }
 
-        // Set the group key for data transformers
-        $this->dataTransformerFactory->setGroupKey($importSource);
         if ($truncateTables) {
-            $truncatedTables = $this->cleanupService->truncateTables($truncateAllTables);
+            $truncatedTables = $this->cleanupService->truncateTables($truncateAllTables, false, $importSource);
             $io->success(sprintf('Truncated all import tables: %s', implode(', ', $truncatedTables)));
         } else {
             $this->cleanupService->cleanUpOldRecords();

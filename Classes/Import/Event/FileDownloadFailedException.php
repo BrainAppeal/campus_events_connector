@@ -29,8 +29,6 @@ class FileDownloadFailedException extends \RuntimeException
      * @param bool $keepExistingFile Optional flag to indicate whether to keep the existing file. Default is false.
      * @param int $code Optional error code. Default is self::NOT_FOUND.
      * @param \Throwable|null $previous Optional previous throwable for exception chaining.
-     *
-     * @return void
      */
     public function __construct(string $message, bool $keepExistingFile = false, int $code = self::NOT_FOUND, ?\Throwable $previous = null)
     {
@@ -42,6 +40,5 @@ class FileDownloadFailedException extends \RuntimeException
     {
         return $this->keepExistingFile;
     }
-
 
 }

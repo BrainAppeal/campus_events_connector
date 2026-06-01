@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace BrainAppeal\CampusEventsConnector\Import\Configuration;
 
 use BrainAppeal\CampusEventsConnector\Import\Exception\ImportTcaConfigurationException;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
+#[Autoconfigure(shared: true)]
 final class ImportTableConfigurationProvider
 {
     /**

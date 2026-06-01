@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Repository;
 
-use Doctrine\DBAL\ArrayParameterType;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
 use Doctrine\DBAL\Exception;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Handles the persistence of import rows into the database.
@@ -18,6 +17,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 abstract readonly class AbstractImportRowRepository
 {
     public const TABLE_IMPORT_ROW = 'tx_campuseventsconnector_import_row';
+
+    public function __construct(protected LoggerInterface $logger, protected ConnectionPool $connectionPool) {}
 
     /**
      * Mark the import rows as finished. If no rows are given, all rows will be marked as finished
@@ -71,7 +72,7 @@ abstract readonly class AbstractImportRowRepository
     {
         $queryBuilder = $this->createQueryBuilderForImportRowTable($importId);
         $queryBuilder->andWhere(
-        // Only process records where the full data have been loaded
+            // Only process records where the full data have been loaded
             $queryBuilder->expr()->eq('data_fully_loaded', $queryBuilder->createNamedParameter(
                 0,
                 Connection::PARAM_INT
@@ -132,8 +133,7 @@ abstract readonly class AbstractImportRowRepository
     protected function createUpdateQueryBuilderForRecordTable(?int $importId, array $importedRows = []): QueryBuilder
     {
         $table = self::TABLE_IMPORT_ROW;
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $connectionPool = $this->connectionPool;
         $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
         $now = time();
         $queryBuilder->update($table);
@@ -153,7 +153,7 @@ abstract readonly class AbstractImportRowRepository
             $queryBuilder->where(
                 $queryBuilder->expr()->in(
                     'uid',
-                    $queryBuilder->createNamedParameter($importRowUidList, ArrayParameterType::INTEGER)
+                    $queryBuilder->createNamedParameter($importRowUidList, Connection::PARAM_INT_ARRAY)
                 )
             );
         }
@@ -172,10 +172,7 @@ abstract readonly class AbstractImportRowRepository
     protected function createQueryBuilderForImportRowTable(int $importId, bool $includeSkipped = false): QueryBuilder
     {
         $table = self::TABLE_IMPORT_ROW;
-        /** @var QueryBuilder $queryBuilder */
-        /** @noinspection NullPointerExceptionInspection */
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable($table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder
             ->select('*')
@@ -207,8 +204,6 @@ abstract readonly class AbstractImportRowRepository
      */
     protected function getDatabaseConnection(string $table = self::TABLE_IMPORT_ROW): Connection
     {
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        return $connectionPool->getConnectionForTable($table);
+        return $this->connectionPool->getConnectionForTable($table);
     }
 }

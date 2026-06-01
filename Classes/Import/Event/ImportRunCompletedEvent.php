@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Event;
 
-use BrainAppeal\CampusEventsConnector\Import\Model\AbstractImportOptions;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportEntry;
+use BrainAppeal\CampusEventsConnector\Import\Workflow\ImportContext;
 
 /**
  * Represents an event that occurs when an import process is stopped
@@ -13,16 +13,14 @@ use BrainAppeal\CampusEventsConnector\Import\Model\ImportEntry;
 class ImportRunCompletedEvent extends AbstractImportEvent
 {
     public function __construct(
-        protected AbstractImportOptions $importOptions,
-        protected ImportEntry $importEntry
-    )
-    {
-        parent::__construct($importOptions);
+        protected ImportContext $context
+    ) {
+        parent::__construct($context);
     }
 
     public function getImportEntry(): ImportEntry
     {
-        return $this->importEntry;
+        return $this->context->getImportEntry();
     }
 
     public function isImportFinished(): bool
@@ -35,7 +33,6 @@ class ImportRunCompletedEvent extends AbstractImportEvent
         return $this->getImportedRowCount() >= $remainingRowCount
             && $this->getFullLoadedRowCount() >= $remainingRowCount;
     }
-
 
     /**
      * Get the total rows

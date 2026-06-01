@@ -1,10 +1,13 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
@@ -13,31 +16,28 @@
 
 namespace BrainAppeal\CampusEventsConnector\Utility;
 
-use TYPO3\CMS\Core\Resource\Folder;
+use BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration;
 use TYPO3\CMS\Core\Resource\InaccessibleFolder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\View\ViewFactoryData;
+use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\View\ViewInterface;
 
 class TemplateEngine
 {
-
     /**
-     * @var \TYPO3\CMS\Fluid\View\StandaloneView[]
+     * @var ViewInterface[]
      */
-    private $templateRendererCache;
+    private array $templateRendererCache = [];
 
-    public function __construct()
-    {
-        $this->templateRendererCache = [];
-    }
-
+    public function __construct(protected ViewFactoryInterface $viewFactory, private readonly ResourceFactory $resourceFactory) {}
 
     /**
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration $configuration
-     * @param string $templateName
+     * @param ConvertConfiguration $configuration
      * @return string[]
      */
-    protected function getTemplateRootPaths($configuration, /** @noinspection PhpUnusedParameterInspection */ $templateName)
+    protected function getTemplateRootPaths(ConvertConfiguration $configuration): array
     {
         return [
             0 => $configuration->getTemplatePath(),
@@ -51,11 +51,10 @@ class TemplateEngine
     private function resolvePath(string $path): string
     {
         if (preg_match('/^\d+:/', $path)) {
-            /** @var ResourceFactory $resourceFactory */
-            $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
+            $resourceFactory = $this->resourceFactory;
             $folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($path);
             if (!($folder instanceof InaccessibleFolder)) {
-                $path = $folder->getPublicUrl();
+                $path = (string)$folder->getPublicUrl();
             }
         }
 
@@ -63,13 +62,12 @@ class TemplateEngine
     }
 
     /**
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration $configuration
-     * @param string $templateName
+     * @param ConvertConfiguration $configuration
      * @return string[]
      */
-    private function getResolvedTemplateRootPaths($configuration, $templateName)
+    private function getResolvedTemplateRootPaths(ConvertConfiguration $configuration): array
     {
-        $templateRootPaths = $this->getTemplateRootPaths($configuration, $templateName);
+        $templateRootPaths = $this->getTemplateRootPaths($configuration);
         foreach ($templateRootPaths as &$templateRootPath) {
             $templateRootPath = $this->resolvePath($templateRootPath);
         }
@@ -78,19 +76,20 @@ class TemplateEngine
     }
 
     /**
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration $configuration
+     * @param ConvertConfiguration $configuration
      * @param string $templateName
-     * @return \TYPO3\CMS\Fluid\View\StandaloneView
+     * @return ViewInterface
      */
-    private function getTemplateRenderer($configuration, $templateName)
+    private function getTemplateRenderer(ConvertConfiguration $configuration, string $templateName): ViewInterface
     {
         if (!isset($this->templateRendererCache[$templateName])) {
-            $templateRootPaths = $this->getResolvedTemplateRootPaths($configuration, $templateName);
+            $templateRootPaths = $this->getResolvedTemplateRootPaths($configuration);
 
-            /** @var \TYPO3\CMS\Fluid\View\StandaloneView $view */
-            $view = GeneralUtility::makeInstance(\TYPO3\CMS\Fluid\View\StandaloneView::class);
-            $view->setTemplateRootPaths($templateRootPaths);
-            $view->setTemplate($templateName . '.html');
+            $viewFactoryData = new ViewFactoryData(
+                templateRootPaths: $templateRootPaths,
+                format: 'html'
+            );
+            $view = $this->viewFactory->create($viewFactoryData);
 
             $this->templateRendererCache[$templateName] = $view;
         }
@@ -99,19 +98,19 @@ class TemplateEngine
     }
 
     /**
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration $configuration
+     * @param ConvertConfiguration $configuration
      * @param string $templateName
      * @param array $values
      * @param bool $stripLineBreaks
-     * @return mixed
+     * @return string
      */
-    public function getFromTemplate($configuration, $templateName, $values, $stripLineBreaks = true)
+    public function getFromTemplate(ConvertConfiguration $configuration, string $templateName, array $values, bool $stripLineBreaks = true): string
     {
-        $templateRenderer = $this->getTemplateRenderer($configuration, $templateName);
-        $templateRenderer->assignMultiple($values);
-        $html = $templateRenderer->render();
+        $view = $this->getTemplateRenderer($configuration, $templateName);
+        $view->assignMultiple($values);
+        $html = $view->render($templateName);
         if ($stripLineBreaks) {
-            $html = preg_replace( "/\r|\n/", "", $html);
+            $html = str_replace(["\r", "\n"], '', $html);
         }
         return $html;
     }

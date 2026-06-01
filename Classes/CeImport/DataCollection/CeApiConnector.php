@@ -5,7 +5,7 @@
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2021 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2021 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
@@ -15,9 +15,9 @@
 namespace BrainAppeal\CampusEventsConnector\CeImport\DataCollection;
 
 use BrainAppeal\CampusEventsConnector\CeImport\DataTransformer\DefaultDataTransformer;
+use BrainAppeal\CampusEventsConnector\Import\DataCollection\AbstractApiConnector;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ApiLimitReachedException;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ApiRecordNotFoundException;
-use BrainAppeal\CampusEventsConnector\Import\DataCollection\AbstractApiConnector;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ApiUnreachableException;
 use Psr\Log\LoggerInterface;
 
@@ -43,13 +43,9 @@ class CeApiConnector extends AbstractApiConnector
      */
     private function generateUri(string $relativeUrl, array $additionalParams): string
     {
-        if (str_starts_with($relativeUrl, self::BASE_PATH)) {
-            $url = $relativeUrl;
-        } else {
-            $url = self::BASE_PATH . $relativeUrl;
-        }
-        if (!empty($additionalParams)) {
-            $paramStr = !str_contains($url, '?') ? '?' : '&';
+        $url = str_starts_with($relativeUrl, self::BASE_PATH) ? $relativeUrl : self::BASE_PATH . $relativeUrl;
+        if ($additionalParams !== []) {
+            $paramStr = str_contains($url, '?') ? '&' : '?';
             foreach ($additionalParams as $key => $value) {
                 $url .= $paramStr . $key . '=' . urlencode((string)$value);
                 $paramStr = '&';
@@ -86,7 +82,7 @@ class CeApiConnector extends AbstractApiConnector
     {
         try {
             $response = $this->getApiResponse('events');
-        } catch (ApiUnreachableException $e) {
+        } catch (ApiUnreachableException) {
             return false;
         }
         return !empty($response) && !empty($response['@id']);
@@ -164,7 +160,7 @@ class CeApiConnector extends AbstractApiConnector
             return (int)$apiReferenceId;
         }
         $parts = explode('/', $apiReferenceId);
-        return (int) end($parts);
+        return (int)end($parts);
     }
 
 }

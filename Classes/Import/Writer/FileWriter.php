@@ -31,9 +31,7 @@ class FileWriter
         private readonly LoggerInterface $logger,
         private readonly FileRepository $fileRepository,
         private readonly FileReferenceRepository $fileReferenceRepository
-    )
-    {
-    }
+    ) {}
 
     /**
      * Processes a list of import models by loading current values, updating files as necessary,
@@ -87,7 +85,7 @@ class FileWriter
      */
     private function updateFileMetadataIfNeeded(
         ImportFileReferenceModel $fileReferenceModel,
-        ImportFileMappingModel   $importFileMappingItem
+        ImportFileMappingModel $importFileMappingItem
     ): void {
         $sysFileUid = $fileReferenceModel->getUidLocal();
         $fileToUpdateMeta = $this->fileRepository->getValidFileOrNull($sysFileUid);
@@ -118,10 +116,9 @@ class FileWriter
      * @param ImportFileMappingModel $importFileMappingItem The mapping model containing file information and timestamp.
      */
     private function handleExistingFileWithTimestampChecks(
-        Folder                 $folder,
+        Folder $folder,
         ImportFileMappingModel $importFileMappingItem
-    ): void
-    {
+    ): void {
         if ($this->isContentOutOfDate($importFileMappingItem)) {
             if ($importFileMappingItem->hasUri()) {
                 $this->saveFileForImportModel($folder, $importFileMappingItem);
@@ -153,8 +150,7 @@ class FileWriter
      */
     private function isContentOutOfDate(
         ImportFileMappingModel $importFileMappingItem
-    ): bool
-    {
+    ): bool {
         if ($importFileMappingItem->isForceUpdate()) {
             return true;
         }
@@ -371,7 +367,6 @@ class FileWriter
      * This forces the indexer to update the storage index if it has been modified during the import.
      *
      * @param string $targetFolderIdentifier The identifier of the target folder where the import was completed.
-     * @return void
      */
     public function onImportFinish(string $targetFolderIdentifier): void
     {

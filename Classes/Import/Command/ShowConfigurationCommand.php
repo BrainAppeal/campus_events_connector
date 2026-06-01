@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Command;
 
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationProvider;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DataTransformerFactory;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,10 +14,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(
+    name: 'ce:import:show-configuration',
+    description: 'Show import configuration information',
+)]
 class ShowConfigurationCommand extends Command
 {
-    public function __construct(protected readonly DataTransformerFactory $dataTransformerFactory,)
-    {
+    public function __construct(
+        protected readonly DataTransformerFactory $dataTransformerFactory,
+        protected ImportTableConfigurationProvider $importTableConfigurationProvider
+    ) {
         parent::__construct();
     }
 
@@ -57,8 +65,7 @@ Import sources: ' . $groupKeys . '
                 $table = $key;
                 // We need to find the group key for the table first
                 foreach ($importGroupKeys as $checkGroupKey) {
-                    $this->dataTransformerFactory->setGroupKey($checkGroupKey);
-                    if ($this->dataTransformerFactory->hasImportConfigurationForTable($table)) {
+                    if ($this->importTableConfigurationProvider->hasImportConfiguration($table)) {
                         $groupKey = $checkGroupKey;
                         break;
                     }
@@ -67,10 +74,6 @@ Import sources: ' . $groupKeys . '
         }
         if ($table && ($field = $input->getArgument('target-field'))) {
             $targetField = $field;
-        }
-
-        if ($groupKey) {
-            $this->dataTransformerFactory->setGroupKey($groupKey);
         }
 
         $io->title('Import configuration details');
@@ -84,14 +87,13 @@ Import sources: ' . $groupKeys . '
                 $io->section('Field configuration for table "' . $table . '"');
                 $this->showTableImportFieldsConfiguration($output, $table);
             }
-        } elseif($groupKey) {
+        } elseif ($groupKey) {
             $io->section('All configured tables and fields for import group "' . $groupKey . '"');
             $this->showImportGroupTableConfiguration($output, $groupKey);
         } else {
             $io->section('All configured import groups and tables');
             $this->showImportTablesByGroupAsTree($io);
         }
-
 
         return Command::SUCCESS;
     }
@@ -100,8 +102,6 @@ Import sources: ' . $groupKeys . '
      * Displays the import tables grouped by their respective group keys in a tree-like tabular format.
      *
      * @param OutputInterface $output An OutputInterface instance used to render the table.
-     *
-     * @return void
      */
     protected function showImportTablesByGroupAsTree(OutputInterface $output): void
     {
@@ -113,8 +113,7 @@ Import sources: ' . $groupKeys . '
             'Priorities',
         ]);
         foreach ($importGroupKeys as $groupKey) {
-            $this->dataTransformerFactory->setGroupKey($groupKey);
-            $dataTransformers = $this->dataTransformerFactory->getAll();
+            $dataTransformers = $this->dataTransformerFactory->getDataTransformersForImportGroup($groupKey);
             $mapTablesToPriority = [];
             foreach ($dataTransformers as $dataTransformer) {
                 $mapTablesToPriority[$dataTransformer->getTable()] = $dataTransformer->getPriority(null);
@@ -134,13 +133,10 @@ Import sources: ' . $groupKeys . '
      *
      * @param OutputInterface $output An OutputInterface instance used to render the table.
      * @param string $table The name of the table whose import fields configuration is displayed.
-     *
-     * @return void
      */
     protected function showTableImportFieldsConfiguration(OutputInterface $output, string $table): void
     {
-        $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($table, true);
-        $importConfiguration = $dataTransformer->getImportConfiguration();
+        $importConfiguration = $this->importTableConfigurationProvider->getConfiguration($table);
         $importFieldMap = $importConfiguration->getImportFieldMap('import');
         if (empty($importFieldMap)) {
             $importFieldMap = $importConfiguration->getImportFieldMap('default');
@@ -173,8 +169,7 @@ Import sources: ' . $groupKeys . '
 
     protected function showGeneralTableConfiguration(SymfonyStyle $io, string $table): void
     {
-        $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($table, true);
-        $importConfiguration = $dataTransformer->getImportConfiguration();
+        $importConfiguration = $this->importTableConfigurationProvider->getConfiguration($table);
 
         $io->definitionList(
             ['Table' => $importConfiguration->getTableName()],
@@ -193,8 +188,7 @@ Import sources: ' . $groupKeys . '
 
     protected function showCompleteFieldConfiguration(SymfonyStyle $io, string $table, string $targetField): void
     {
-        $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($table, true);
-        $importConfiguration = $dataTransformer->getImportConfiguration();
+        $importConfiguration = $this->importTableConfigurationProvider->getConfiguration($table);
         $fieldConfiguration = $importConfiguration->getImportConfigurationForField($targetField, 'import');
 
         if (!$fieldConfiguration) {
@@ -224,16 +218,7 @@ Import sources: ' . $groupKeys . '
 
         $io->section('Raw Configuration Array');
         $rawConfig = [];
-        // Since $configuration is protected, we can't access it directly, but we can use get() if we know the keys.
-        // However, we want to show all keys.
-        // Let's check if there is a way to get the whole array.
-        // Looking at ImportFieldConfigurationModel, it doesn't have a getConfiguration() method.
-        // I should probably add one or use Reflection. Reflection is easier for a debug command.
-
-        $reflection = new \ReflectionClass($fieldConfiguration);
-        $property = $reflection->getProperty('configuration');
-        $property->setAccessible(true);
-        $config = $property->getValue($fieldConfiguration);
+        $config = $fieldConfiguration->getConfiguration();
 
         foreach ($config as $key => $value) {
             $rawConfig[] = [$key => is_scalar($value) ? (string)$value : json_encode($value)];
@@ -246,8 +231,6 @@ Import sources: ' . $groupKeys . '
      *
      * @param OutputInterface $output An OutputInterface instance used to render the table.
      * @param string $groupKey The key identifying the group for which the table configuration is displayed.
-     *
-     * @return void
      */
     protected function showImportGroupTableConfiguration(OutputInterface $output, string $groupKey): void
     {
@@ -257,10 +240,9 @@ Import sources: ' . $groupKeys . '
             'Source ID',
             'Translatable',
             'Source fields',
-            'Target fields'
+            'Target fields',
         ]);
-        $this->dataTransformerFactory->setGroupKey($groupKey);
-        $dataTransformers = $this->dataTransformerFactory->getAll();
+        $dataTransformers = $this->dataTransformerFactory->getDataTransformersForImportGroup($groupKey);
         foreach ($dataTransformers as $dataTransformer) {
             $importConfiguration = $dataTransformer->getImportConfiguration();
             $sourceFields = [];

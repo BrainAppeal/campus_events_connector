@@ -1,18 +1,20 @@
 <?php
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2021 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2021 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
  * @link      https://www.campus-events.com/
  */
 
-
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
+
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
  * EventSession
@@ -22,14 +24,14 @@ class EventSession extends AbstractImportedEntity implements BelongsToEventInter
     use DatePeriodTrait;
 
     /**
-     * @var ?\BrainAppeal\CampusEventsConnector\Domain\Model\Event
+     * @var ?Event
      */
-    protected $event = null;
+    protected $event;
 
     /**
      * session time periods
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange>
+     * @var ObjectStorage<TimeRange>
      */
     protected $sessionTimePeriods;
 
@@ -47,12 +49,10 @@ class EventSession extends AbstractImportedEntity implements BelongsToEventInter
      * Do not modify this method!
      * It will be rewritten on each save in the extension builder
      * You may modify the constructor of this class instead
-     *
-     * @return void
      */
     protected function initStorageObjects()
     {
-        $this->sessionTimePeriods = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        $this->sessionTimePeriods = new ObjectStorage();
     }
 
     /**
@@ -72,7 +72,7 @@ class EventSession extends AbstractImportedEntity implements BelongsToEventInter
     }
 
     /**
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange>
+     * @return ObjectStorage<TimeRange>
      */
     public function getSessionTimePeriods()
     {
@@ -80,7 +80,7 @@ class EventSession extends AbstractImportedEntity implements BelongsToEventInter
     }
 
     /**
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange> $sessionTimePeriods
+     * @param ObjectStorage<TimeRange> $sessionTimePeriods
      */
     public function setSessionTimePeriods($sessionTimePeriods): void
     {
@@ -90,12 +90,11 @@ class EventSession extends AbstractImportedEntity implements BelongsToEventInter
     /**
      * Adds a SessionTimePeriod
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $sessionTimePeriod
-     * @return void
+     * @param TimeRange $sessionTimePeriod
      */
-    public function addSessionTimePeriod(\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $sessionTimePeriod): void
+    public function addSessionTimePeriod(TimeRange $sessionTimePeriod): void
     {
-        if (null !== $event = $this->getEvent()) {
+        if (($event = $this->getEvent()) instanceof Event) {
             $sessionTimePeriod->setEvent($event);
         }
         $this->getSessionTimePeriods()->attach($sessionTimePeriod);
@@ -104,10 +103,9 @@ class EventSession extends AbstractImportedEntity implements BelongsToEventInter
     /**
      * Removes a SessionTimePeriod
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $sessionTimePeriodToRemove The SessionTimePeriod to be removed
-     * @return void
+     * @param TimeRange $sessionTimePeriodToRemove The SessionTimePeriod to be removed
      */
-    public function removeSessionTimePeriod(\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange $sessionTimePeriodToRemove): void
+    public function removeSessionTimePeriod(TimeRange $sessionTimePeriodToRemove): void
     {
         $this->getSessionTimePeriods()->detach($sessionTimePeriodToRemove);
     }

@@ -1,16 +1,18 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
  * @link      https://www.campus-events.com/
  */
-
 
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
@@ -19,7 +21,6 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Model;
  */
 class Referent extends AbstractImportedEntity
 {
-
     /**
      * title
      *
@@ -139,9 +140,8 @@ class Referent extends AbstractImportedEntity
      * Sets the title
      *
      * @param string $title
-     * @return void
      */
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
@@ -160,9 +160,8 @@ class Referent extends AbstractImportedEntity
      * Sets the firstName
      *
      * @param string $firstName
-     * @return void
      */
-    public function setFirstName($firstName)
+    public function setFirstName($firstName): void
     {
         $this->firstName = $firstName;
     }
@@ -181,9 +180,8 @@ class Referent extends AbstractImportedEntity
      * Sets the lastName
      *
      * @param string $lastName
-     * @return void
      */
-    public function setLastName($lastName)
+    public function setLastName($lastName): void
     {
         $this->lastName = $lastName;
     }
@@ -199,7 +197,7 @@ class Referent extends AbstractImportedEntity
     /**
      * @param string $externalUrl
      */
-    public function setExternalUrl($externalUrl)
+    public function setExternalUrl($externalUrl): void
     {
         $this->externalUrl = $externalUrl;
     }
@@ -215,7 +213,7 @@ class Referent extends AbstractImportedEntity
     /**
      * @param string $academicDegree
      */
-    public function setAcademicDegree($academicDegree)
+    public function setAcademicDegree($academicDegree): void
     {
         $this->academicDegree = $academicDegree;
     }
@@ -231,7 +229,7 @@ class Referent extends AbstractImportedEntity
     /**
      * @param string $institution
      */
-    public function setInstitution($institution)
+    public function setInstitution($institution): void
     {
         $this->institution = $institution;
     }
@@ -247,7 +245,7 @@ class Referent extends AbstractImportedEntity
     /**
      * @param string $phone
      */
-    public function setPhone($phone)
+    public function setPhone($phone): void
     {
         $this->phone = $phone;
     }
@@ -263,7 +261,7 @@ class Referent extends AbstractImportedEntity
     /**
      * @param string $email
      */
-    public function setEmail($email)
+    public function setEmail($email): void
     {
         $this->email = $email;
     }
@@ -279,7 +277,7 @@ class Referent extends AbstractImportedEntity
     /**
      * @param string $businessAddress
      */
-    public function setBusinessAddress($businessAddress)
+    public function setBusinessAddress($businessAddress): void
     {
         $this->businessAddress = $businessAddress;
     }
@@ -295,7 +293,7 @@ class Referent extends AbstractImportedEntity
     /**
      * @param string $publications
      */
-    public function setPublications($publications)
+    public function setPublications($publications): void
     {
         $this->publications = $publications;
     }
@@ -311,7 +309,7 @@ class Referent extends AbstractImportedEntity
     /**
      * @param string $focusOfWork
      */
-    public function setFocusOfWork($focusOfWork)
+    public function setFocusOfWork($focusOfWork): void
     {
         $this->focusOfWork = $focusOfWork;
     }
@@ -327,7 +325,7 @@ class Referent extends AbstractImportedEntity
     /**
      * @param string $eventFormats
      */
-    public function setEventFormats($eventFormats)
+    public function setEventFormats($eventFormats): void
     {
         $this->eventFormats = $eventFormats;
     }
@@ -343,7 +341,7 @@ class Referent extends AbstractImportedEntity
     /**
      * @param string $references
      */
-    public function setReferences($references)
+    public function setReferences($references): void
     {
         $this->references = $references;
     }
@@ -359,7 +357,7 @@ class Referent extends AbstractImportedEntity
     /**
      * @param string $description
      */
-    public function setDescription($description)
+    public function setDescription($description): void
     {
         $this->description = $description;
     }

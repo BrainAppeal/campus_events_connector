@@ -31,11 +31,6 @@ abstract class AbstractImportOptions
      * @var string[]
      */
     protected array $optionalExtensionConfigurationFields = ['developmentLocalCacheAgeInDays', 'forceUpdate', 'completeUpdate', 'debug', 'targetImportSource'];
-
-    /**
-     * @var int<1, max>|null The uid of the import record.
-     */
-    protected ?int $importId = null;
     /**
      * The storage page ID
      */
@@ -160,16 +155,6 @@ abstract class AbstractImportOptions
         return $limit;
     }
 
-    public function getImportId(): ?int
-    {
-        return $this->importId;
-    }
-
-    public function setImportId(?int $importId): void
-    {
-        $this->importId = $importId;
-    }
-
     public function getPid(): int
     {
         return $this->pid;
@@ -230,7 +215,7 @@ abstract class AbstractImportOptions
      */
     public function isVerbose(): bool
     {
-        return OutputInterface::VERBOSITY_VERBOSE <= $this->verbosity;
+        return $this->verbosity >= OutputInterface::VERBOSITY_VERBOSE;
     }
 
     public function isDebug(): bool

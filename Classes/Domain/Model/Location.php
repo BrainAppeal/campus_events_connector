@@ -1,16 +1,18 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
  * @link      https://www.campus-events.com/
  */
-
 
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
@@ -19,7 +21,6 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Model;
  */
 class Location extends AbstractImportedEntity
 {
-
     /**
      * name
      *
@@ -97,9 +98,8 @@ class Location extends AbstractImportedEntity
      * Sets the name
      *
      * @param string $name
-     * @return void
      */
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -118,9 +118,8 @@ class Location extends AbstractImportedEntity
      * Sets the streetName
      *
      * @param string $streetName
-     * @return void
      */
-    public function setStreetName($streetName)
+    public function setStreetName($streetName): void
     {
         $this->streetName = $streetName;
     }
@@ -139,9 +138,8 @@ class Location extends AbstractImportedEntity
      * Sets the town
      *
      * @param string $town
-     * @return void
      */
-    public function setTown($town)
+    public function setTown($town): void
     {
         $this->town = $town;
     }
@@ -160,9 +158,8 @@ class Location extends AbstractImportedEntity
      * Sets the zipCode
      *
      * @param string $zipCode
-     * @return void
      */
-    public function setZipCode($zipCode)
+    public function setZipCode($zipCode): void
     {
         $this->zipCode = $zipCode;
     }
@@ -178,7 +175,7 @@ class Location extends AbstractImportedEntity
     /**
      * @param string $listViewDisplayName
      */
-    public function setListViewDisplayName($listViewDisplayName)
+    public function setListViewDisplayName($listViewDisplayName): void
     {
         $this->listViewDisplayName = $listViewDisplayName;
     }
@@ -194,7 +191,7 @@ class Location extends AbstractImportedEntity
     /**
      * @param string $building
      */
-    public function setBuilding($building)
+    public function setBuilding($building): void
     {
         $this->building = $building;
     }
@@ -210,7 +207,7 @@ class Location extends AbstractImportedEntity
     /**
      * @param string $room
      */
-    public function setRoom($room)
+    public function setRoom($room): void
     {
         $this->room = $room;
     }
@@ -226,7 +223,7 @@ class Location extends AbstractImportedEntity
     /**
      * @param string $longitude
      */
-    public function setLongitude($longitude)
+    public function setLongitude($longitude): void
     {
         $this->longitude = $longitude;
     }
@@ -242,7 +239,7 @@ class Location extends AbstractImportedEntity
     /**
      * @param string $latitude
      */
-    public function setLatitude($latitude)
+    public function setLatitude($latitude): void
     {
         $this->latitude = $latitude;
     }

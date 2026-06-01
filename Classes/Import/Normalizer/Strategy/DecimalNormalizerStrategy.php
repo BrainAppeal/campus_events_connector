@@ -11,7 +11,6 @@ use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurat
  */
 readonly class DecimalNormalizerStrategy extends AbstractNormalizerStrategy
 {
-
     private int $precision;
 
     public function __construct(ImportFieldConfigurationModel $mapEntry)

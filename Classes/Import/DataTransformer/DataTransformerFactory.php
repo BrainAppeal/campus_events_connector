@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace BrainAppeal\CampusEventsConnector\Import\DataTransformer;
 
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationProvider;
+use BrainAppeal\CampusEventsConnector\Import\Exception\ImportTcaConfigurationException;
+use BrainAppeal\CampusEventsConnector\Import\Workflow\ImportContext;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -24,9 +26,9 @@ class DataTransformerFactory implements SingletonInterface
     protected array $groupMap = [];
 
     /**
-     * @var ?string
+     * @var array<string, bool>
      */
-    protected ?string $groupKey = null;
+    protected array $groupInitializedMap = [];
 
     /**
      * Constructor for initializing the class.
@@ -47,27 +49,6 @@ class DataTransformerFactory implements SingletonInterface
     }
 
     /**
-     * Set the group key
-     *
-     * @param string $groupKey The group key
-     */
-    public function setGroupKey(string $groupKey): void
-    {
-        $this->groupKey = $groupKey;
-        $this->initializeDataTransformerPriority();
-    }
-
-    /**
-     * Get the current group key
-     *
-     * @return string The current group key
-     */
-    public function getGroupKey(): string
-    {
-        return $this->groupKey;
-    }
-
-    /**
      * Get the registered group keys
      *
      * @return string[] The registered group keys
@@ -81,14 +62,15 @@ class DataTransformerFactory implements SingletonInterface
      * Get a DataTransformer instance by key
      *
      * @param string $targetTable The DataTransformer key
+     * @param string $importGroupKey The import group this table belongs to
      * @param bool $ignoreGroupKey Whether to ignore the group key validation
      * @return ImportDataTransformerInterface The DataTransformer instance
-     * @throws \InvalidArgumentException If no DataTransformer is registered for the given key
+     * @throws ImportTcaConfigurationException
      */
-    private function getDataTransformer(string $targetTable, bool $ignoreGroupKey = false): ImportDataTransformerInterface
+    private function getDataTransformer(string $targetTable, string $importGroupKey, bool $ignoreGroupKey = false): ImportDataTransformerInterface
     {
         if (!$ignoreGroupKey) {
-            if (!$this->groupKey || empty($this->groupMap[$this->groupKey])) {
+            if (!$importGroupKey || empty($this->groupMap[$importGroupKey])) {
                 throw new \InvalidArgumentException(
                     'The current group key for the import must be set',
                     1767537943
@@ -96,12 +78,16 @@ class DataTransformerFactory implements SingletonInterface
             }
 
             // Check if the data transformer belongs to the current group
-            if (!in_array($targetTable, $this->groupMap[$this->groupKey])) {
+            if (!in_array($targetTable, $this->groupMap[$importGroupKey])) {
                 throw new \InvalidArgumentException(
-                    'DataTransformer with key ' . $targetTable . ' does not belong to the current group ' . $this->groupKey,
+                    'DataTransformer with key ' . $targetTable . ' does not belong to the current group ' . $importGroupKey,
                     1767537944
                 );
             }
+        }
+        if ($importGroupKey && !isset($this->groupInitializedMap[$importGroupKey])) {
+            $this->groupInitializedMap[$importGroupKey] = true;
+            $this->initializeDataTransformerPriority($importGroupKey);
         }
 
         if (!isset($this->registry[$targetTable])) {
@@ -109,7 +95,7 @@ class DataTransformerFactory implements SingletonInterface
             $dataTransformerClass = $importConfiguration->getDataTransformerClass();
             if (!is_a($dataTransformerClass, ImportDataTransformerInterface::class, true)) {
                 throw new \InvalidArgumentException(
-                    sprintf('The DataTransformer registered for table %s must implement ImportDataTransformerInterface',  $targetTable),
+                    sprintf('The DataTransformer registered for table %s must implement ImportDataTransformerInterface', $targetTable),
                     1767537946
                 );
             }
@@ -121,23 +107,35 @@ class DataTransformerFactory implements SingletonInterface
     /**
      * Retrieve the registered keys based on the class map and group map.
      *
+     * @param string $importGroup
      * @return string[] An array of registered tables
      */
-    public function getRegisteredTableNames(): array
+    public function getTableNamesForImportGroup(string $importGroup): array
     {
-        return $this->groupMap[$this->groupKey] ?? [];
+        return $this->groupMap[$importGroup] ?? [];
     }
 
     /**
      * Get all registered DataTransformer instances
      *
+     * @param ImportContext $context
      * @return array<ImportDataTransformerInterface> The registered DataTransformer instances
      */
-    public function getAll(): array
+    public function getDataTransformersByContext(ImportContext $context): array
+    {
+        return $this->getDataTransformersForImportGroup($context->getImportSource());
+    }
+    /**
+     * Get all registered DataTransformer instances
+     *
+     * @param string $importGroup
+     * @return array<ImportDataTransformerInterface> The registered DataTransformer instances
+     */
+    public function getDataTransformersForImportGroup(string $importGroup): array
     {
         $instances = [];
-        foreach ($this->getRegisteredTableNames() as $targetTable) {
-            $instances[$targetTable] = $this->getDataTransformerByTable($targetTable);
+        foreach ($this->getTableNamesForImportGroup($importGroup) as $targetTable) {
+            $instances[$targetTable] = $this->getDataTransformer($targetTable, $importGroup, true);
         }
         return $instances;
     }
@@ -161,9 +159,9 @@ class DataTransformerFactory implements SingletonInterface
      * @return ImportDataTransformerInterface The DataTransformer instance
      * @throws \InvalidArgumentException If no DataTransformer is registered for the given type
      */
-    public function getDataTransformerByTable(string $tableName, bool $ignoreGroupKey = false): ImportDataTransformerInterface
+    public function getDataTransformerByContextAndTable(ImportContext $context, string $tableName, bool $ignoreGroupKey = false): ImportDataTransformerInterface
     {
-        return $this->getDataTransformer($tableName, $ignoreGroupKey);
+        return $this->getDataTransformer($tableName, $context->getImportSource(), $ignoreGroupKey);
     }
 
     /**
@@ -174,11 +172,12 @@ class DataTransformerFactory implements SingletonInterface
      * to satisfy dependency constraints. Higher priority numbers are interpreted as higher precedence.
      * The method also performs a safety check to prevent infinite loops caused by circular dependencies.
      *
-     * @return void
+     * @param string $importGroup
+     * @throws ImportTcaConfigurationException
      */
-    private function initializeDataTransformerPriority(): void
+    private function initializeDataTransformerPriority(string $importGroup): void
     {
-        $dataTransformers = $this->getAll();
+        $dataTransformers = $this->getDataTransformersForImportGroup($importGroup);
         $dataTransformerPriority = [];
         $dependencies = [];
         $mapIdentifierFields = [];
@@ -194,7 +193,7 @@ class DataTransformerFactory implements SingletonInterface
                     throw new \RuntimeException('Circular dependency detected for data transformers: ' . $table . ' -> ' . $dependsOnTable);
                 }
                 // If the uid field is referenced and is used as the import identifier, we don't need to add the dependency'
-                if (($mapIdentifierFields[$dependsOnTable]??null) !== 'uid' || count($fields) > 1 || current($fields) !== 'uid') {
+                if (($mapIdentifierFields[$dependsOnTable] ?? null) !== 'uid' || count($fields) > 1 || current($fields) !== 'uid') {
                     $refTables[] = $dependsOnTable;
                 }
             }
@@ -224,7 +223,7 @@ class DataTransformerFactory implements SingletonInterface
             }
         }
         foreach ($dataTransformerPriority as $table => $priority) {
-            $dataTransformer = $this->getDataTransformerByTable($table);
+            $dataTransformer = $this->getDataTransformer($table, $importGroup, true);
             $dataTransformer->setPriority($priority);
         }
     }

@@ -118,7 +118,6 @@ class SlugGenerator
      * @param string $table The name of the database table whose slugs need to be updated.
      * @param array $tableData The data to be used for updating the slugs, structured as key-value pairs.
      * @param bool $useDataHandlerForSlugUpdates Either use the DataHandler to update the slugs, or update them directly via the database connection. Defaults to true.
-     * @return void This method does not return a value.
      */
     private function updateSlugs(string $table, array $tableData, bool $useDataHandlerForSlugUpdates): void
     {

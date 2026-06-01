@@ -1,18 +1,19 @@
 <?php
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
  * @link      https://www.campus-events.com/
  */
 
-use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
+use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -37,8 +38,8 @@ return [
         'delete' => 'deleted',
         'enablecolumns' => [
             'disabled' => 'hidden',
-//            'starttime' => 'starttime',
-//            'endtime' => 'endtime',
+            //            'starttime' => 'starttime',
+            //            'endtime' => 'endtime',
         ],
         'searchFields' => 'title,first_name,last_name,
         external_url,academic_degree,institution,phone,email,business_address,publications,focus_of_work,event_formats,references,description',
@@ -47,7 +48,7 @@ return [
         ],
         'security' => [
             'ignoreRootLevelRestriction' => true,
-        ]
+        ],
     ],
     'types' => [
         '1' => ['showitem' => '--palette--;;paletteName,external_url,academic_degree,institution,phone,email,business_address,publications,focus_of_work,event_formats,references,description,type,

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\DataTransformer;
 
-use BrainAppeal\CampusEventsConnector\Import\Exception\MappingException;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel;
+use BrainAppeal\CampusEventsConnector\Import\Exception\MappingException;
 
 /**
  * An abstract class that provides a base for data transformers,
@@ -13,7 +13,6 @@ use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurat
  */
 class RawValueExtractor
 {
-
     /**
      * Determines the raw value based on the provided mapping entry configuration and raw data.
      *

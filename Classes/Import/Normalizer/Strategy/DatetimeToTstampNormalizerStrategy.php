@@ -9,7 +9,6 @@ namespace BrainAppeal\CampusEventsConnector\Import\Normalizer\Strategy;
  */
 readonly class DatetimeToTstampNormalizerStrategy extends AbstractNormalizerStrategy
 {
-
     public function normalize(mixed $value): ?int
     {
         if ($value === null && $this->isNullable) {

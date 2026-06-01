@@ -1,20 +1,21 @@
 <?php
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
  * @link      https://www.campus-events.com/
  */
 
-
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
+use TYPO3\CMS\Extbase\Annotation\ORM\Cascade;
 use TYPO3\CMS\Extbase\Annotation\ORM\Lazy;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
@@ -227,21 +228,21 @@ class Event extends AbstractImportedEntity
 
     /**
      * alternativeEvents
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Event>
+     * @var ObjectStorage<Event>
      */
     #[Lazy]
     protected ?ObjectStorage $alternativeEvents = null;
 
     /**
      * Event attachments
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment>
+     * @var ObjectStorage<EventAttachment>
      */
     #[Lazy]
     protected ?ObjectStorage $eventAttachments = null;
 
     /**
      * Event images
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventImage>
+     * @var ObjectStorage<EventImage>
      */
     #[Lazy]
     protected ?ObjectStorage $eventImages = null;
@@ -279,7 +280,7 @@ class Event extends AbstractImportedEntity
      *
      * @var ?\DateTime
      */
-    protected ?\DateTime $ticketCancellationUntil= null;
+    protected ?\DateTime $ticketCancellationUntil = null;
 
     /**
      * Tickets available from
@@ -305,7 +306,7 @@ class Event extends AbstractImportedEntity
     /**
      * referents
      *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Referent>
+     * @var ObjectStorage<Referent>
      */
     #[Lazy()]
     protected ?ObjectStorage $referents = null;
@@ -313,7 +314,7 @@ class Event extends AbstractImportedEntity
     /**
      * sponsors
      *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor>
+     * @var ObjectStorage<Sponsor>
      */
     #[Lazy()]
     protected ?ObjectStorage $sponsors = null;
@@ -321,7 +322,7 @@ class Event extends AbstractImportedEntity
     /**
      * contactPersons
      *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ContactPerson>
+     * @var ObjectStorage<ContactPerson>
      */
     #[Lazy()]
     protected ?ObjectStorage $contactPersons = null;
@@ -329,16 +330,16 @@ class Event extends AbstractImportedEntity
     /**
      * eventSessions
      *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventSession>
+     * @var ObjectStorage<EventSession>
      */
-    #[\TYPO3\CMS\Extbase\Annotation\ORM\Cascade(['value' => 'remove'])]
+    #[Cascade(['value' => 'remove'])]
     #[Lazy()]
     protected ?ObjectStorage $eventSessions = null;
 
     /**
      * categories
      *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Category>
+     * @var ObjectStorage<Category>
      */
     #[Lazy()]
     protected ?ObjectStorage $categories = null;
@@ -346,7 +347,7 @@ class Event extends AbstractImportedEntity
     /**
      * organizer
      *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer>
+     * @var ObjectStorage<Organizer>
      */
     #[Lazy()]
     protected ?ObjectStorage $organizer = null;
@@ -354,7 +355,7 @@ class Event extends AbstractImportedEntity
     /**
      * targetGroups
      *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup>
+     * @var ObjectStorage<TargetGroup>
      */
     #[Lazy()]
     protected ?ObjectStorage $targetGroups = null;
@@ -362,7 +363,7 @@ class Event extends AbstractImportedEntity
     /**
      * viewLists
      *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList>
+     * @var ObjectStorage<ViewList>
      */
     #[Lazy()]
     protected ?ObjectStorage $viewLists = null;
@@ -370,7 +371,7 @@ class Event extends AbstractImportedEntity
     /**
      * filterCategories
      *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory>
+     * @var ObjectStorage<FilterCategory>
      */
     #[Lazy()]
     protected ?ObjectStorage $filterCategories = null;
@@ -378,7 +379,7 @@ class Event extends AbstractImportedEntity
     /**
      * eventTicketPriceVariants
      *
-     * @var ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventTicketPriceVariant>
+     * @var ObjectStorage<EventTicketPriceVariant>
      */
     #[Lazy()]
     protected ?ObjectStorage $eventTicketPriceVariants = null;
@@ -405,8 +406,6 @@ class Event extends AbstractImportedEntity
      * Do not modify this method!
      * It will be rewritten on each save in the extension builder
      * You may modify the constructor of this class instead
-     *
-     * @return void
      */
     protected function initStorageObjects()
     {
@@ -441,10 +440,9 @@ class Event extends AbstractImportedEntity
      * Sets the status
      *
      * @param int $status
-     * @return void
      * @deprecated
      */
-    public function setStatus($status)
+    public function setStatus($status): void
     {
         $this->status = $status;
     }
@@ -463,7 +461,6 @@ class Event extends AbstractImportedEntity
      * Sets the canceled
      *
      * @param ?bool $canceled
-     * @return void
      */
     public function setCanceled(?bool $canceled): void
     {
@@ -524,9 +521,8 @@ class Event extends AbstractImportedEntity
      * Sets the url
      *
      * @param string $url
-     * @return void
      */
-    public function setUrl($url)
+    public function setUrl($url): void
     {
         $this->url = $url;
     }
@@ -545,9 +541,8 @@ class Event extends AbstractImportedEntity
      * Sets the name
      *
      * @param string $name
-     * @return void
      */
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -566,9 +561,8 @@ class Event extends AbstractImportedEntity
      * Sets the subtitle
      *
      * @param string $subtitle
-     * @return void
      */
-    public function setSubtitle($subtitle)
+    public function setSubtitle($subtitle): void
     {
         $this->subtitle = $subtitle;
     }
@@ -587,9 +581,8 @@ class Event extends AbstractImportedEntity
      * Sets the description
      *
      * @param string $description
-     * @return void
      */
-    public function setDescription($description)
+    public function setDescription($description): void
     {
         $this->description = $description;
     }
@@ -608,9 +601,8 @@ class Event extends AbstractImportedEntity
      * Sets the shortDescription
      *
      * @param string $shortDescription
-     * @return void
      */
-    public function setShortDescription($shortDescription)
+    public function setShortDescription($shortDescription): void
     {
         $this->shortDescription = $shortDescription;
     }
@@ -629,9 +621,8 @@ class Event extends AbstractImportedEntity
      * Sets the learningObjective
      *
      * @param string $learningObjective
-     * @return void
      */
-    public function setLearningObjective($learningObjective)
+    public function setLearningObjective($learningObjective): void
     {
         $this->learningObjective = $learningObjective;
     }
@@ -690,7 +681,6 @@ class Event extends AbstractImportedEntity
      * Sets the minParticipants
      *
      * @param ?int $minParticipants
-     * @return void
      */
     public function setMinParticipants(?int $minParticipants): void
     {
@@ -711,7 +701,6 @@ class Event extends AbstractImportedEntity
      * Sets the maxParticipants
      *
      * @param ?int $maxParticipants
-     * @return void
      */
     public function setMaxParticipants(?int $maxParticipants): void
     {
@@ -781,10 +770,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds a Category
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Category $category
-     * @return void
+     * @param Category $category
      */
-    public function addCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\Category $category)
+    public function addCategory(Category $category): void
     {
         $this->getCategories()->attach($category);
     }
@@ -792,10 +780,9 @@ class Event extends AbstractImportedEntity
     /**
      * Removes a Category
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Category $categoryToRemove The Category to be removed
-     * @return void
+     * @param Category $categoryToRemove The Category to be removed
      */
-    public function removeCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\Category $categoryToRemove)
+    public function removeCategory(Category $categoryToRemove): void
     {
         $this->getCategories()->detach($categoryToRemove);
     }
@@ -803,11 +790,11 @@ class Event extends AbstractImportedEntity
     /**
      * Returns the categories
      *
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Category> $categories
+     * @return ObjectStorage<Category> $categories
      */
     public function getCategories(): ObjectStorage
     {
-        if (null === $this->categories) {
+        if (!$this->categories instanceof ObjectStorage) {
             $this->categories = new ObjectStorage();
         }
         return $this->categories;
@@ -816,10 +803,9 @@ class Event extends AbstractImportedEntity
     /**
      * Sets the categories
      *
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Category> $categories
-     * @return void
+     * @param ObjectStorage<Category> $categories
      */
-    public function setCategories(ObjectStorage $categories)
+    public function setCategories(ObjectStorage $categories): void
     {
         $this->categories = $categories;
     }
@@ -827,10 +813,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds a Organizer
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Organizer $organizer
-     * @return void
+     * @param Organizer $organizer
      */
-    public function addOrganizer(\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer $organizer)
+    public function addOrganizer(Organizer $organizer): void
     {
         $this->getOrganizer()->attach($organizer);
     }
@@ -838,10 +823,9 @@ class Event extends AbstractImportedEntity
     /**
      * Removes a Organizer
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Organizer $organizerToRemove The Organizer to be removed
-     * @return void
+     * @param Organizer $organizerToRemove The Organizer to be removed
      */
-    public function removeOrganizer(\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer $organizerToRemove)
+    public function removeOrganizer(Organizer $organizerToRemove): void
     {
         $this->getOrganizer()->detach($organizerToRemove);
     }
@@ -849,11 +833,11 @@ class Event extends AbstractImportedEntity
     /**
      * Returns the organizer
      *
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer> $organizer
+     * @return ObjectStorage<Organizer> $organizer
      */
     public function getOrganizer(): ObjectStorage
     {
-        if (null === $this->organizer) {
+        if (!$this->organizer instanceof ObjectStorage) {
             $this->organizer = new ObjectStorage();
         }
         return $this->organizer;
@@ -862,10 +846,9 @@ class Event extends AbstractImportedEntity
     /**
      * Sets the organizer
      *
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Organizer> $organizer
-     * @return void
+     * @param ObjectStorage<Organizer> $organizer
      */
-    public function setOrganizer(ObjectStorage $organizer)
+    public function setOrganizer(ObjectStorage $organizer): void
     {
         $this->organizer = $organizer;
     }
@@ -873,10 +856,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds a TargetGroup
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroup
-     * @return void
+     * @param TargetGroup $targetGroup
      */
-    public function addTargetGroup(\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroup)
+    public function addTargetGroup(TargetGroup $targetGroup): void
     {
         $this->getTargetGroups()->attach($targetGroup);
     }
@@ -884,10 +866,9 @@ class Event extends AbstractImportedEntity
     /**
      * Removes a TargetGroup
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroupToRemove The TargetGroup to be removed
-     * @return void
+     * @param TargetGroup $targetGroupToRemove The TargetGroup to be removed
      */
-    public function removeTargetGroup(\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroupToRemove)
+    public function removeTargetGroup(TargetGroup $targetGroupToRemove): void
     {
         $this->getTargetGroups()->detach($targetGroupToRemove);
     }
@@ -895,11 +876,11 @@ class Event extends AbstractImportedEntity
     /**
      * Returns the targetGroups
      *
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup> targetGroups
+     * @return ObjectStorage<TargetGroup> targetGroups
      */
     public function getTargetGroups(): ObjectStorage
     {
-        if (null === $this->targetGroups) {
+        if (!$this->targetGroups instanceof ObjectStorage) {
             $this->targetGroups = new ObjectStorage();
         }
         return $this->targetGroups;
@@ -908,10 +889,9 @@ class Event extends AbstractImportedEntity
     /**
      * Sets the targetGroups
      *
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup> $targetGroups
-     * @return void
+     * @param ObjectStorage<TargetGroup> $targetGroups
      */
-    public function setTargetGroups(ObjectStorage $targetGroups)
+    public function setTargetGroups(ObjectStorage $targetGroups): void
     {
         $this->targetGroups = $targetGroups;
     }
@@ -919,10 +899,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds a FilterCategory
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategory
-     * @return void
+     * @param FilterCategory $filterCategory
      */
-    public function addFilterCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategory)
+    public function addFilterCategory(FilterCategory $filterCategory): void
     {
         $this->getFilterCategories()->attach($filterCategory);
     }
@@ -930,10 +909,9 @@ class Event extends AbstractImportedEntity
     /**
      * Removes a FilterCategory
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategoryToRemove The FilterCategory to be removed
-     * @return void
+     * @param FilterCategory $filterCategoryToRemove The FilterCategory to be removed
      */
-    public function removeFilterCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategoryToRemove)
+    public function removeFilterCategory(FilterCategory $filterCategoryToRemove): void
     {
         $this->getFilterCategories()->detach($filterCategoryToRemove);
     }
@@ -941,11 +919,11 @@ class Event extends AbstractImportedEntity
     /**
      * Returns the filterCategories
      *
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory> filterCategories
+     * @return ObjectStorage<FilterCategory> filterCategories
      */
     public function getFilterCategories(): ObjectStorage
     {
-        if (null === $this->filterCategories) {
+        if (!$this->filterCategories instanceof ObjectStorage) {
             $this->filterCategories = new ObjectStorage();
         }
         return $this->filterCategories;
@@ -954,10 +932,9 @@ class Event extends AbstractImportedEntity
     /**
      * Sets the filterCategories
      *
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory> $filterCategories
-     * @return void
+     * @param ObjectStorage<FilterCategory> $filterCategories
      */
-    public function setFilterCategories(ObjectStorage $filterCategories)
+    public function setFilterCategories(ObjectStorage $filterCategories): void
     {
         $this->filterCategories = $filterCategories;
     }
@@ -965,7 +942,7 @@ class Event extends AbstractImportedEntity
     /**
      * Returns the timeRanges
      *
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TimeRange> timeRanges
+     * @return ObjectStorage<TimeRange> timeRanges
      */
     public function getTimeRanges(): ObjectStorage
     {
@@ -991,7 +968,7 @@ class Event extends AbstractImportedEntity
             $tstamp = 0;
             foreach ($this->getTimeRanges() as $timeRange) {
                 /** @var TimeRange $timeRange */
-                if ($timeRange->getStartTstamp() > 0 && (0 === $tstamp || $timeRange->getStartTstamp() < $tstamp)) {
+                if ($timeRange->getStartTstamp() > 0 && ($tstamp === 0 || $timeRange->getStartTstamp() < $tstamp)) {
                     $tstamp = $timeRange->getStartTstamp();
                 }
             }
@@ -1121,7 +1098,7 @@ class Event extends AbstractImportedEntity
     /**
      * @param ?string $eventNumber
      */
-    public function setEventNumber(?string $eventNumber)
+    public function setEventNumber(?string $eventNumber): void
     {
         $this->eventNumber = $eventNumber;
     }
@@ -1137,7 +1114,7 @@ class Event extends AbstractImportedEntity
     /**
      * @param ?string $disturberMessage
      */
-    public function setDisturberMessage(?string $disturberMessage)
+    public function setDisturberMessage(?string $disturberMessage): void
     {
         $this->disturberMessage = $disturberMessage;
     }
@@ -1153,7 +1130,7 @@ class Event extends AbstractImportedEntity
     /**
      * @param ?string $sponsorsTitle
      */
-    public function setSponsorsTitle(?string $sponsorsTitle)
+    public function setSponsorsTitle(?string $sponsorsTitle): void
     {
         $this->sponsorsTitle = $sponsorsTitle;
     }
@@ -1169,7 +1146,7 @@ class Event extends AbstractImportedEntity
     /**
      * @param ?string $referentsTitle
      */
-    public function setReferentsTitle(?string $referentsTitle)
+    public function setReferentsTitle(?string $referentsTitle): void
     {
         $this->referentsTitle = $referentsTitle;
     }
@@ -1185,7 +1162,7 @@ class Event extends AbstractImportedEntity
     /**
      * @param ?string $seoTitle
      */
-    public function setSeoTitle(?string $seoTitle)
+    public function setSeoTitle(?string $seoTitle): void
     {
         $this->seoTitle = $seoTitle;
     }
@@ -1201,7 +1178,7 @@ class Event extends AbstractImportedEntity
     /**
      * @param ?string $seoDescription
      */
-    public function setSeoDescription(?string $seoDescription)
+    public function setSeoDescription(?string $seoDescription): void
     {
         $this->seoDescription = $seoDescription;
     }
@@ -1237,7 +1214,7 @@ class Event extends AbstractImportedEntity
     /**
      * @param ?string $eventAttendanceMode
      */
-    public function setEventAttendanceMode($eventAttendanceMode)
+    public function setEventAttendanceMode($eventAttendanceMode): void
     {
         $this->eventAttendanceMode = $eventAttendanceMode;
     }
@@ -1253,26 +1230,26 @@ class Event extends AbstractImportedEntity
     /**
      * @param int $modifiedAtRecursive
      */
-    public function setModifiedAtRecursive($modifiedAtRecursive)
+    public function setModifiedAtRecursive($modifiedAtRecursive): void
     {
         $this->modifiedAtRecursive = $modifiedAtRecursive;
     }
 
     /**
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Event>
+     * @return ObjectStorage<Event>
      */
     public function getAlternativeEvents(): ObjectStorage
     {
-        if ($this->alternativeEvents === null) {
+        if (!$this->alternativeEvents instanceof ObjectStorage) {
             $this->alternativeEvents = new ObjectStorage();
         }
         return $this->alternativeEvents;
     }
 
     /**
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Event> $alternativeEvents
+     * @param ObjectStorage<Event> $alternativeEvents
      */
-    public function setAlternativeEvents($alternativeEvents)
+    public function setAlternativeEvents($alternativeEvents): void
     {
         $this->alternativeEvents = $alternativeEvents;
     }
@@ -1280,10 +1257,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds an AlternativeEvent
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Event $alternativeEvent
-     * @return void
+     * @param Event $alternativeEvent
      */
-    public function addAlternativeEvent(\BrainAppeal\CampusEventsConnector\Domain\Model\Event $alternativeEvent)
+    public function addAlternativeEvent(Event $alternativeEvent): void
     {
         $this->getAlternativeEvents()->attach($alternativeEvent);
     }
@@ -1291,29 +1267,28 @@ class Event extends AbstractImportedEntity
     /**
      * Removes an AlternativeEvent
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Event $alternativeEventToRemove The alternativeEvent to be removed
-     * @return void
+     * @param Event $alternativeEventToRemove The alternativeEvent to be removed
      */
-    public function removeAlternativeEvent(\BrainAppeal\CampusEventsConnector\Domain\Model\Event $alternativeEventToRemove)
+    public function removeAlternativeEvent(Event $alternativeEventToRemove): void
     {
         $this->getAlternativeEvents()->detach($alternativeEventToRemove);
     }
 
     /**
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment>
+     * @return ObjectStorage<EventAttachment>
      */
     public function getEventAttachments(): ObjectStorage
     {
-        if ($this->eventAttachments === null) {
+        if (!$this->eventAttachments instanceof ObjectStorage) {
             $this->eventAttachments = new ObjectStorage();
         }
         return $this->eventAttachments;
     }
 
     /**
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment> $eventAttachments
+     * @param ObjectStorage<EventAttachment> $eventAttachments
      */
-    public function setEventAttachments($eventAttachments)
+    public function setEventAttachments($eventAttachments): void
     {
         $this->eventAttachments = $eventAttachments;
     }
@@ -1321,10 +1296,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds an EventAttachment
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment $eventAttachment
-     * @return void
+     * @param EventAttachment $eventAttachment
      */
-    public function addEventAttachment(\BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment $eventAttachment)
+    public function addEventAttachment(EventAttachment $eventAttachment): void
     {
         $this->getEventAttachments()->attach($eventAttachment);
     }
@@ -1332,10 +1306,9 @@ class Event extends AbstractImportedEntity
     /**
      * Removes an EventAttachment
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment $eventAttachmentToRemove The EventAttachment to be removed
-     * @return void
+     * @param EventAttachment $eventAttachmentToRemove The EventAttachment to be removed
      */
-    public function removeEventAttachment(\BrainAppeal\CampusEventsConnector\Domain\Model\EventAttachment $eventAttachmentToRemove)
+    public function removeEventAttachment(EventAttachment $eventAttachmentToRemove): void
     {
         $this->getEventAttachments()->detach($eventAttachmentToRemove);
     }
@@ -1355,7 +1328,7 @@ class Event extends AbstractImportedEntity
                     $fileReference->getOriginalResource();
                     $fileReferences->attach($fileReference);
                 }
-            } catch (ResourceDoesNotExistException $e) {
+            } catch (ResourceDoesNotExistException) {
                 // File reference is broken, do not add it to the list of file references
                 continue;
             }
@@ -1368,7 +1341,7 @@ class Event extends AbstractImportedEntity
      */
     public function getEventImages(): ObjectStorage
     {
-        if ($this->eventImages === null) {
+        if (!$this->eventImages instanceof ObjectStorage) {
             $this->eventImages = new ObjectStorage();
         }
         return $this->eventImages;
@@ -1377,7 +1350,7 @@ class Event extends AbstractImportedEntity
     /**
      * @param ObjectStorage<EventImage> $eventImages
      */
-    public function setEventImages($eventImages)
+    public function setEventImages($eventImages): void
     {
         $this->eventImages = $eventImages;
     }
@@ -1385,10 +1358,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds an EventImage
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\EventImage $eventImage
-     * @return void
+     * @param EventImage $eventImage
      */
-    public function addEventImage(\BrainAppeal\CampusEventsConnector\Domain\Model\EventImage $eventImage)
+    public function addEventImage(EventImage $eventImage): void
     {
         $this->getEventImages()->attach($eventImage);
     }
@@ -1396,10 +1368,9 @@ class Event extends AbstractImportedEntity
     /**
      * Removes an EventImage
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\EventImage $eventImageToRemove The eventImage to be removed
-     * @return void
+     * @param EventImage $eventImageToRemove The eventImage to be removed
      */
-    public function removeEventImage(\BrainAppeal\CampusEventsConnector\Domain\Model\EventImage $eventImageToRemove)
+    public function removeEventImage(EventImage $eventImageToRemove): void
     {
         $this->getEventImages()->detach($eventImageToRemove);
     }
@@ -1419,7 +1390,7 @@ class Event extends AbstractImportedEntity
                     $fileReference->getOriginalResource();
                     $fileReferences->attach($fileReference);
                 }
-            } catch (ResourceDoesNotExistException $e) {
+            } catch (ResourceDoesNotExistException) {
                 // File reference is broken, do not add it to the list of file references
                 continue;
             }
@@ -1428,20 +1399,20 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Referent>
+     * @return ObjectStorage<Referent>
      */
     public function getReferents(): ObjectStorage
     {
-        if ($this->referents === null) {
+        if (!$this->referents instanceof ObjectStorage) {
             $this->referents = new ObjectStorage();
         }
         return $this->referents;
     }
 
     /**
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Referent> $referents
+     * @param ObjectStorage<Referent> $referents
      */
-    public function setReferents($referents)
+    public function setReferents($referents): void
     {
         $this->referents = $referents;
     }
@@ -1449,10 +1420,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds a Referent
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Referent $referent
-     * @return void
+     * @param Referent $referent
      */
-    public function addReferent(\BrainAppeal\CampusEventsConnector\Domain\Model\Referent $referent)
+    public function addReferent(Referent $referent): void
     {
         $this->getReferents()->attach($referent);
     }
@@ -1460,10 +1430,9 @@ class Event extends AbstractImportedEntity
     /**
      * Removes a Referent
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Referent $referentToRemove The Referent to be removed
-     * @return void
+     * @param Referent $referentToRemove The Referent to be removed
      */
-    public function removeReferent(\BrainAppeal\CampusEventsConnector\Domain\Model\Referent $referentToRemove)
+    public function removeReferent(Referent $referentToRemove): void
     {
         $this->getReferents()->detach($referentToRemove);
     }
@@ -1471,7 +1440,7 @@ class Event extends AbstractImportedEntity
     /**
      * Returns the referents
      *
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Referent>
+     * @return ObjectStorage<Referent>
      * @deprecated
      */
     public function getSpeakers(): ObjectStorage
@@ -1480,20 +1449,20 @@ class Event extends AbstractImportedEntity
     }
 
     /**
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor>
+     * @return ObjectStorage<Sponsor>
      */
     public function getSponsors(): ObjectStorage
     {
-        if ($this->sponsors === null) {
+        if (!$this->sponsors instanceof ObjectStorage) {
             $this->sponsors = new ObjectStorage();
         }
         return $this->sponsors;
     }
 
     /**
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor> $sponsors
+     * @param ObjectStorage<Sponsor> $sponsors
      */
-    public function setSponsors($sponsors)
+    public function setSponsors($sponsors): void
     {
         $this->sponsors = $sponsors;
     }
@@ -1501,10 +1470,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds a Sponsor
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor $sponsor
-     * @return void
+     * @param Sponsor $sponsor
      */
-    public function addSponsor(\BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor $sponsor)
+    public function addSponsor(Sponsor $sponsor): void
     {
         $this->getSponsors()->attach($sponsor);
     }
@@ -1512,27 +1480,26 @@ class Event extends AbstractImportedEntity
     /**
      * Removes a Sponsor
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor $sponsorToRemove The Sponsor to be removed
-     * @return void
+     * @param Sponsor $sponsorToRemove The Sponsor to be removed
      */
-    public function removeSponsor(\BrainAppeal\CampusEventsConnector\Domain\Model\Sponsor $sponsorToRemove)
+    public function removeSponsor(Sponsor $sponsorToRemove): void
     {
         $this->getSponsors()->detach($sponsorToRemove);
     }
 
     /**
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ContactPerson>
+     * @return ObjectStorage<ContactPerson>
      */
     public function getContactPersons(): ObjectStorage
     {
-        if (null === $this->contactPersons) {
+        if (!$this->contactPersons instanceof ObjectStorage) {
             $this->contactPersons = new ObjectStorage();
         }
         return $this->contactPersons;
     }
 
     /**
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ContactPerson> $contactPersons
+     * @param ObjectStorage<ContactPerson> $contactPersons
      */
     public function setContactPersons($contactPersons): void
     {
@@ -1542,10 +1509,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds a ContactPerson
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ContactPerson $contactPerson
-     * @return void
+     * @param ContactPerson $contactPerson
      */
-    public function addContactPerson(\BrainAppeal\CampusEventsConnector\Domain\Model\ContactPerson $contactPerson): void
+    public function addContactPerson(ContactPerson $contactPerson): void
     {
         $this->getContactPersons()->attach($contactPerson);
     }
@@ -1553,29 +1519,28 @@ class Event extends AbstractImportedEntity
     /**
      * Removes a ContactPerson
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ContactPerson $contactPersonToRemove The ContactPerson to be removed
-     * @return void
+     * @param ContactPerson $contactPersonToRemove The ContactPerson to be removed
      */
-    public function removeContactPerson(\BrainAppeal\CampusEventsConnector\Domain\Model\ContactPerson $contactPersonToRemove): void
+    public function removeContactPerson(ContactPerson $contactPersonToRemove): void
     {
         $this->getContactPersons()->detach($contactPersonToRemove);
     }
 
     /**
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventSession>
+     * @return ObjectStorage<EventSession>
      */
     public function getEventSessions(): ObjectStorage
     {
-        if (null === $this->eventSessions) {
+        if (!$this->eventSessions instanceof ObjectStorage) {
             $this->eventSessions = new ObjectStorage();
         }
         return $this->eventSessions;
     }
 
     /**
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventSession> $eventSessions
+     * @param ObjectStorage<EventSession> $eventSessions
      */
-    public function setEventSessions($eventSessions)
+    public function setEventSessions($eventSessions): void
     {
         $this->eventSessions = $eventSessions;
     }
@@ -1583,10 +1548,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds an EventSession
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\EventSession $eventSession
-     * @return void
+     * @param EventSession $eventSession
      */
-    public function addEventSession(\BrainAppeal\CampusEventsConnector\Domain\Model\EventSession $eventSession): void
+    public function addEventSession(EventSession $eventSession): void
     {
         $this->getEventSessions()->attach($eventSession);
     }
@@ -1594,27 +1558,26 @@ class Event extends AbstractImportedEntity
     /**
      * Removes an EventSession
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\EventSession $eventSessionToRemove The EventSession to be removed
-     * @return void
+     * @param EventSession $eventSessionToRemove The EventSession to be removed
      */
-    public function removeEventSession(\BrainAppeal\CampusEventsConnector\Domain\Model\EventSession $eventSessionToRemove): void
+    public function removeEventSession(EventSession $eventSessionToRemove): void
     {
         $this->getEventSessions()->detach($eventSessionToRemove);
     }
 
     /**
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventTicketPriceVariant>
+     * @return ObjectStorage<EventTicketPriceVariant>
      */
     public function getEventTicketPriceVariants(): ObjectStorage
     {
-        if (null === $this->eventTicketPriceVariants) {
+        if (!$this->eventTicketPriceVariants instanceof ObjectStorage) {
             $this->eventTicketPriceVariants = new ObjectStorage();
         }
         return $this->eventTicketPriceVariants;
     }
 
     /**
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\EventTicketPriceVariant> $eventTicketPriceVariants
+     * @param ObjectStorage<EventTicketPriceVariant> $eventTicketPriceVariants
      */
     public function setEventTicketPriceVariants($eventTicketPriceVariants): void
     {
@@ -1624,10 +1587,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds an EventTicketPriceVariant
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\EventTicketPriceVariant $eventTicketPriceVariant
-     * @return void
+     * @param EventTicketPriceVariant $eventTicketPriceVariant
      */
-    public function addEventTicketPriceVariant(\BrainAppeal\CampusEventsConnector\Domain\Model\EventTicketPriceVariant $eventTicketPriceVariant): void
+    public function addEventTicketPriceVariant(EventTicketPriceVariant $eventTicketPriceVariant): void
     {
         $this->getEventTicketPriceVariants()->attach($eventTicketPriceVariant);
     }
@@ -1635,10 +1597,9 @@ class Event extends AbstractImportedEntity
     /**
      * Removes an EventTicketPriceVariant
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\EventTicketPriceVariant $eventTicketPriceVariantToRemove The EventTicketPriceVariant to be removed
-     * @return void
+     * @param EventTicketPriceVariant $eventTicketPriceVariantToRemove The EventTicketPriceVariant to be removed
      */
-    public function removeEventTicketPriceVariant(\BrainAppeal\CampusEventsConnector\Domain\Model\EventTicketPriceVariant $eventTicketPriceVariantToRemove): void
+    public function removeEventTicketPriceVariant(EventTicketPriceVariant $eventTicketPriceVariantToRemove): void
     {
         $this->getEventTicketPriceVariants()->detach($eventTicketPriceVariantToRemove);
     }
@@ -1657,7 +1618,7 @@ class Event extends AbstractImportedEntity
      */
     public function getLocations(): ObjectStorage
     {
-        if (null === $this->locations) {
+        if (!$this->locations instanceof ObjectStorage) {
             $this->locations = new ObjectStorage();
         }
         return $this->locations;
@@ -1685,7 +1646,6 @@ class Event extends AbstractImportedEntity
      * Adds a Location
      *
      * @param Location $location
-     * @return void
      */
     public function addLocation(Location $location): void
     {
@@ -1696,7 +1656,6 @@ class Event extends AbstractImportedEntity
      * Removes a Location
      *
      * @param Location $locationToRemove The Location to be removed
-     * @return void
      */
     public function removeLocation(Location $locationToRemove): void
     {
@@ -1706,10 +1665,9 @@ class Event extends AbstractImportedEntity
     /**
      * Adds a ViewList
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ViewList $viewList
-     * @return void
+     * @param ViewList $viewList
      */
-    public function addViewList(\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList $viewList): void
+    public function addViewList(ViewList $viewList): void
     {
         $this->getViewLists()->attach($viewList);
     }
@@ -1717,10 +1675,9 @@ class Event extends AbstractImportedEntity
     /**
      * Removes a ViewList
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ViewList $viewListToRemove The ViewList to be removed
-     * @return void
+     * @param ViewList $viewListToRemove The ViewList to be removed
      */
-    public function removeViewList(\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList $viewListToRemove): void
+    public function removeViewList(ViewList $viewListToRemove): void
     {
         $this->getViewLists()->detach($viewListToRemove);
     }
@@ -1728,11 +1685,11 @@ class Event extends AbstractImportedEntity
     /**
      * Returns the viewLists
      *
-     * @return ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList> viewLists
+     * @return ObjectStorage<ViewList> viewLists
      */
     public function getViewLists(): ObjectStorage
     {
-        if (null === $this->viewLists) {
+        if (!$this->viewLists instanceof ObjectStorage) {
             $this->viewLists = new ObjectStorage();
         }
         return $this->viewLists;
@@ -1741,8 +1698,7 @@ class Event extends AbstractImportedEntity
     /**
      * Sets the viewLists
      *
-     * @param ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList> $viewLists
-     * @return void
+     * @param ObjectStorage<ViewList> $viewLists
      */
     public function setViewLists(ObjectStorage $viewLists): void
     {

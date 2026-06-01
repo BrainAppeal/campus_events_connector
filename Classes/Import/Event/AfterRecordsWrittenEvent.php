@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Event;
 
-use BrainAppeal\CampusEventsConnector\Import\Model\AbstractImportOptions;
 use BrainAppeal\CampusEventsConnector\Import\TargetResolution\ImportTargetRecordMapping;
 
 /**
@@ -12,17 +11,8 @@ use BrainAppeal\CampusEventsConnector\Import\TargetResolution\ImportTargetRecord
  */
 class AfterRecordsWrittenEvent extends AbstractImportEvent
 {
-
-    public function __construct(
-        protected AbstractImportOptions     $importOptions,
-        protected ImportTargetRecordMapping $targetUidMapping
-    )
-    {
-        parent::__construct($importOptions);
-    }
-
     public function getTargetUidMapping(): ImportTargetRecordMapping
     {
-        return $this->targetUidMapping;
+        return $this->context->getTargetRecordMapping();
     }
 }

@@ -8,14 +8,15 @@ use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurat
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationProvider;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ImportOptionsConfigurationException;
+use BrainAppeal\CampusEventsConnector\Import\Exception\ImportTcaConfigurationException;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ReferenceNotFoundException;
 use BrainAppeal\CampusEventsConnector\Import\Repository\AbstractImportRowRepository;
 use BrainAppeal\CampusEventsConnector\Import\TargetResolution\ImportTargetRecordMapping;
+use BrainAppeal\CampusEventsConnector\Import\Workflow\ImportContext;
 use Doctrine\DBAL\Exception;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * An abstract class that provides a base for data transformers,
@@ -24,10 +25,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 readonly class ReferenceWriter extends AbstractImportRowRepository
 {
     public function __construct(
-        protected LoggerInterface                  $logger,
-        protected ImportTableConfigurationProvider $importTableConfigurationProvider
-    )
-    {
+        protected ImportTableConfigurationProvider $importTableConfigurationProvider,
+        LoggerInterface $logger,
+        ConnectionPool $connectionPool
+    ) {
+        parent::__construct($logger, $connectionPool);
     }
 
     public function updateManyToOneReferences(string $table): void
@@ -99,11 +101,13 @@ readonly class ReferenceWriter extends AbstractImportRowRepository
     /**
      * Updates many-to-many references based on the provided mapping and configuration.
      *
-     * @param ImportTargetRecordMapping $mapping The reference resolver instance containing the mapping and references.
-     * @return void
+     * @param ImportContext $context
+     * @throws ImportOptionsConfigurationException
+     * @throws ImportTcaConfigurationException
      */
-    public function updateManyToManyReferences(ImportTargetRecordMapping $mapping): void
+    public function updateManyToManyReferences(ImportContext $context): void
     {
+        $mapping = $context->getTargetRecordMapping();
         foreach ($mapping->getManyToManyReferences() as $mmReference) {
             $table = $mmReference->getTable();
             $importTableConfiguration = $this->importTableConfigurationProvider->getConfiguration($table);
@@ -126,7 +130,7 @@ readonly class ReferenceWriter extends AbstractImportRowRepository
     protected function updateManyToManyReferencesForTableField(string $table, array $mmReferences, ImportFieldConfigurationModel $mapEntry, ImportTargetRecordMapping $mapping): void
     {
         $targetField = $mapEntry->getTargetField();
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $connectionPool = $this->connectionPool;
         $foreignTable = $mapEntry->getReferenceTable();
         $foreignMatchField = $mapEntry->get('foreign_match_field');
         $mmTable = $mapEntry->getManyToManyTable();
@@ -173,7 +177,7 @@ readonly class ReferenceWriter extends AbstractImportRowRepository
                             'target_field' => $targetField,
                             'uid_local' => $uidLocal,
                             'sourceIdentifier' => $sourceIdentifier,
-                            'foreignMatchField' => $foreignMatchField
+                            'foreignMatchField' => $foreignMatchField,
                         ]);
                         continue;
                     }
@@ -249,8 +253,7 @@ readonly class ReferenceWriter extends AbstractImportRowRepository
      */
     protected function fetchMMRowsForTableByUidLocal(string $mmTable, string $localField = 'uid_local', string $foreignField = 'uid_foreign'): array
     {
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        $connection = $connectionPool->getConnectionForTable($mmTable);
+        $connection = $this->connectionPool->getConnectionForTable($mmTable);
         // Map existing rows by uid to allow fast lookup of existing records
         $existingRowsByUidLocal = [];
         $query = 'SELECT * FROM ' . $mmTable;
@@ -272,8 +275,7 @@ readonly class ReferenceWriter extends AbstractImportRowRepository
     protected function executeSql(string $table, array $statements): void
     {
         if ($statements) {
-            $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-            $connection = $connectionPool->getConnectionForTable($table);
+            $connection = $this->connectionPool->getConnectionForTable($table);
             foreach ($statements as $statement) {
                 try {
                     $connection->executeStatement($statement);

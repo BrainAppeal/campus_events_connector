@@ -9,7 +9,4 @@ namespace BrainAppeal\CampusEventsConnector\Import\Event;
  *
  * This is mainly used to override the import options before the import starts.
  */
-class BeforeImportStartedEvent extends AbstractImportEvent
-{
-
-}
+class BeforeImportStartedEvent extends AbstractImportEvent {}

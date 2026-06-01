@@ -1,38 +1,39 @@
 {
-    "name": "brainappeal/campus_events_connector",
-    "type": "typo3-cms-extension",
-    "description": "Manage events, appointments, registrations and participants centrally with Campus Events. To use this extension, a Campus Events installation or access to the API is required. For more information see https://www.campus-events.com",
-    "license": [
-        "GPL-2.0-only"
-    ],
-     "keywords": [
-        "TYPO3",
-        "extension",
-        "event",
-        "events",
-        "veranstaltung",
-        "eventtool"
-     ],
-    "homepage": "https://www.campus-events.com/",
-    "authors": [
-        {
-            "name": "Brain Appeal GmbH",
-            "email": "info@brain-appeal.com",
-            "homepage": "https://www.brain-appeal.com"
-        }
-    ],
-    "require": {
-      "typo3/cms-core": "^12.4 || ^13.4",
-      "guzzlehttp/guzzle": "^7.7.0|^8.0.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "BrainAppeal\\CampusEventsConnector\\": "Classes"
-        }
-    },
-    "extra": {
-        "typo3/cms": {
-            "extension-key": "campus_events_connector"
-        }
+  "name": "brainappeal/campus_events_connector",
+  "type": "typo3-cms-extension",
+  "description": "Campus Events Connector - Manage events, appointments, registrations and participants centrally with Campus Events. To use this extension, a Campus Events installation or access to the API is required. For more information see https://www.campus-events.com",
+  "license": [
+    "GPL-2.0-only"
+  ],
+  "keywords": [
+    "TYPO3",
+    "extension",
+    "event",
+    "events",
+    "veranstaltung",
+    "eventtool"
+  ],
+  "homepage": "https://www.campus-events.com/",
+  "authors": [
+    {
+      "name": "Brain Appeal GmbH",
+      "email": "info@brain-appeal.com",
+      "homepage": "https://www.brain-appeal.com"
     }
+  ],
+  "require": {
+    "typo3/cms-core": "^13.4 || ^14.3",
+    "guzzlehttp/guzzle": "^7.7.0|^8.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "BrainAppeal\\CampusEventsConnector\\": "Classes"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "campus_events_connector",
+      "version": "6.0.0"
+    }
+  }
 }

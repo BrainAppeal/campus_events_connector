@@ -2,11 +2,12 @@
 
 namespace BrainAppeal\CampusEventsConnector\Import\Utility;
 
+use TYPO3\CMS\Core\Cache\CacheDataCollector;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\CacheTag;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\Generic\QueryResult;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
  * Cache utility class
@@ -18,11 +19,11 @@ class Cache
      *
      * The cache data collector is obtained from the TYPO3 front-end request attributes.
      *
-     * @return TypoScriptFrontendController The cache data collector instance.
+     * @return CacheDataCollector The cache data collector instance.
      */
-    protected static function getCacheDataCollector(): TypoScriptFrontendController
+    protected static function getCacheDataCollector(): CacheDataCollector
     {
-        return $GLOBALS['TSFE'];
+        return $GLOBALS['TYPO3_REQUEST']->getAttribute('frontend.cache.collector');
     }
 
     /**
@@ -40,7 +41,7 @@ class Cache
             $cacheDataCollector = self::getCacheDataCollector();
             $cacheTags = [];
             foreach ($cacheTagIdentifiers as $cacheTagIdentifier) {
-                $cacheTags[] = $cacheTagIdentifier;
+                $cacheTags[] = new CacheTag($cacheTagIdentifier);
             }
             $cacheDataCollector->addCacheTags(...$cacheTags);
         }
@@ -70,7 +71,7 @@ class Cache
     /**
      * Adds cache tags to the page cache by records.
      *
-     * The following cache tags will be added to cache collector: "tx_hub_zis_CLASS_uid_[model:uid]"
+     * The following cache tags will be added to cache collector: "tx_campus_events_connector_CLASS_uid_[model:uid]"
      *
      * @param string $table
      * @param AbstractEntity[]|QueryResult $records with records

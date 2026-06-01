@@ -19,8 +19,8 @@ class DevelopmentConnectorCache
 
     public function __construct(
         private readonly LoggerInterface $logger,
-        string          $relativePath,
-        int                              $developmentLocalCacheAgeInDays = 0
+        string $relativePath,
+        int $developmentLocalCacheAgeInDays = 0
     ) {
         $this->relativePath = trim($relativePath, '/');
         if ($developmentLocalCacheAgeInDays > 0 && Environment::getContext()->isDevelopment()) {

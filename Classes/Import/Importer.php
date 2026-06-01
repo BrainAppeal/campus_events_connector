@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import;
 
-use BrainAppeal\CampusEventsConnector\Import\Event\BeforeImportStartedEvent;
-use BrainAppeal\CampusEventsConnector\Import\Exception\StopImportException;
-use Doctrine\DBAL\Exception;
 use BrainAppeal\CampusEventsConnector\Import\DataCollection\AbstractDataCollection;
 use BrainAppeal\CampusEventsConnector\Import\Event\AfterDataCollectionCompletedEvent;
 use BrainAppeal\CampusEventsConnector\Import\Event\AfterRecordsWrittenEvent;
+use BrainAppeal\CampusEventsConnector\Import\Event\BeforeImportStartedEvent;
 use BrainAppeal\CampusEventsConnector\Import\Event\ImportFinishEvent;
 use BrainAppeal\CampusEventsConnector\Import\Event\ImportRunCompletedEvent;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ImportAlreadyRunningException;
+use BrainAppeal\CampusEventsConnector\Import\Exception\StopImportException;
 use BrainAppeal\CampusEventsConnector\Import\Model\AbstractImportOptions;
-use BrainAppeal\CampusEventsConnector\Import\Model\ImportEntry;
 use BrainAppeal\CampusEventsConnector\Import\Repository\ImportEntryManager;
-use BrainAppeal\CampusEventsConnector\Import\TargetResolution\ImportTargetRecordMapping;
+use BrainAppeal\CampusEventsConnector\Import\Workflow\ImportContext;
+use BrainAppeal\CampusEventsConnector\Import\Workflow\ImportContextRegistry;
 use BrainAppeal\CampusEventsConnector\Import\Workflow\ImportRecordWorkflow;
+use Doctrine\DBAL\Exception;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,17 +29,17 @@ use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
  */
 class Importer
 {
-
     /**
      * @var ?OutputInterface
      */
     private ?OutputInterface $output = null;
 
     public function __construct(
-        protected readonly ImportEntryManager   $importEntryManager,
+        protected ImportContextRegistry $importContextRegistry,
+        protected readonly ImportEntryManager $importEntryManager,
         protected readonly ImportRecordWorkflow $processing,
-        protected readonly LoggerInterface      $logger,
-        protected EventDispatcherInterface      $eventDispatcher,
+        protected readonly LoggerInterface $logger,
+        protected EventDispatcherInterface $eventDispatcher,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -70,56 +70,61 @@ class Importer
      */
     public function run(AbstractDataCollection $dataCollection, AbstractImportOptions $importOptions): int
     {
-        $event = new BeforeImportStartedEvent($importOptions);
-        $this->eventDispatcher->dispatch($event);
-        $importSource = $importOptions->getImportSource();
         $startTime = microtime(true);
-        $this->checkImportSourceAvailability($dataCollection, $importSource);
-        if ($importOptions->isForceUpdate() || !$importOptions->supportsContinuedImport()) {
-            $this->importEntryManager->forceStartOfNewImportEntry($importSource);
-        }
-        $forced = $importOptions->isForceUpdate() ? ' forced' : '';
-        $this->writeOutput(sprintf('Starting%s import for source %s', $forced, $importSource));
-        $dataSourceLastModified = $importOptions->isForceUpdate() ? time() : $dataCollection->getDataSourceLastModified();
-        $importEntry = $this->importEntryManager->getCurrentImportEntry($importSource, $importOptions->getPid(), $dataSourceLastModified);
-        $importOptions->setImportId($importEntry->getUid());
-        $importEntry->setImportLimit($importOptions->getLimit());
-        $processedRecordCount = 0;
+        $importSource = $importOptions->getImportSource();
+        $context = $this->importContextRegistry->create($importOptions);
         try {
-            $processedRecordCount = $this->executeDataImport($dataCollection, $importEntry, $importOptions);
-            $duration = round(microtime(true) - $startTime, 3);
-            $infoMessage = sprintf('Loading duration: %s seconds', $duration);
-            $this->writeOutput($infoMessage);
-            $infoMessage = sprintf(
-                'Executed import for source %s. %d of %d records processed. API data fetched for %d records. %d records skipped.',
-                $importSource,
-                $importEntry->getImportedRowCount(),
-                $importEntry->getTotalRowCount(),
-                $importEntry->getFullLoadedRowCount(),
-                $importEntry->getSkippedRowCount(),
-            );
-            $this->writeOutput($infoMessage);
-            $this->logger->info($infoMessage, ['importSource' => $importSource, 'duration' => $duration]);
-            if ($importEntry->isImportFinished()) {
-                $this->writeOutput(sprintf(
-                    'Completed import for source %s.',
-                    $importSource
-                ));
+            $event = new BeforeImportStartedEvent($context);
+            $this->eventDispatcher->dispatch($event);
+            $this->checkImportSourceAvailability($dataCollection, $context);
+            if ($importOptions->isForceUpdate() || !$importOptions->supportsContinuedImport()) {
+                $this->importEntryManager->forceStartOfNewImportEntry($importSource);
             }
-        } catch (StopImportException $exception) {
-            if ($exception->isErrorCode()) {
+            $forced = $importOptions->isForceUpdate() ? ' forced' : '';
+            $this->writeOutput(sprintf('Starting%s import for source %s', $forced, $importSource));
+            $dataSourceLastModified = $importOptions->isForceUpdate() ? time() : $dataCollection->getDataSourceLastModified();
+            $importEntry = $this->importEntryManager->getCurrentImportEntry($importSource, $importOptions->getPid(), $dataSourceLastModified);
+            $importEntry->setImportLimit($importOptions->getLimit());
+            $context->setImportEntry($importEntry);
+            $processedRecordCount = 0;
+            try {
+                $processedRecordCount = $this->executeDataImport($dataCollection, $context);
+                $duration = round(microtime(true) - $startTime, 3);
+                $infoMessage = sprintf('Loading duration: %s seconds', $duration);
+                $this->writeOutput($infoMessage);
+                $infoMessage = sprintf(
+                    'Executed import for source %s. %d of %d records processed. API data fetched for %d records. %d records skipped.',
+                    $importSource,
+                    $importEntry->getImportedRowCount(),
+                    $importEntry->getTotalRowCount(),
+                    $importEntry->getFullLoadedRowCount(),
+                    $importEntry->getSkippedRowCount(),
+                );
+                $this->writeOutput($infoMessage);
+                $this->logger->info($infoMessage, ['importSource' => $importSource, 'duration' => $duration]);
+                if ($importEntry->isImportFinished()) {
+                    $this->writeOutput(sprintf(
+                        'Completed import for source %s.',
+                        $importSource
+                    ));
+                }
+            } catch (StopImportException $exception) {
+                if ($exception->isErrorCode()) {
+                    $this->logger->error(sprintf('Error during import: %s', $exception->getMessage()), ['exception' => $exception]);
+                    throw $exception;
+                }
+                $this->writeOutput('No data have been changed on the remote system. Import stopped.');
+                $importEntry->setRunning(false);
+                $importEntry->markAsFinished();
+                $this->importEntryManager->updateActiveEntry($importEntry);
+            } catch (\Exception $exception) {
                 $this->logger->error(sprintf('Error during import: %s', $exception->getMessage()), ['exception' => $exception]);
                 throw $exception;
             }
-            $this->writeOutput('No data have been changed on the remote system. Import stopped.');
-            $importEntry->setRunning(false);
-            $importEntry->markAsFinished();
-            $this->importEntryManager->updateActiveEntry($importEntry);
-        } catch (\Exception $exception) {
-            $this->logger->error(sprintf('Error during import: %s', $exception->getMessage()), ['exception' => $exception]);
-            throw $exception;
+            return $processedRecordCount;
+        } finally {
+            $this->importContextRegistry->destroy($importSource);
         }
-        return $processedRecordCount;
     }
 
     /**
@@ -142,14 +147,14 @@ class Importer
      * accordingly. It also handles stopping the import and providing relevant status updates.
      *
      * @param AbstractDataCollection $dataCollection An instance responsible for processing the import source.
-     * @param ImportEntry $importEntry The import entry object for which the data import is being performed.
-     * @param AbstractImportOptions $importOptions
+     * @param ImportContext $context
      * @return int Returns the total number of records processed during the import operation.
      */
-    private function executeDataImport(AbstractDataCollection $dataCollection, ImportEntry $importEntry, AbstractImportOptions $importOptions): int
+    private function executeDataImport(AbstractDataCollection $dataCollection, ImportContext $context): int
     {
-        $isStartOfNewImport = !$importEntry->isFirstImportDone();
-        if ($isStartOfNewImport) {
+        $importEntry = $context->getImportEntry();
+        if (!$importEntry->isFirstImportDone()) {
+            $context->setIsStartOfNewImport(true);
             $importEntry->setFirstImportDone(true);
             $infoMessage = sprintf('Importing data for new import entry %d. This may take a while.', $importEntry->getUid());
         } else {
@@ -157,22 +162,22 @@ class Importer
         }
         $this->writeOutput($infoMessage);
         $processedRecordCount = 0;
-        $collectedRowCount = $dataCollection->collectRawData($isStartOfNewImport);
+        $collectedRowCount = $dataCollection->collectRawData($context);
+        $importOptions = $context->options;
         $configuredLimit = $importOptions->getLimit();
         $limit = $configuredLimit > 0 ? $configuredLimit - $collectedRowCount : null;
-        if ($dataCollection->isComplete()) {
-            $infoMessage = sprintf('Data collection of %d rows from data source %s finished', $collectedRowCount, $importOptions->getImportSource());
+        if ($dataCollection->isComplete($context)) {
+            $infoMessage = sprintf('Data collection of %d rows from data source %s finished', $collectedRowCount, $context->getImportSource());
             $this->writeOutput($infoMessage);
-            $this->logger->info($infoMessage, ['importSource' => $importOptions->getImportSource()]);
-            $afterDataCollectionCompletedEvent = new AfterDataCollectionCompletedEvent($importOptions);
+            $this->logger->info($infoMessage, ['importSource' => $context->getImportSource()]);
+            $afterDataCollectionCompletedEvent = new AfterDataCollectionCompletedEvent($context);
             $this->eventDispatcher->dispatch($afterDataCollectionCompletedEvent);
             if ($limit === null || $limit > 0) {
-                $processedRecordCount = $this->processing->transformCollectedData($importEntry, $limit);
-                $mapping = $this->processing->getMapping();
-                $afterDataTransformationCompletedEvent = new AfterRecordsWrittenEvent($importOptions, $mapping);
+                $processedRecordCount = $this->processing->transformCollectedData($context, $limit);
+                $afterDataTransformationCompletedEvent = new AfterRecordsWrittenEvent($context);
                 $this->eventDispatcher->dispatch($afterDataTransformationCompletedEvent);
-                $this->writeCreateOrUpdatedMessage($mapping);
-                $processingErrors = $this->processing->getErrorsByTable();
+                $this->writeCreateOrUpdatedMessage($context);
+                $processingErrors = $context->getErrorsByTable();
                 if (!empty($processingErrors)) {
                     $this->writeOutput('There were errors processing the collected data:');
                     foreach ($processingErrors as $table => $errorsForTable) {
@@ -183,12 +188,12 @@ class Importer
                 }
             }
         }
-        $stopEvent = new ImportRunCompletedEvent($importOptions, $importEntry);
+        $stopEvent = new ImportRunCompletedEvent($context);
         $this->eventDispatcher->dispatch($stopEvent);
         $importEntry->setRunning(false);
         $this->importEntryManager->updateActiveEntry($importEntry);
         if ($importEntry->isImportFinished()) {
-            $event = new ImportFinishEvent($importOptions, $importEntry);
+            $event = new ImportFinishEvent($context);
             $this->eventDispatcher->dispatch($event);
             if ($event->getDeletedRowCount() > 0) {
                 $infoMessage = sprintf('Import workflow: %d rows were deleted.', $event->getDeletedRowCount());
@@ -209,12 +214,11 @@ class Importer
      * created or updated, grouped by source type, based on the provided mapping object.
      * If no records were created or updated, appropriate messages are also written.
      *
-     * @param ImportTargetRecordMapping $mapping The mapping object containing counts
-     *                                           of created and updated records, grouped by type.
-     * @return void
+     * @param ImportContext $context
      */
-    private function writeCreateOrUpdatedMessage(ImportTargetRecordMapping $mapping): void
+    private function writeCreateOrUpdatedMessage(ImportContext $context): void
     {
+        $mapping = $context->getTargetRecordMapping();
         $groupTextsCreated = [];
         $groupTextsUpdated = [];
         $totalCreatedCount = 0;
@@ -243,11 +247,12 @@ class Importer
      * Checks if the import source is available and throws an exception if not.
      *
      * @param AbstractDataCollection $initialization
-     * @param string $importSource
+     * @param ImportContext $context
      */
-    private function checkImportSourceAvailability(AbstractDataCollection $initialization, string $importSource): void
+    private function checkImportSourceAvailability(AbstractDataCollection $initialization, ImportContext $context): void
     {
-        if (!$initialization->canProvide()) {
+        if (!$initialization->canProvide($context)) {
+            $importSource = $context->getImportSource();
             $message = sprintf('The import source %s either does not exist, is not readable or is not configured correctly!', $importSource);
             $this->writeOutput($message);
             $this->logger->error($message, ['importSource' => $importSource]);

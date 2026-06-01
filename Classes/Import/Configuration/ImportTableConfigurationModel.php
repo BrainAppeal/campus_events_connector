@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Configuration;
 
-use Doctrine\DBAL\Schema\Column;
-use Doctrine\DBAL\Types\Type;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DefaultDataTransformer;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ImportTcaConfigurationException;
+use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * Model for import table configuration
@@ -178,7 +178,7 @@ class ImportTableConfigurationModel
 
     public function getLanguageFieldMapping(): ?ImportFieldConfigurationModel
     {
-        if ($this->languageField && null === $this->languageFieldMapping) {
+        if ($this->languageField && $this->languageFieldMapping === null) {
             $this->languageFieldMapping = $this->getImportConfigurationForField($this->languageField);
         }
         return $this->languageFieldMapping;
@@ -283,7 +283,7 @@ class ImportTableConfigurationModel
             if (!empty($config['config']['foreign_table']) && !empty($importItem['field']) && is_scalar($importItem['field'])) {
                 $config[$tcaImportKey]['raw_value_field'] = $mapColumnsByImportField[(string)$importItem['field']] ?? null;
             }
-            $fieldConfigurationModel = new ImportFieldConfigurationModel($table, $tcaImportKey, $column, $config,$tableColumInfo[$column] ?? null);
+            $fieldConfigurationModel = new ImportFieldConfigurationModel($table, $tcaImportKey, $column, $config, $tableColumInfo[$column] ?? null);
             $itemProcess = $config[$tcaImportKey]['custom_process'] ?? 'default';
             $importFieldMaps[$itemProcess][$column] = $fieldConfigurationModel;
         }
@@ -294,8 +294,6 @@ class ImportTableConfigurationModel
      * Initializes dependencies based on the provided import field map.
      * Scans the field map for reference entries and categorizes them as
      * dependencies to other tables or internal dependencies within the same table.
-     *
-     * @return void
      */
     private function initializeDependencies(): void
     {
@@ -322,7 +320,7 @@ class ImportTableConfigurationModel
      */
     public function getDependenciesToOtherTables(): array
     {
-        if (null === $this->dependenciesToOtherTables) {
+        if ($this->dependenciesToOtherTables === null) {
             $this->initializeDependencies();
         }
         return $this->dependenciesToOtherTables;
@@ -334,7 +332,7 @@ class ImportTableConfigurationModel
      */
     public function getInternalDependencies(): array
     {
-        if (null === $this->internalDependencies) {
+        if ($this->internalDependencies === null) {
             $this->initializeDependencies();
         }
         return $this->internalDependencies;

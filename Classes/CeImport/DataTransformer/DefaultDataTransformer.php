@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace BrainAppeal\CampusEventsConnector\CeImport\DataTransformer;
 
 use BrainAppeal\CampusEventsConnector\CeImport\DataCollection\CeApiConnector;
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\AbstractDataTransformer;
-use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportFileMappingModel;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
 
@@ -27,7 +27,7 @@ class DefaultDataTransformer extends AbstractDataTransformer
     public function __construct(protected ImportTableConfigurationModel $importConfiguration)
     {
         parent::__construct($importConfiguration);
-        if (!empty($this->importConfiguration->getDependenciesToOtherTables())) {
+        if ($this->importConfiguration->getDependenciesToOtherTables() !== []) {
             $fieldMap = $this->importConfiguration->getImportFieldMap();
             foreach ($fieldMap as $mapEntry) {
                 if ($mapEntry->isReference()) {
@@ -45,13 +45,13 @@ class DefaultDataTransformer extends AbstractDataTransformer
     {
         $model = parent::initializeImportRecord($importData);
         // Skip records that have invalid references to events
-        if ($model && $this->hasSingleEventReference && !empty($this->mapFieldsWithReferences)) {
+        if ($model && $this->hasSingleEventReference && $this->mapFieldsWithReferences !== []) {
             $importData = $model->getImportData();
-            $value = $importData['event']??null;
-            $mapEntry = $this->mapFieldsWithReferences['event'];
-            if ($value && $mapEntry instanceof ImportFieldConfigurationModel) {
+            $value = $importData['event'] ?? null;
+            if ($value) {
+                $mapEntry = $this->mapFieldsWithReferences['event'];
                 $eventSourceId = $this->filterReferenceValue($value, $mapEntry);
-                if (!in_array($eventSourceId, $this->validEventSourceIds)) {
+                if (!in_array($eventSourceId, $this->validEventSourceIds, false)) {
                     return null;
                 }
             }
@@ -66,16 +66,16 @@ class DefaultDataTransformer extends AbstractDataTransformer
 
     public function postProcessAfterModelAdded(ImportRecordModel $model): void
     {
-        if (empty($this->mapFieldsWithReferences)) {
+        if ($this->mapFieldsWithReferences === []) {
             return;
         }
         $importData = $model->getImportData();
         // Convert references to IDs
         foreach ($this->mapFieldsWithReferences as $fieldName => $mapEntry) {
             if (!array_key_exists($fieldName, $importData)) {
-                throw new \InvalidArgumentException(sprintf('Missing required field in import data: %s for table %s', $fieldName, $this->getTable()));
+                throw new \InvalidArgumentException(sprintf('Missing required field in import data: %s for table %s', $fieldName, $this->getTable()), 3779433680);
             }
-            $value = $importData[$fieldName]??null;
+            $value = $importData[$fieldName] ?? null;
             $importData[$fieldName] = $this->filterReferenceValue($value, $mapEntry);
         }
         // No post-processing required
@@ -102,7 +102,7 @@ class DefaultDataTransformer extends AbstractDataTransformer
                     $procVal = implode(',', $procVal);
                 }
             }
-        } elseif($value !== null) {
+        } elseif ($value !== null) {
             $procVal = CeApiConnector::filterId((string)$value);
         }
         return $procVal;
@@ -116,9 +116,9 @@ class DefaultDataTransformer extends AbstractDataTransformer
     public function postProcessConvertedData(ImportRecordModel $model, array $data): array
     {
         $externalResourceUrl = $data['external_resource_url'] ?? null;
-        if ($externalResourceUrl && !str_starts_with($externalResourceUrl, 'http')
+        if ($externalResourceUrl && !str_starts_with((string)$externalResourceUrl, 'http')
             && $this->hasFileTransformations() && $baseUri = $this->getFileDataTransformerHelper()->getBaseUri()) {
-            $data['external_resource_url'] = rtrim($baseUri, '/') . '/' . ltrim($externalResourceUrl, '/');
+            $data['external_resource_url'] = rtrim($baseUri, '/') . '/' . ltrim((string)$externalResourceUrl, '/');
         }
         return $data;
     }
@@ -126,19 +126,10 @@ class DefaultDataTransformer extends AbstractDataTransformer
     public function getApiEndpoint(): ?string
     {
         $apiEndpoint = $this->importConfiguration->getApiEndpoint();
-        if (empty($apiEndpoint)) {
+        if (in_array($apiEndpoint, [null, ''], true)) {
             throw new \RuntimeException('Api endpoint not set for ' . $this->getTable(), 1767112698);
         }
         return $apiEndpoint;
-    }
-
-    public function getEntityName(): string
-    {
-        $importField = $this->importConfiguration->getImportField();
-        if (empty($importField)) {
-            throw new \RuntimeException('Entity name not set for ' . $this->getTable(), 1766859355);
-        }
-        return $importField;
     }
 
     public static function getApiField(): ?string
@@ -151,7 +142,6 @@ class DefaultDataTransformer extends AbstractDataTransformer
      *
      * @param ImportRecordModel $model
      * @param ImportFileMappingModel $fileModel
-     * @return void
      */
     protected function checkIfForcedFileUpdateIsRequired(ImportRecordModel $model, ImportFileMappingModel $fileModel): void
     {

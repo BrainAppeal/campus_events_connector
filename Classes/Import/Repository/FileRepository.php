@@ -10,7 +10,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Mime\MimeTypes;
-use TYPO3\CMS\Core\Resource\DuplicationBehavior;
+use TYPO3\CMS\Core\Resource\Enum\DuplicationBehavior;
 use TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException;
 use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
@@ -90,7 +90,6 @@ class FileRepository extends AbstractFileRepository
      * Runs the storage indexing for the specified storage ID.
      *
      * @param ResourceStorage $storage The resource storage to index.
-     * @return void
      */
     protected function runStorageIndexing(ResourceStorage $storage): void
     {
@@ -105,7 +104,8 @@ class FileRepository extends AbstractFileRepository
             $indexer->processChangesInStorages();
             $storage->setEvaluatePermissions($currentEvaluatePermissionsValue);
         } catch (\Exception $e) {
-            $this->logger->error(sprintf('Storage indexing failed for storage %d. Message: %s',
+            $this->logger->error(sprintf(
+                'Storage indexing failed for storage %d. Message: %s',
                 $storage->getUid(),
                 $e->getMessage()
             ));
@@ -129,6 +129,7 @@ class FileRepository extends AbstractFileRepository
      * @param string $url URL of the file to be downloaded.
      * @param string[] $allowedExtensions Optional list of allowed file extensions
      * @param array $clientOptions
+     * @param int $downloadAttemptCount
      * @return array{file: string, extension: string, mimeType: string|null}
      */
     public function downloadFile(
@@ -136,8 +137,7 @@ class FileRepository extends AbstractFileRepository
         array $allowedExtensions = [],
         array $clientOptions = [],
         int $downloadAttemptCount = 0
-    ): array
-    {
+    ): array {
         $tempFile = GeneralUtility::tempnam('import_');
 
         $client = GeneralUtility::makeInstance(Client::class, $clientOptions);
@@ -215,14 +215,23 @@ class FileRepository extends AbstractFileRepository
         string $tempFile,
         string $filename,
         ?int $existingFileUid
-    ): File
-    {
+    ): File {
         $storage = $targetFolder->getStorage();
+        // TYPO3 > 13
+        if (class_exists(DuplicationBehavior::class)) {
+            $conflictMode = DuplicationBehavior::REPLACE;
+        } /** @noinspection PhpUndefinedClassInspection */ elseif (class_exists(\TYPO3\CMS\Core\Resource\DuplicationBehavior::class)) {
+            // TYPO3 < 14
+            $conflictMode = \TYPO3\CMS\Core\Resource\DuplicationBehavior::REPLACE;
+        } else {
+            throw new \RuntimeException('Unsupported TYPO3 version for file conflict handling', 1694575200);
+        }
         if ($existingFileUid) {
+
             try {
                 $fileObject = $this->resourceFactory->getFileObject($existingFileUid);
                 if ($fileObject->getName() !== $filename) {
-                    $storage->renameFile($fileObject, $filename, DuplicationBehavior::REPLACE);
+                    $storage->renameFile($fileObject, $filename, $conflictMode);
                 }
                 $storage->replaceFile($fileObject, $tempFile);
                 // Delete the temporary file
@@ -231,7 +240,7 @@ class FileRepository extends AbstractFileRepository
             } catch (\Throwable) {
             }
         }
-        $file = $storage->addFile($tempFile, $targetFolder, $filename, DuplicationBehavior::REPLACE);
+        $file = $storage->addFile($tempFile, $targetFolder, $filename, $conflictMode);
         /** @var File $file */
         // Delete the temporary file
         @unlink($tempFile);

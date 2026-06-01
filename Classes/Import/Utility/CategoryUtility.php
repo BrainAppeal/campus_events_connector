@@ -12,7 +12,6 @@ use TYPO3\CMS\Core\Utility\StringUtility;
 
 class CategoryUtility
 {
-
     public static function getCategoryUidByTitle(string $title, ?int $createIfNotFoundPid = null, ?int $parentCategoryUid = null): ?int
     {
         // Search for category in sys_category table

@@ -1,16 +1,18 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
  * @link      https://www.campus-events.com/
  */
-
 
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
@@ -19,7 +21,6 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Model;
  */
 class ContactPerson extends AbstractImportedEntity
 {
-
     /**
      * title
      *
@@ -87,7 +88,7 @@ class ContactPerson extends AbstractImportedEntity
     /**
      * @param string $title
      */
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
@@ -103,7 +104,7 @@ class ContactPerson extends AbstractImportedEntity
     /**
      * @param string $firstName
      */
-    public function setFirstName($firstName)
+    public function setFirstName($firstName): void
     {
         $this->firstName = $firstName;
     }
@@ -119,7 +120,7 @@ class ContactPerson extends AbstractImportedEntity
     /**
      * @param string $lastName
      */
-    public function setLastName($lastName)
+    public function setLastName($lastName): void
     {
         $this->lastName = $lastName;
     }
@@ -135,7 +136,7 @@ class ContactPerson extends AbstractImportedEntity
     /**
      * @param string $position
      */
-    public function setPosition($position)
+    public function setPosition($position): void
     {
         $this->position = $position;
     }
@@ -151,7 +152,7 @@ class ContactPerson extends AbstractImportedEntity
     /**
      * @param string $department
      */
-    public function setDepartment($department)
+    public function setDepartment($department): void
     {
         $this->department = $department;
     }
@@ -167,7 +168,7 @@ class ContactPerson extends AbstractImportedEntity
     /**
      * @param string $institution
      */
-    public function setInstitution($institution)
+    public function setInstitution($institution): void
     {
         $this->institution = $institution;
     }
@@ -183,7 +184,7 @@ class ContactPerson extends AbstractImportedEntity
     /**
      * @param string $phone
      */
-    public function setPhone($phone)
+    public function setPhone($phone): void
     {
         $this->phone = $phone;
     }
@@ -199,7 +200,7 @@ class ContactPerson extends AbstractImportedEntity
     /**
      * @param string $mailAddress
      */
-    public function setMailAddress($mailAddress)
+    public function setMailAddress($mailAddress): void
     {
         $this->mailAddress = $mailAddress;
     }

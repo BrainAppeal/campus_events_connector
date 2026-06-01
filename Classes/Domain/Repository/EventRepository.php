@@ -1,10 +1,13 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
@@ -14,6 +17,8 @@
 namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration;
+use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 /**
  * The repository for Events
@@ -22,12 +27,13 @@ class EventRepository extends AbstractImportedRepository
 {
     /**
      * @param ConvertConfiguration $configuration
-     * @param int|bool|null $restrictToPid Restrict results to page UID; NULL := $configuration->getPid(); false := no restriction
-     * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     * @param bool|int|null $restrictToPid Restrict results to page UID; NULL := $configuration->getPid(); false := no restriction
+     * @return QueryResultInterface|array
+     * @throws InvalidQueryException
      */
-    public function findAllByConvertConfiguration(ConvertConfiguration $configuration, $restrictToPid = null)
+    public function findAllByConvertConfiguration(ConvertConfiguration $configuration, bool|int|null $restrictToPid = null): QueryResultInterface|array
     {
-        if (false !== $restrictToPid) {
+        if ($restrictToPid !== false) {
             $pid = $restrictToPid ?? $configuration->getPid();
             $this->setPidRestriction($pid);
         } else {
@@ -45,10 +51,10 @@ class EventRepository extends AbstractImportedRepository
         foreach ($targetGroups as $targetGroup) {
             $targetGroupConstraints[] = $query->contains('targetGroups', $targetGroup);
         }
-        if ($filterCategoryConstraints) {
+        if ($filterCategoryConstraints !== []) {
             $query->matching($query->logicalAnd(...$filterCategoryConstraints));
         }
-        if ($targetGroupConstraints) {
+        if ($targetGroupConstraints !== []) {
             $query->matching($query->logicalAnd(...$targetGroupConstraints));
         }
         $viewLists = $configuration->getViewLists();
@@ -56,7 +62,7 @@ class EventRepository extends AbstractImportedRepository
         foreach ($viewLists as $viewList) {
             $viewListConstraints[] = $query->contains('viewLists', $viewList);
         }
-        if ($viewListConstraints) {
+        if ($viewListConstraints !== []) {
             $query->matching($query->logicalAnd(...$viewListConstraints));
         }
         return $query->execute();

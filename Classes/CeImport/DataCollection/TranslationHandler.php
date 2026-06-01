@@ -7,7 +7,7 @@ declare(strict_types=1);
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2025 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2025 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
@@ -94,7 +94,7 @@ class TranslationHandler implements SingletonInterface
         $translationOverlays = $this->findTranslationOverlaysByPageId($pageId);
         $pageLanguageOverlays = [];
         foreach ($translationOverlays as $translationOverlay) {
-            $languageId = (int) $translationOverlay['sys_language_uid'];
+            $languageId = (int)$translationOverlay['sys_language_uid'];
             if (isset($mapLanguageToId[$languageId])) {
                 $pageLanguageOverlays[$languageId] = $translationOverlay;
                 $language = $mapLanguageToId[$languageId];

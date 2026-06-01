@@ -1,16 +1,16 @@
 <?php
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
  * @link      https://www.campus-events.com/
  */
-
 
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
@@ -19,7 +19,6 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Model;
  */
 class FilterCategory extends AbstractImportedEntity
 {
-
     /**
      * name
      *
@@ -30,9 +29,9 @@ class FilterCategory extends AbstractImportedEntity
     /**
      * parent
      *
-     * @var ?\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory
+     * @var ?FilterCategory
      */
-    protected $parent = null;
+    protected $parent;
 
     /**
      * __construct
@@ -48,13 +47,8 @@ class FilterCategory extends AbstractImportedEntity
      * Do not modify this method!
      * It will be rewritten on each save in the extension builder
      * You may modify the constructor of this class instead
-     *
-     * @return void
      */
-    protected function initStorageObjects()
-    {
-
-    }
+    protected function initStorageObjects() {}
 
     /**
      * Returns the name
@@ -70,7 +64,6 @@ class FilterCategory extends AbstractImportedEntity
      * Sets the name
      *
      * @param string $name
-     * @return void
      */
     public function setName($name): void
     {
@@ -80,7 +73,7 @@ class FilterCategory extends AbstractImportedEntity
     /**
      * Returns the parent
      *
-     * @return ?\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $parent
+     * @return ?FilterCategory $parent
      */
     public function getParent(): ?FilterCategory
     {
@@ -90,10 +83,9 @@ class FilterCategory extends AbstractImportedEntity
     /**
      * Sets the parent
      *
-     * @param ?\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $parent
-     * @return void
+     * @param ?FilterCategory $parent
      */
-    public function setParent(?\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $parent = null): void
+    public function setParent(?FilterCategory $parent = null): void
     {
         $this->parent = $parent;
     }

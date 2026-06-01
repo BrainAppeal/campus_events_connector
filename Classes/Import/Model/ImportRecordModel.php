@@ -154,7 +154,6 @@ class ImportRecordModel extends AbstractImportModel
      *
      * @param string $targetField The field in the table that the reference targets.
      * @param string $message Info message about the unresolved value.
-     * @return void
      */
     public function addUnresolvedValue(string $targetField, string $message): void
     {
@@ -231,8 +230,6 @@ class ImportRecordModel extends AbstractImportModel
     /**
      * Clears the raw import data by resetting associated properties.
      * This saves a lot of memory when importing large amounts of data.
-     *
-     * @return void
      */
     public function clearRawData(): void
     {
@@ -499,7 +496,6 @@ class ImportRecordModel extends AbstractImportModel
     /**
      * @param string $field
      * @param array<int, ?int> $mapReferences
-     * @return void
      */
     public function addManyToManyReferences(string $field, array $mapReferences): void
     {

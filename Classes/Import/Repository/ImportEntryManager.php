@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Repository;
 
-use Doctrine\DBAL\Exception;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ImportAlreadyRunningException;
 use BrainAppeal\CampusEventsConnector\Import\Finisher\CleanupService;
 use BrainAppeal\CampusEventsConnector\Import\Finisher\ObsoleteImportedRecordRemover;
@@ -12,7 +11,6 @@ use BrainAppeal\CampusEventsConnector\Import\Model\ImportEntry;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * The ImportEntryManager handles the management of import entries, including
@@ -23,13 +21,12 @@ readonly class ImportEntryManager
     public const TABLE_IMPORT = 'tx_campuseventsconnector_import';
 
     public function __construct(
-        protected ImportRecordReader            $importRecordReader,
-        protected ImportRecordWriter            $importRecordWriter,
-        protected CleanupService                $cleanupService,
+        protected ImportRecordReader $importRecordReader,
+        protected ImportRecordWriter $importRecordWriter,
+        protected CleanupService $cleanupService,
         protected ObsoleteImportedRecordRemover $obsoleteImportedRecordRemover,
-    )
-    {
-    }
+        protected ConnectionPool $connectionPool,
+    ) {}
 
     public function getImportRecordReader(): ImportRecordReader
     {
@@ -49,28 +46,19 @@ readonly class ImportEntryManager
      */
     public function stopImportEntriesMarkedAsRunning(int $pid): void
     {
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        $connection = $connectionPool->getConnectionForTable(self::TABLE_IMPORT);
+        $connection = $this->connectionPool->getConnectionForTable(self::TABLE_IMPORT);
         $sql = 'UPDATE tx_campuseventsconnector_import SET running = 0 WHERE deleted = 0 AND running = 1 AND pid = :pid';
         $connection->executeStatement($sql, ['pid' => $pid], ['pid' => Connection::PARAM_INT]);
     }
 
     /**
-     * Forces the start of a new import entry by cleaning up existing data.
+     * Forces the start of a new import entry by deleting all existing import entries for the given data source.
      *
-     * @param ?string $dataSource Optional data source name to determine the scope of the cleanup.
-     *                            If provided, only import entries related to the specified data source are deleted.
-     *                            If null, a full table truncation will be performed.
-     * @throws Exception
+     * @param string $dataSource Data source name; only import entries for this source are deleted.
      */
-    public function forceStartOfNewImportEntry(?string $dataSource = null): void
+    public function forceStartOfNewImportEntry(string $dataSource): void
     {
-        if ($dataSource) {
-            $this->cleanupService->deleteImportEntriesForDataSource($dataSource);
-        } else {
-            $this->cleanupService->truncateTables(false, true);
-        }
+        $this->cleanupService->deleteImportEntriesForDataSource($dataSource);
     }
 
     /**
@@ -239,16 +227,13 @@ readonly class ImportEntryManager
     protected function getQueryBuilderForImportTable(): QueryBuilder
     {
         $table = self::TABLE_IMPORT;
-        /** @noinspection OneTimeUseVariablesInspection */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        return $connectionPool->getQueryBuilderForTable($table);
+        return $this->connectionPool->getQueryBuilderForTable($table);
     }
 
     /**
      * Updates the provided import entry in the database.
      *
      * @param ImportEntry $importEntry The import entry to be updated, containing the data mapped to database fields.
-     * @return void
      */
     protected function update(ImportEntry $importEntry): void
     {

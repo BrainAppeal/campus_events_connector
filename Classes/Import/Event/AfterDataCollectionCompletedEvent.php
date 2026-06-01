@@ -7,7 +7,4 @@ namespace BrainAppeal\CampusEventsConnector\Import\Event;
 /**
  * Represents an event that occurs when the data collection process is completed
  */
-class AfterDataCollectionCompletedEvent extends AbstractImportEvent
-{
-
-}
+class AfterDataCollectionCompletedEvent extends AbstractImportEvent {}

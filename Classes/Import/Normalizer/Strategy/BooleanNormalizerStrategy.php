@@ -9,7 +9,6 @@ namespace BrainAppeal\CampusEventsConnector\Import\Normalizer\Strategy;
  */
 readonly class BooleanNormalizerStrategy extends AbstractNormalizerStrategy
 {
-
     public function normalize(mixed $value): int
     {
         return $this->formatBoolean($value) ? 1 : 0;

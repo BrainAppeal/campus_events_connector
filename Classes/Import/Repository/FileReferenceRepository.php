@@ -8,7 +8,6 @@ use BrainAppeal\CampusEventsConnector\Import\Model\ImportFileReferenceModel;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Result;
 use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
@@ -19,7 +18,6 @@ use TYPO3\CMS\Core\Utility\StringUtility;
 
 class FileReferenceRepository extends AbstractFileRepository
 {
-
     /**
      * Cleans up file references from the database for the specified tables.
      * This includes deleting file references and the associated files that are no longer valid
@@ -27,13 +25,11 @@ class FileReferenceRepository extends AbstractFileRepository
      *
      * @param string[] $tablesWithFileReferences An array of table names that contain file references
      * to be cleaned up. Each table's references will be processed and obsolete records removed.
-     * @return void
      */
     public function cleanupFileReferences(array $tablesWithFileReferences): void
     {
         $refTable = 'sys_file_reference';
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $connectionPool = $this->connectionPool;
         $connection = $connectionPool->getConnectionForTable($refTable);
         // Delete all file references and the referenced files for this table
         foreach ($tablesWithFileReferences as $table) {
@@ -65,9 +61,6 @@ class FileReferenceRepository extends AbstractFileRepository
      *
      * @param Folder $folder The folder whose file references should be checked.
      * The folder is validated for sufficient access permissions, and its files and references are processed.
-     *
-     * @return void This method does not return any value. It performs cleanup operations for orphaned or missing files and their references.
-     * Logs details about actions taken such as file deletions or warnings for missing files.
      */
     public function checkFileReferencesInFolder(Folder $folder): void
     {
@@ -78,8 +71,7 @@ class FileReferenceRepository extends AbstractFileRepository
             return;
         }
         $refTable = 'sys_file_reference';
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $connectionPool = $this->connectionPool;
         $folderHash = $folder->getHashedIdentifier();
         $queryBuilder = $connectionPool->getQueryBuilderForTable($refTable);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
@@ -175,8 +167,7 @@ class FileReferenceRepository extends AbstractFileRepository
     public function getFileReferencesForTableRecordList(string $table, array $recordIdList, int $languageUid = 0, ?string $fieldName = null): Result
     {
         $refTable = 'sys_file_reference';
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $connectionPool = $this->connectionPool;
         $queryBuilder = $connectionPool->getQueryBuilderForTable($refTable);
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder->getRestrictions()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
@@ -251,8 +242,7 @@ class FileReferenceRepository extends AbstractFileRepository
         $fileReferenceUid = $fileReferenceModel->getUid();
         $uid = $fileReferenceModel->getUid();
         $refTable = 'sys_file_reference';
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $connectionPool = $this->connectionPool;
         $connection = $connectionPool->getConnectionForTable($refTable);
         // Delete the file reference
         $connection->delete($refTable, [
@@ -292,8 +282,7 @@ class FileReferenceRepository extends AbstractFileRepository
         if (!$table || !$fieldName || !$recordId || !$pid || !$fileUid) {
             throw new \InvalidArgumentException(sprintf('Invalid file reference model provided: Table: %s.%s; UID: %d; PID: %d; File UID: %d', $table, $fieldName, $recordId, $pid, $fileUid));
         }
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $connectionPool = $this->connectionPool;
         $languageUid = $fileReferenceModel->getLanguageUid();
         $existingFileReferenceUid = $fileReferenceModel->getUid();
         // Assemble DataHandler data
@@ -378,7 +367,7 @@ class FileReferenceRepository extends AbstractFileRepository
         $dataHandler->enableLogging = false;
         $dataHandler->process_datamap();
         if (!$existingFileReferenceUid) {
-            $referenceUid = $dataHandler->substNEWwithIDs[$referenceId]??null;
+            $referenceUid = $dataHandler->substNEWwithIDs[$referenceId] ?? null;
             if (!$referenceUid) {
                 $this->logger->error(sprintf('News file reference for %s.%s: %d could not created %d by data handler. Will create manually.', $table, $fieldName, $recordId, $fileUid));
                 $connection = $connectionPool->getConnectionForTable($refTable);

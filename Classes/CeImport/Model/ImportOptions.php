@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\CeImport\Model;
 
-use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
 use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationProvider;
 use BrainAppeal\CampusEventsConnector\Import\Model\AbstractImportOptions;
+use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -25,7 +25,7 @@ class ImportOptions extends AbstractImportOptions
     /**
      * @var ?string
      */
-    private ?string $apiKey;
+    private ?string $apiKey = null;
     /**
      * @var ?string
      */
@@ -48,7 +48,7 @@ class ImportOptions extends AbstractImportOptions
      */
     public function updateConfiguration(array $config, ?InputInterface $input = null): void
     {
-        if ($input) {
+        if ($input instanceof InputInterface) {
             $baseUri = $input->getArgument('baseuri');
             $apiKey = $input->getArgument('apikey');
         } else {
@@ -61,13 +61,9 @@ class ImportOptions extends AbstractImportOptions
         $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(TCAUtility::EXT_NAME);
         $enableMultipleImportSources = $extConf['enable_multiple_import_sources'] ?? false;
         if ($enableMultipleImportSources) {
-            $importSource = preg_replace("/['\"]/", '', $baseUri);
+            $importSource = preg_replace("/['\"]/", '', (string)$baseUri);
             $host = parse_url($importSource, PHP_URL_HOST);
-            if ($host) {
-                $this->targetImportSource = (string)$host;
-            } else {
-                $this->targetImportSource = $importSource;
-            }
+            $this->targetImportSource = $host ? (string)$host : $importSource;
         }
     }
 

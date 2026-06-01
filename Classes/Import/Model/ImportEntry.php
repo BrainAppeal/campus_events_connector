@@ -6,7 +6,6 @@ namespace BrainAppeal\CampusEventsConnector\Import\Model;
 
 class ImportEntry
 {
-
     /**
      * @var int<1, max>|null The uid of the record. The uid is only unique in the context of the database table.
      */

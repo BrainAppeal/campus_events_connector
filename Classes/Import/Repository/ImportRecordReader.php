@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Repository;
 
-use Doctrine\DBAL\Exception;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DataTransformerFactory;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
+use Doctrine\DBAL\Exception;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class BrainAppeal\CampusEventsConnector\Import\Repository\ImportRecordReader
@@ -26,9 +26,11 @@ readonly class ImportRecordReader extends AbstractImportRowRepository
     public const IMPORT_ROW_TYPE_MAPPED = 2;
 
     public function __construct(
-        protected DataTransformerFactory $dataTransformerFactory
-    )
-    {
+        protected DataTransformerFactory $dataTransformerFactory,
+        LoggerInterface $logger,
+        ConnectionPool $connectionPool
+    ) {
+        parent::__construct($logger, $connectionPool);
     }
 
     /**
@@ -66,7 +68,7 @@ readonly class ImportRecordReader extends AbstractImportRowRepository
     {
         $queryBuilder = $this->createQueryBuilderForImportRowTable($importId);
         $queryBuilder->andWhere(
-        // Only process records where the full data have been loaded
+            // Only process records where the full data have been loaded
             $queryBuilder->expr()->eq('data_fully_loaded', $queryBuilder->createNamedParameter(
                 1,
                 Connection::PARAM_INT
@@ -109,7 +111,7 @@ readonly class ImportRecordReader extends AbstractImportRowRepository
     {
         $queryBuilder = $this->createQueryBuilderForImportRowTable($importId);
         $queryBuilder->andWhere(
-        // Only process records where the full data have been loaded
+            // Only process records where the full data have been loaded
             $queryBuilder->expr()->eq('data_fully_loaded', $queryBuilder->createNamedParameter(
                 1,
                 Connection::PARAM_INT
@@ -157,8 +159,7 @@ readonly class ImportRecordReader extends AbstractImportRowRepository
     public function getRowCountsForImport(int $importId): array|false
     {
         $table = AbstractImportRowRepository::TABLE_IMPORT_ROW;
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
         $queryBuilder
             ->selectLiteral(
                 'COUNT(*) AS total_rows',

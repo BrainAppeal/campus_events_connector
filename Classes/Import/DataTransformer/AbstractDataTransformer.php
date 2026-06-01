@@ -66,7 +66,7 @@ abstract class AbstractDataTransformer implements ImportDataTransformerInterface
     /**
      * Returns a list of import keys that need to be imported for the current source type. The value of each array
      * entry indicates if the child type is a record list (true) or a single record
-     * @return ?array<string, array{identifier: string|string[], isListType: bool}>
+     * @return ?array<string, array{identifier: string|string[], isListType: bool, isManyToMany: ?bool, referenceFieldName: ?string}>
      */
     public function getChildRecordTypesForSourceType(): ?array
     {
@@ -368,9 +368,6 @@ abstract class AbstractDataTransformer implements ImportDataTransformerInterface
      *
      * @param ImportRecordModel $model
      * @param ImportFileMappingModel $fileModel
-     * @return void
      */
-    protected function checkIfForcedFileUpdateIsRequired(ImportRecordModel $model, ImportFileMappingModel $fileModel): void
-    {
-    }
+    protected function checkIfForcedFileUpdateIsRequired(ImportRecordModel $model, ImportFileMappingModel $fileModel): void {}
 }

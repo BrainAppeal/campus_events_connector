@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\CeImport;
@@ -9,12 +8,8 @@ use BrainAppeal\CampusEventsConnector\CeImport\DataCollection\CeApiConnector;
 use BrainAppeal\CampusEventsConnector\CeImport\DataCollection\CeApiDataCollection;
 use BrainAppeal\CampusEventsConnector\CeImport\DataCollection\TranslationHandler;
 use BrainAppeal\CampusEventsConnector\CeImport\Model\ImportOptions;
-use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DataTransformerFactory;
-use BrainAppeal\CampusEventsConnector\Import\DataTransformer\ImportDataTransformerInterface;
 use BrainAppeal\CampusEventsConnector\Import\Importer;
-use BrainAppeal\CampusEventsConnector\Import\ImportOptionsFactory;
 use BrainAppeal\CampusEventsConnector\Import\Model\AbstractImportOptions;
-use BrainAppeal\CampusEventsConnector\Importer\PostImportHookInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -24,8 +19,6 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\CommandLineUserAuthentication;
 use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * A class responsible for running the import process for Campus Events data.
@@ -33,17 +26,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 readonly class ImportRunner
 {
-
     public function __construct(
-        private Importer               $importer,
-        private ImportOptionsFactory   $importOptionsFactory,
-        private DataTransformerFactory $dataTransformerFactory,
-        private CeApiDataCollection    $dataCollection,
-        private CeApiConnector         $apiConnector,
-        private TranslationHandler     $translationHandler
-    )
-    {
-    }
+        private Importer $importer,
+        private CeApiDataCollection $dataCollection,
+        private CeApiConnector $apiConnector,
+        private TranslationHandler $translationHandler
+    ) {}
 
     /**
      * Bootstrap running of upgradeWizards
@@ -68,10 +56,10 @@ readonly class ImportRunner
      */
     public function run(int $pid, array $config, ?InputInterface $input = null, ?OutputInterface $output = null): int
     {
-        if (null === $output) {
+        if (!$output instanceof OutputInterface) {
             $output = new ConsoleOutput();
         }
-        if (null === $input) {
+        if (!$input instanceof InputInterface) {
             $input = new ArgvInput();
         }
         $io = new SymfonyStyle($input, $output);
@@ -79,7 +67,7 @@ readonly class ImportRunner
         $this->bootstrap();
         $pageRecord = BackendUtility::getRecord('pages', $pid);
         if (!$pageRecord) {
-            throw new \InvalidArgumentException(sprintf('The storage page with id %s does not exist!', $pid));
+            throw new \InvalidArgumentException(sprintf('The storage page with id %s does not exist!', $pid), 7435615918);
         }
         $io->writeln(sprintf('Importing data to storage page %s [%d]', $pageRecord['title'], $pid));
         $config['targetImportSource'] = '';
@@ -87,7 +75,6 @@ readonly class ImportRunner
         if (isset($config['verbosity'])) {
             $importOptions->setVerbosity((int)$config['verbosity']);
         }
-        $this->importOptionsFactory->set($importOptions);
         $importer = $this->importer;
         $importer->setOutput($io);
         if ($importOptions->isStopPrevious()) {
@@ -101,60 +88,11 @@ readonly class ImportRunner
         $languageMap = $this->initializeLanguageMap($pid);
         $this->dataCollection->setLanguageMap($languageMap);
 
-        // Set the group key for data transformers
-        $this->dataTransformerFactory->setGroupKey($importOptions->getImportSource());
-        foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
-            if ($dataTransformer->hasFileTransformations()) {
-                $dataTransformer->getFileDataTransformerHelper()->setBaseUri($importOptions->getBaseUri());
-            }
-            $this->fixImportSourceNames($dataTransformer, $importOptions);
-        }
-
         $processedRecordCount = $importer->run($this->dataCollection, $importOptions);
-        foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
-            $this->updateImportedAtField($dataTransformer);
-        }
-        $this->callHooks($importOptions->getPid());
 
         $message = $this->buildSummaryMessage($processedRecordCount, $importOptions);
         $io->success(trim($message));
         return $processedRecordCount;
-    }
-
-    private function fixImportSourceNames(ImportDataTransformerInterface $dataTransformer, ImportOptions $importOptions): void
-    {
-        $targetSourceValue = $importOptions->getTargetImportSource();
-        $importConfiguration = $dataTransformer->getImportConfiguration();
-        $targetSourceField = $importConfiguration->getTargetImportSourceField();
-        $baseUri = $importOptions->getBaseUri();
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        if ($targetSourceField && $targetSourceValue) {
-            $tableName = $importConfiguration->getTableName();
-            $connection = $connectionPool->getConnectionForTable($tableName);
-            $updateImportSourceSql = "UPDATE $tableName SET ce_import_source = ? WHERE (ce_import_source = ? OR (ce_import_id > 0 AND ce_import_source IS NULL))";
-            $connection->executeStatement($updateImportSourceSql, [$targetSourceValue, $baseUri]);
-        }
-    }
-
-    /**
-     * Update the imported_at field for the
-     */
-    private function updateImportedAtField(ImportDataTransformerInterface $dataTransformer): void
-    {
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        $tableName = $dataTransformer->getTable();
-        $connection = $connectionPool->getConnectionForTable($tableName);
-        $schemaManager = $connection->createSchemaManager();
-        $tableColumInfo = $schemaManager->listTableColumns($tableName);
-        foreach ($tableColumInfo as $column) {
-            if ($column->getName() === 'ce_imported_at') {
-                $updateImportSourceSql = "UPDATE $tableName SET ce_imported_at = tstamp WHERE ce_import_id > 0 AND (ce_imported_at IS NULL OR ce_imported_at < tstamp)";
-                $connection->executeStatement($updateImportSourceSql);
-                break;
-            }
-        }
     }
 
     /**
@@ -207,26 +145,5 @@ readonly class ImportRunner
             }
         }
         return $message;
-    }
-
-    /**
-     * Executes registered hooks after the import process.
-     * Alternatively, you can implement an event listener for ImportFinishEvent
-     *
-     * @param int $targetPid The target page ID to be passed to the hook methods.
-     * @return void
-     */
-    private function callHooks(int $targetPid): void
-    {
-        if (isset($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'])
-            && is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'])
-        ) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tx_campuseventsconnector']['postImport'] as $classRef) {
-                $hookObj = GeneralUtility::makeInstance($classRef);
-                if ($hookObj instanceof PostImportHookInterface || method_exists($hookObj, 'postImport')) {
-                    $hookObj->postImport($targetPid);
-                }
-            }
-        }
     }
 }

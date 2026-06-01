@@ -9,7 +9,6 @@ namespace BrainAppeal\CampusEventsConnector\Import\Normalizer\Strategy;
  */
 readonly class ApiReferenceToIdNormalizerStrategy extends AbstractNormalizerStrategy
 {
-
     public function normalize(mixed $value): int
     {
         if (empty($value)) {
@@ -36,7 +35,7 @@ readonly class ApiReferenceToIdNormalizerStrategy extends AbstractNormalizerStra
             return (int)$apiReferenceId;
         }
         $parts = explode('/', $apiReferenceId);
-        return (int) end($parts);
+        return (int)end($parts);
     }
 
     public static function supports(string $normalizerKey): bool

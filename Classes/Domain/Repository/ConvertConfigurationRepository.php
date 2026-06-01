@@ -1,10 +1,11 @@
 <?php
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
@@ -15,20 +16,22 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
+use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
  * The repository for ConverterConfigurations
  */
-abstract class ConvertConfigurationRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+abstract class ConvertConfigurationRepository extends Repository
 {
     /**
-     * @param null|int|int[] $pid
+     * @param int|int[]|null $pid
      */
     protected function setPidRestriction($pid)
     {
-        /** @var \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings $defaultQuerySettings */
+        /** @var Typo3QuerySettings $defaultQuerySettings */
         $defaultQuerySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
-        if (null === $pid) {
+        if ($pid === null) {
             $defaultQuerySettings->setRespectStoragePage(false);
         } else {
             if (!is_array($pid)) {
@@ -41,7 +44,7 @@ abstract class ConvertConfigurationRepository extends \TYPO3\CMS\Extbase\Persist
 
     /**
      * @param int $pid
-     * @return object[]|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     * @return object[]|QueryResultInterface
      */
     public function findActiveByPid($pid)
     {

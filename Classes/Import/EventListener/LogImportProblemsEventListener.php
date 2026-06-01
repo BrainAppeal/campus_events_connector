@@ -7,19 +7,21 @@ namespace BrainAppeal\CampusEventsConnector\Import\EventListener;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DataTransformerFactory;
 use BrainAppeal\CampusEventsConnector\Import\Event\AfterRecordsWrittenEvent;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Attribute\AsEventListener;
 
+#[AsEventListener(
+    identifier: 'ce/post-transform/log-problems'
+)]
 readonly class LogImportProblemsEventListener
 {
     public function __construct(
         protected DataTransformerFactory $dataTransformerFactory,
-        protected LoggerInterface        $logger
-    )
-    {
-    }
+        protected LoggerInterface $logger
+    ) {}
 
     public function __invoke(AfterRecordsWrittenEvent $event): void
     {
-        foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
+        foreach ($this->dataTransformerFactory->getDataTransformersByContext($event->getContext()) as $dataTransformer) {
             $croppedFieldInfo = $dataTransformer->getCroppedFieldInfo();
             foreach ($croppedFieldInfo as $field => $error) {
                 $errorMessage = sprintf(

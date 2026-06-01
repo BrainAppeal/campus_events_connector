@@ -1,19 +1,20 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
  * @link      https://www.campus-events.com/
  */
 
-
 namespace BrainAppeal\CampusEventsConnector\Converter;
-
 
 use BrainAppeal\CampusEventsConnector\Domain\Model\ConvertConfiguration;
 use BrainAppeal\CampusEventsConnector\Domain\Model\Event;
@@ -21,8 +22,10 @@ use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\AbstractImportedRepository;
 use BrainAppeal\CampusEventsConnector\Domain\Repository\EventRepository;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 abstract class AbstractEventToObjectConverter implements EventConverterInterface
 {
@@ -41,16 +44,10 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
      */
     private $configuration;
 
-    /**
-     * @var DataMapper
-     */
-    protected $dataMapper;
-
     public function __construct(
-        DataMapper      $dataMapper,
-        private readonly EventRepository $eventRepository)
-    {
-        $this->dataMapper = $dataMapper;
+        protected DataMapper $dataMapper,
+        protected readonly EventRepository $eventRepository
+    ) {
     }
 
     /**
@@ -58,12 +55,14 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
      */
     protected function getObjectRepository(): AbstractImportedRepository
     {
-        if (null === $this->objectRepository) {
-            throw new \InvalidArgumentException('Inject objectRepository in service constructor!');
+        if ($this->objectRepository === null) {
+            throw new \InvalidArgumentException('Inject objectRepository in service constructor!', 6861810020);
         }
 
         return $this->objectRepository;
     }
+
+    abstract protected function getTargetTable(): string;
 
     /**
      * @return EventRepository
@@ -73,24 +72,22 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
         return $this->eventRepository;
     }
 
-
     /**
      * @param EventRepository $eventRepository
      * @param ConvertConfiguration $configuration
-     * @return Event[]
+     * @return Event[]|QueryResultInterface<int, Event>
      */
-    protected abstract function getMatchingEventsByConfiguration(EventRepository $eventRepository, ConvertConfiguration $configuration);
+    abstract protected function getMatchingEventsByConfiguration(EventRepository $eventRepository, ConvertConfiguration $configuration): array|QueryResultInterface;
 
     /**
      * @param ConvertConfiguration $configuration
      */
     private function setUp(ConvertConfiguration $configuration): void
     {
-        $dataMapper = GeneralUtility::makeInstance(DataMapper::class);
-        $this->importSource = $dataMapper->getDataMap($configuration::class)->getTableName() . ':' . $configuration->getUid();
+        $this->importSource = $this->dataMapper->getDataMap($configuration::class)->getTableName() . ':' . $configuration->getUid();
         $this->configuration = $configuration;
         // Set the current language to "de" so news description translations are german
-        if (null !== $languageService = $this->getLanguageService()) {
+        if (($languageService = $this->getLanguageService()) instanceof LanguageService) {
             $languageService->lang = 'de';
         }
     }
@@ -98,7 +95,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     /**
      * @param ConvertConfiguration $configuration
      */
-    public function run($configuration)
+    public function run($configuration): void
     {
         $this->setUp($configuration);
 
@@ -127,22 +124,21 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
      * @param ConvertConfiguration $configuration
      * @api Use this method to individualize your object
      */
-    protected abstract function individualizeObjectByEvent($object, $event, $configuration): void;
+    abstract protected function individualizeObjectByEvent(ImportedModelInterface $object, Event $event, ConvertConfiguration $configuration): void;
 
     /**
-     * Returns true, if the event can be converted to the target object model; Override this function in custom
+     * Returns true if the event can be converted to the target object model; Override this function in custom
      * converter to support skipping import of single events
      * @param Event $event
      * @return bool
      */
-    protected function isConversionPossible($event)
+    protected function isConversionPossible(Event $event): bool
     {
         return true;
     }
 
     /**
      * @param Event $event
-     * @return void
      */
     private function convertEvent(Event $event): void
     {
@@ -153,7 +149,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
 
         $objectRepository = $this->getObjectRepository();
         $object = $objectRepository->findByImport($importSource, $importId);
-        if (null === $object) {
+        if (!$object instanceof ImportedModelInterface) {
             // Use DataHandler to prevent problems with news proxy classes (e.g. EXT:yoast_news defines a news model constructor, which is not valid)
             $object = $this->createNewModelInstance($event, $configuration->getTargetPid());
         }
@@ -169,9 +165,9 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     }
 
     /**
-     * @return ?\TYPO3\CMS\Core\Localization\LanguageService
+     * @return ?LanguageService
      */
-    protected function getLanguageService(): ?\TYPO3\CMS\Core\Localization\LanguageService
+    protected function getLanguageService(): ?LanguageService
     {
         return $GLOBALS['LANG'] ?? null;
     }
@@ -185,7 +181,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
     {
         $object = null;
         $objectRepository = $this->getObjectRepository();
-        $importTable = $objectRepository->getImportTableName();
+        $importTable = $this->getTargetTable();
         $importSource = $this->importSource;
         $importId = $event->getUid();
         if ($importTable && isset($GLOBALS['TCA'][$importTable])) {
@@ -216,7 +212,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
             $dataHandler->process_datamap();
             $object = $objectRepository->findByImport($importSource, $importId);
         }
-        if (null === $object) {
+        if (!$object instanceof ImportedModelInterface) {
             $object = $objectRepository->createNewModelInstance($importSource, $importId, $pid);
         }
         return $object;
@@ -226,7 +222,7 @@ abstract class AbstractEventToObjectConverter implements EventConverterInterface
      * @param Event $event
      * @return array
      */
-    protected function getAdditionDataHandlerValues($event)
+    protected function getAdditionDataHandlerValues(Event $event): array
     {
         return [];
     }

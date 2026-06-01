@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\DataTransformer;
 
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel;
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\Exception\MappingException;
 use BrainAppeal\CampusEventsConnector\Import\Exception\RecordInvalidException;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ValidationException;
-use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
-use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\Normalizer\Strategy as NormalizerStrategy;
 use BrainAppeal\CampusEventsConnector\Import\Normalizer\Strategy\NormalizerStrategyRegistry;
 use BrainAppeal\CampusEventsConnector\Import\TargetResolution\ReferenceResolver;
-use BrainAppeal\CampusEventsConnector\Import\Utility\SlugNormalizer;
+use BrainAppeal\CampusEventsConnector\Import\Workflow\ImportContext;
+use TYPO3\CMS\Core\Slug\SlugNormalizer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -55,8 +56,6 @@ class RawDataToTcaNormalizer
 
     /**
      * Retrieves and returns an array of format functions for the specified table.
-     *
-     * @return void
      */
     private function initializeNormalizerStrategies(): void
     {
@@ -129,12 +128,13 @@ class RawDataToTcaNormalizer
     /**
      * Transforms the raw import data of the provided model using a field map and optional format functions.
      *
+     * @param ImportContext $context
      * @param ImportRecordModel $model The import record model containing the raw data to be transformed.
      * @param ReferenceResolver $referenceResolver The import target record mapping used to resolve references.
      * @return array The transformed data mapped to the specified target fields.
      * @throws RecordInvalidException
      */
-    public function convert(ImportRecordModel $model, ReferenceResolver $referenceResolver): array
+    public function convert(ImportContext $context, ImportRecordModel $model, ReferenceResolver $referenceResolver): array
     {
         $data = [];
         $importFieldMap = $this->importConfiguration->getImportFieldMap();
@@ -155,7 +155,7 @@ class RawDataToTcaNormalizer
                 continue;
             }
             if ($mapEntry->isReference()) {
-                $rawValue = $referenceResolver->resolve($model, $rawValue, $mapEntry);
+                $rawValue = $referenceResolver->resolve($context, $model, $rawValue, $mapEntry);
             }
             if ($strategy = $this->fieldStrategies[$targetField] ?? null) {
                 $val = $strategy->normalize($rawValue);

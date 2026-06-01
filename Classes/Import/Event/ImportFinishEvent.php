@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Event;
 
-use BrainAppeal\CampusEventsConnector\Import\Model\AbstractImportOptions;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportEntry;
 
 /**
@@ -14,27 +13,19 @@ class ImportFinishEvent extends AbstractImportEvent
 {
     protected int $deletedRowCount = 0;
 
-    public function __construct(
-        protected AbstractImportOptions $importOptions,
-        private readonly ImportEntry $importEntry
-    )
-    {
-        parent::__construct($importOptions);
-    }
-
     public function getImportEntry(): ImportEntry
     {
-        return $this->importEntry;
+        return $this->context->getImportEntry();
     }
 
     public function getTotalRowCount(): int
     {
-        return $this->importEntry->getTotalRowCount();
+        return $this->context->getImportEntry()->getTotalRowCount();
     }
 
     public function getSkippedRowCount(): int
     {
-        return $this->importEntry->getSkippedRowCount();
+        return $this->context->getImportEntry()->getSkippedRowCount();
     }
 
     public function getDeletedRowCount(): int

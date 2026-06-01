@@ -7,6 +7,7 @@ namespace BrainAppeal\CampusEventsConnector\Import\EventListener;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DataTransformerFactory;
 use BrainAppeal\CampusEventsConnector\Import\Event\BeforeImportStartedEvent;
 use BrainAppeal\CampusEventsConnector\Import\Writer\FileWriter;
+use TYPO3\CMS\Core\Attribute\AsEventListener;
 
 /**
  * A readonly event listener that checks the consistency of data transformations
@@ -15,11 +16,14 @@ use BrainAppeal\CampusEventsConnector\Import\Writer\FileWriter;
  * available data transformers. If inconsistencies are detected, the import
  * process is updated to run in force update mode.
  */
+#[AsEventListener(
+    identifier: 'ce/before-start/check-consistency'
+)]
 readonly class CheckConsistencyEventListener
 {
     public function __construct(
         protected DataTransformerFactory $dataTransformerFactory,
-        protected FileWriter             $fileImport,
+        protected FileWriter $fileImport,
     ) {}
 
     public function __invoke(BeforeImportStartedEvent $event): void
@@ -28,11 +32,10 @@ readonly class CheckConsistencyEventListener
         $fileTargetResourceIdentifier = $importOptions->getFileTargetResourceIdentifier();
         if ($fileTargetResourceIdentifier) {
             $isConsistent = true;
-            foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
-                if ($dataTransformer->hasFileTransformations()) {
-                    if (!$this->fileImport->checkConsistency($dataTransformer->getTable(), $fileTargetResourceIdentifier)) {
-                        $isConsistent = false;
-                    }
+            foreach ($this->dataTransformerFactory->getDataTransformersByContext($event->getContext()) as $dataTransformer) {
+                if ($dataTransformer->hasFileTransformations()
+                    && !$this->fileImport->checkConsistency($dataTransformer->getTable(), $fileTargetResourceIdentifier)) {
+                    $isConsistent = false;
                 }
             }
             if (!$isConsistent) {

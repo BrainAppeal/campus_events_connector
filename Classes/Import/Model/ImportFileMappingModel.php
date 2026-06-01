@@ -120,7 +120,6 @@ class ImportFileMappingModel extends AbstractImportModel
 
     /**
      * @param array $clientOptions
-     * @return void
      */
     public function setClientOptions(array $clientOptions): void
     {
@@ -139,7 +138,7 @@ class ImportFileMappingModel extends AbstractImportModel
 
     public function addMetaData(string $key, string $value): void
     {
-        $this->metaData[$key] = $value;;
+        $this->metaData[$key] = $value;
     }
 
     public function getMetaData(): array

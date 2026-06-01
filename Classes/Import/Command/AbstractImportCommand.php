@@ -8,7 +8,6 @@ use BrainAppeal\CampusEventsConnector\Import\DataCollection\AbstractDataCollecti
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DataTransformerFactory;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ImportOptionsConfigurationException;
 use BrainAppeal\CampusEventsConnector\Import\Importer;
-use BrainAppeal\CampusEventsConnector\Import\ImportOptionsFactory;
 use BrainAppeal\CampusEventsConnector\Import\Model\AbstractImportOptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -47,13 +46,11 @@ abstract class AbstractImportCommand extends Command
 
     public function __construct(
         protected readonly AbstractDataCollection $dataCollection,
-        protected readonly Importer               $importer,
+        protected readonly Importer $importer,
         protected readonly ExtensionConfiguration $extensionConfiguration,
-        protected readonly ImportOptionsFactory   $importOptionsFactory,
         protected readonly DataTransformerFactory $dataTransformerFactory,
-        ?string                                   $name = null
-    )
-    {
+        ?string $name = null
+    ) {
         parent::__construct($name);
     }
 
@@ -130,14 +127,11 @@ abstract class AbstractImportCommand extends Command
         if ($output->isVerbose()) {
             $importOptions->enableStatistics();
         }
-        $this->importOptionsFactory->set($importOptions);
         $importer = $this->importer;
         $importer->setOutput($io);
         if ($importOptions->isStopPrevious()) {
             $importer->stopImportEntriesMarkedAsRunning($pid);
         }
-        // Set the group key for data transformers
-        $this->dataTransformerFactory->setGroupKey($importOptions->getImportSource());
 
         $processedRecordCount = $importer->run($this->dataCollection, $importOptions);
 

@@ -12,7 +12,6 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
  */
 readonly class HtmlForRteNormalizerStrategy extends AbstractNormalizerStrategy
 {
-
     public function normalize(mixed $value): ?string
     {
         if ($value === null && $this->isNullable) {
@@ -41,7 +40,7 @@ readonly class HtmlForRteNormalizerStrategy extends AbstractNormalizerStrategy
             'Ü' => '&Uuml;',
             'ß' => '&szlig;',
         ];
-        $cleanedHtml = preg_replace("/<img[^>]+>/i", '', $html);
+        $cleanedHtml = preg_replace('/<img[^>]+>/i', '', $html);
         if (mb_strlen((string)$cleanedHtml) > 65535) {
             $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
             $append = '...';

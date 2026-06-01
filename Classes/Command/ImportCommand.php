@@ -5,15 +5,24 @@ declare(strict_types=1);
 namespace BrainAppeal\CampusEventsConnector\Command;
 
 use BrainAppeal\CampusEventsConnector\CeImport\ImportRunner;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+#[AsCommand(
+    name: 'ce:import:events',
+    description: 'Campus Events: Import event records',
+)]
 class ImportCommand extends Command
 {
+    public function __construct(private readonly ImportRunner $importRunner)
+    {
+        parent::__construct();
+    }
+
 
     /**
      * Configure the command by defining the name, options, and arguments
@@ -66,6 +75,7 @@ class ImportCommand extends Command
                 'Enable debug mode'
             );
     }
+
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -88,11 +98,10 @@ class ImportCommand extends Command
             'apiKey' => $apiKey,
             'debug' => $input->hasOption('debug') && $input->getOption('debug'),
         ];
-        if (!empty($this->storageId) && !empty($this->storageFolder)) {
-            $config['importTargetResourceIdentifier'] = $storageId . ':' . trim($storageFolder, '/') . '/';
+        if (!empty($storageId) && !empty($storageFolder)) {
+            $config['importTargetResourceIdentifier'] = $storageId . ':' . trim((string)$storageFolder, '/') . '/';
         }
-        $importRunner = GeneralUtility::makeInstance(ImportRunner::class);
-        $importRunner->run($targetPid, $config, $input, $output);
+        $this->importRunner->run($targetPid, $config, $input, $output);
 
         return Command::SUCCESS;
     }

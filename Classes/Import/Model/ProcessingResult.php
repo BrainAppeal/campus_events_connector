@@ -17,7 +17,7 @@ class ProcessingResult
     private array $recordCounts = [
         'processed' => 0,
         'inserted' => 0,
-        'updated' => 0
+        'updated' => 0,
     ];
 
     /**
@@ -110,7 +110,6 @@ class ProcessingResult
      *
      * @param string $sourceType The source type to associate the model with.
      * @param ImportRecordModel $model The import record model to be added.
-     * @return void
      */
     public function addNewGroupModelForType(string $sourceType, ImportRecordModel $model): void
     {

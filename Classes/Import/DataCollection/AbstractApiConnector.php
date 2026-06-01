@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\DataCollection;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ApiLimitReachedException;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ApiRecordNotFoundException;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ApiUnreachableException;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Core\Environment;
@@ -22,7 +22,6 @@ use TYPO3\CMS\Core\Core\Environment;
  */
 abstract class AbstractApiConnector
 {
-
     protected int $countApiCalls = 0;
     protected int $countCachedApiCalls = 0;
     protected int $maxApiCallsPerRun = -1;

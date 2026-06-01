@@ -1,23 +1,26 @@
 <?php
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
  * @link      https://www.campus-events.com/
  */
 
-
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
+
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
  * ConvertConfiguration
  */
-abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+abstract class ConvertConfiguration extends AbstractEntity
 {
     /**
      * targetPid
@@ -36,29 +39,29 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * targetGroups
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup>
+     * @var ObjectStorage<TargetGroup>
      */
     protected $targetGroups;
 
     /**
      * viewLists
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList>
+     * @var ObjectStorage<ViewList>
      */
     protected $viewLists;
 
     /**
      * filterCategories
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory>
+     * @var ObjectStorage<FilterCategory>
      */
     protected $filterCategories;
 
     public function __construct()
     {
-        $this->filterCategories = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
-        $this->targetGroups = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
-        $this->viewLists = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        $this->filterCategories = new ObjectStorage();
+        $this->targetGroups = new ObjectStorage();
+        $this->viewLists = new ObjectStorage();
     }
 
     /**
@@ -75,9 +78,8 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
      * Sets the targetPid
      *
      * @param int $targetPid
-     * @return void
      */
-    public function setTargetPid($targetPid)
+    public function setTargetPid($targetPid): void
     {
         $this->targetPid = $targetPid;
     }
@@ -96,9 +98,8 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
      * Sets the templatePath
      *
      * @param string $templatePath
-     * @return void
      */
-    public function setTemplatePath($templatePath)
+    public function setTemplatePath($templatePath): void
     {
         $this->templatePath = $templatePath;
     }
@@ -106,10 +107,9 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * Adds a TargetGroup
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroup
-     * @return void
+     * @param TargetGroup $targetGroup
      */
-    public function addTargetGroup(\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroup)
+    public function addTargetGroup(TargetGroup $targetGroup): void
     {
         $this->targetGroups->attach($targetGroup);
     }
@@ -117,10 +117,9 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * Removes a TargetGroup
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroupToRemove The TargetGroup to be removed
-     * @return void
+     * @param TargetGroup $targetGroupToRemove The TargetGroup to be removed
      */
-    public function removeTargetGroup(\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup $targetGroupToRemove)
+    public function removeTargetGroup(TargetGroup $targetGroupToRemove): void
     {
         $this->targetGroups->detach($targetGroupToRemove);
     }
@@ -128,7 +127,7 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * Returns the targetGroups
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup> targetGroups
+     * @return ObjectStorage<TargetGroup> targetGroups
      */
     public function getTargetGroups()
     {
@@ -138,10 +137,9 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * Sets the targetGroups
      *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\TargetGroup> $targetGroups
-     * @return void
+     * @param ObjectStorage<TargetGroup> $targetGroups
      */
-    public function setTargetGroups(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $targetGroups)
+    public function setTargetGroups(ObjectStorage $targetGroups): void
     {
         $this->targetGroups = $targetGroups;
     }
@@ -149,10 +147,9 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * Adds a FilterCategory
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategory
-     * @return void
+     * @param FilterCategory $filterCategory
      */
-    public function addFilterCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategory)
+    public function addFilterCategory(FilterCategory $filterCategory): void
     {
         $this->filterCategories->attach($filterCategory);
     }
@@ -160,10 +157,9 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * Removes a FilterCategory
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategoryToRemove The FilterCategory to be removed
-     * @return void
+     * @param FilterCategory $filterCategoryToRemove The FilterCategory to be removed
      */
-    public function removeFilterCategory(\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory $filterCategoryToRemove)
+    public function removeFilterCategory(FilterCategory $filterCategoryToRemove): void
     {
         $this->filterCategories->detach($filterCategoryToRemove);
     }
@@ -171,7 +167,7 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * Returns the filterCategories
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory> filterCategories
+     * @return ObjectStorage<FilterCategory> filterCategories
      */
     public function getFilterCategories()
     {
@@ -181,10 +177,9 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * Sets the filterCategories
      *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\FilterCategory> $filterCategories
-     * @return void
+     * @param ObjectStorage<FilterCategory> $filterCategories
      */
-    public function setFilterCategories(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $filterCategories)
+    public function setFilterCategories(ObjectStorage $filterCategories): void
     {
         $this->filterCategories = $filterCategories;
     }
@@ -192,10 +187,9 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * Adds a ViewList
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ViewList $viewList
-     * @return void
+     * @param ViewList $viewList
      */
-    public function addViewList(\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList $viewList)
+    public function addViewList(ViewList $viewList): void
     {
         $this->getViewLists()->attach($viewList);
     }
@@ -203,10 +197,9 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * Removes a ViewList
      *
-     * @param \BrainAppeal\CampusEventsConnector\Domain\Model\ViewList $viewListToRemove The ViewList to be removed
-     * @return void
+     * @param ViewList $viewListToRemove The ViewList to be removed
      */
-    public function removeViewList(\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList $viewListToRemove)
+    public function removeViewList(ViewList $viewListToRemove): void
     {
         $this->getViewLists()->detach($viewListToRemove);
     }
@@ -214,12 +207,12 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * Returns the viewLists
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList> viewLists
+     * @return ObjectStorage<ViewList> viewLists
      */
     public function getViewLists()
     {
-        if (null === $this->viewLists) {
-            $this->viewLists = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+        if ($this->viewLists === null) {
+            $this->viewLists = new ObjectStorage();
         }
         return $this->viewLists;
     }
@@ -227,10 +220,9 @@ abstract class ConvertConfiguration extends \TYPO3\CMS\Extbase\DomainObject\Abst
     /**
      * Sets the viewLists
      *
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BrainAppeal\CampusEventsConnector\Domain\Model\ViewList> $viewLists
-     * @return void
+     * @param ObjectStorage<ViewList> $viewLists
      */
-    public function setViewLists(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $viewLists)
+    public function setViewLists(ObjectStorage $viewLists): void
     {
         $this->viewLists = $viewLists;
     }

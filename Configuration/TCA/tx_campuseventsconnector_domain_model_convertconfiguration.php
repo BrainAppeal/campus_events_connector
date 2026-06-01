@@ -1,10 +1,13 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
@@ -30,7 +33,7 @@ return [
         'type' => 'type',
         'typeicon_column' => 'type',
         'typeicon_classes' => [
-            'default' => 'campus-events-convertconfiguration-default'
+            'default' => 'campus-events-convertconfiguration-default',
         ],
         'security' => [
             'ignoreRootLevelRestriction' => true,
@@ -40,7 +43,7 @@ return [
             'starttime' => 'starttime',
             'endtime' => 'endtime',
         ],
-        'searchFields' => 'target_pid'
+        'searchFields' => 'target_pid',
     ],
     'types' => [
         0 => ['showitem' => 'type,
@@ -72,12 +75,12 @@ return [
                         [
                             'label' => 'LLL:EXT:campus_events_connector/Resources/Private/Language/locallang_db.xlf:tx_campuseventsconnector_domain_model_convertconfiguration.select_type',
                             'value' => 0,
-                            'icon' => 'ext-convertconfiguration-type-default'
-                        ]
+                            'icon' => 'ext-convertconfiguration-type-default',
+                        ],
                     ],
                     'size' => 1,
                     'maxitems' => 1,
-                ]
+                ],
             ],
             'target_pid' => [
                 'exclude' => true,
@@ -88,8 +91,8 @@ return [
                     'size' => 1,
                     'maxitems' => 1,
                     'minitems' => 0,
-                    'default' => 0
-                ]
+                    'default' => 0,
+                ],
             ],
             'template_path' => [
                 'exclude' => true,
@@ -99,7 +102,7 @@ return [
                     'size' => 1,
                     'maxitems' => 1,
                     'minitems' => 0,
-                    'eval' => 'trim'
+                    'eval' => 'trim',
                 ],
             ],
             'target_groups' => [
@@ -115,11 +118,11 @@ return [
                     'size' => 10,
                     'fieldControl' => [
                         'editPopup' => [
-                            'disabled' => false
+                            'disabled' => false,
                         ],
                         'addRecord' => [
                             'disabled' => false,
-                        ]
+                        ],
                     ],
                     // Allow language synchronization so that relations are copied on localization
                     'behaviour' => [
@@ -142,11 +145,11 @@ return [
                     'multiple' => 0,
                     'fieldControl' => [
                         'editPopup' => [
-                            'disabled' => false
+                            'disabled' => false,
                         ],
                         'addRecord' => [
                             'disabled' => false,
-                        ]
+                        ],
                     ],
                     // Allow language synchronization so that relations are copied on localization
                     'behaviour' => [
@@ -168,11 +171,11 @@ return [
                     'size' => 10,
                     'fieldControl' => [
                         'editPopup' => [
-                            'disabled' => false
+                            'disabled' => false,
                         ],
                         'addRecord' => [
                             'disabled' => false,
-                        ]
+                        ],
                     ],
                     // Allow language synchronization so that relations are copied on localization
                     'behaviour' => [

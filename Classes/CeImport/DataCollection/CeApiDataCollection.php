@@ -11,6 +11,7 @@ use BrainAppeal\CampusEventsConnector\Import\Exception\ApiLimitReachedException;
 use BrainAppeal\CampusEventsConnector\Import\Exception\ApiRecordNotFoundException;
 use BrainAppeal\CampusEventsConnector\Import\Exception\StopImportException;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
+use BrainAppeal\CampusEventsConnector\Import\Workflow\ImportContext;
 use BrainAppeal\CampusEventsConnector\Utility\TCAUtility;
 
 class CeApiDataCollection extends AbstractDataCollection
@@ -33,7 +34,7 @@ class CeApiDataCollection extends AbstractDataCollection
         $this->apiConnector = $apiConnector;
     }
 
-    public function canProvide(): bool
+    public function canProvide(ImportContext $context): bool
     {
         return $this->apiConnector->isConfigured();
     }
@@ -67,10 +68,10 @@ class CeApiDataCollection extends AbstractDataCollection
         return $this->apiConnector->getCountCachedApiCalls();
     }
 
-    public function collectRawData(bool $isNewImport): int
+    public function collectRawData(ImportContext $context): int
     {
-        if ($isNewImport) {
-            $this->startProcessingForNewImport();
+        if ($context->isStartOfNewImport()) {
+            $this->startProcessingForNewImport($context);
             return $this->totalRowsToImport;
         }
         return 0;
@@ -80,7 +81,6 @@ class CeApiDataCollection extends AbstractDataCollection
      * Sets the language map used for mapping language codes to their corresponding identifiers.
      *
      * @param array $languageMap An associative array where the key is the language code and the value is the language identifier.
-     * @return void
      */
     public function setLanguageMap(array $languageMap): void
     {
@@ -91,51 +91,53 @@ class CeApiDataCollection extends AbstractDataCollection
      * Starts a new import process. This method is intended to set up any necessary
      * resources, configurations, or states required to start a new import operation.
      */
-    protected function startProcessingForNewImport(): void
+    protected function startProcessingForNewImport(ImportContext $context): void
     {
         gc_enable();
-        $this->delayLoadingDetails = !$this->getImportOptions()->isForceUpdate();
-        $eventSourceIdList = $this->fetchAndAddEventItems();
+        $importOptions = $context->options;
+        $this->delayLoadingDetails = !$importOptions->isForceUpdate();
+        $eventSourceIdList = $this->fetchAndAddEventItems($context);
         /** @var ImportRecordModel[] $rows */
         $rows = [];
-        if ($this->getImportOptions()->isForceUpdate()) {
-            foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
+        if ($importOptions->isForceUpdate()) {
+            foreach ($this->dataTransformerFactory->getDataTransformersByContext($context) as $dataTransformer) {
                 if ($dataTransformer->getTable() === TCAUtility::TABLE_EVENTS) {
                     continue;
                 }
                 /** @var DefaultDataTransformer $dataTransformer */
                 $dataTransformer->setValidEventSourceIds($eventSourceIdList);
-                $this->fetchAndAddRowsForDataTransformer($dataTransformer, $rows);
+                $this->fetchAndAddRowsForDataTransformer($context, $dataTransformer, $rows);
             }
             gc_collect_cycles();
             if (!empty($rows)) {
-                $this->importRecordWriter->addRows($rows);
+                $this->importRecordWriter->addRows($context, $rows);
             }
             return;
         }
-        $importId = $this->getImportOptions()->getImportId();
+        $importId = $context->getImportId();
         $incompleteRows = $this->importRecordWriter->findIncompleteImportRows($importId, TCAUtility::TABLE_EVENTS);
-        if (empty($incompleteRows)) {
-            throw new StopImportException(sprintf('All event rows are marked as skipped for import id %d. Stopping import process.', $importId));
+        if ($incompleteRows === []) {
+            $message = sprintf('All event rows are marked as skipped for import id %d. Stopping import process.', $importId);
+            throw new StopImportException($message, StopImportException::CODE_STOP_IMPORT_NO_DATA);
         }
-        foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
+        foreach ($this->dataTransformerFactory->getDataTransformersByContext($context) as $dataTransformer) {
             if ($dataTransformer->getTable() === TCAUtility::TABLE_EVENTS) {
                 continue;
             }
             /** @var DefaultDataTransformer $dataTransformer */
             $dataTransformer->setValidEventSourceIds($eventSourceIdList);
-            $this->fetchAndAddRowsForDataTransformer($dataTransformer, $rows);
+            $this->fetchAndAddRowsForDataTransformer($context, $dataTransformer, $rows);
         }
         gc_collect_cycles();
         if (!empty($rows)) {
-            $this->importRecordWriter->addRows($rows);
+            $this->importRecordWriter->addRows($context, $rows);
         }
         // Only load the record details for rows that are not skipped
         $incompleteRows = $this->importRecordWriter->findIncompleteImportRows($importId);
-        if (!empty($incompleteRows)) {
+        if ($incompleteRows !== []) {
             $dummyRows = [];
             foreach ($incompleteRows as $model) {
-                $this->fetchRemainingDataForModel($model, $dummyRows);
+                $this->fetchRemainingDataForModel($context, $model, $dummyRows);
             }
             $this->importRecordWriter->update($incompleteRows);
         }
@@ -149,19 +151,19 @@ class CeApiDataCollection extends AbstractDataCollection
      *
      * @return array List of source record UIDs associated with the processed event items.
      */
-    protected function fetchAndAddEventItems(): array
+    protected function fetchAndAddEventItems(ImportContext $context): array
     {
         /** @var ImportRecordModel[] $rows */
         $rows = [];
         // Save the event rows first. If no event was changed, we can stop the import process here.
-        $eventDataTransformer = $this->dataTransformerFactory->getDataTransformerByTable(TCAUtility::TABLE_EVENTS);
+        $eventDataTransformer = $this->dataTransformerFactory->getDataTransformerByContextAndTable($context, TCAUtility::TABLE_EVENTS);
         /** @var EventDataTransformer $eventDataTransformer */
-        $this->fetchAndAddRowsForDataTransformer($eventDataTransformer, $rows);
+        $this->fetchAndAddRowsForDataTransformer($context, $eventDataTransformer, $rows);
         $eventSourceIdList = [];
         foreach ($rows as $model) {
             $eventSourceIdList[] = $model->getSourceRecordUid();
         }
-        $this->importRecordWriter->addRows($rows);
+        $this->importRecordWriter->addRows($context, $rows);
         return $eventSourceIdList;
     }
 
@@ -169,11 +171,11 @@ class CeApiDataCollection extends AbstractDataCollection
      * Adds rows for the specified data transformer by processing API list items for each language
      * in the language map. Updates the rows array with import record models derived from the API data.
      *
+     * @param ImportContext $context
      * @param DefaultDataTransformer $dataTransformer The data transformer used to process and transform API records.
      * @param array &$rows The array to be updated with import record models created from the API data.
-     * @return void
      */
-    protected function fetchAndAddRowsForDataTransformer(DefaultDataTransformer $dataTransformer, array &$rows): void
+    protected function fetchAndAddRowsForDataTransformer(ImportContext $context, DefaultDataTransformer $dataTransformer, array &$rows): void
     {
         $dataFullyLoaded = $dataTransformer->isApiListItemContainsAllData();
         foreach ($this->languageMap as $languageCode => $languageUid) {
@@ -181,7 +183,7 @@ class CeApiDataCollection extends AbstractDataCollection
             foreach ($listItems as $record) {
                 $record['_language_id'] = $languageUid;
                 $record['_language_code'] = $languageCode;
-                $this->addImportRecordModel($record, $dataTransformer, $dataFullyLoaded, $rows);
+                $this->addImportRecordModel($context, $record, $dataTransformer, $dataFullyLoaded, $rows);
             }
         }
     }
@@ -194,36 +196,37 @@ class CeApiDataCollection extends AbstractDataCollection
      * @param ImportRecordModel[] $newRows An array passed by reference to collect new rows for processing.
      * @return bool True, if the full API data was successfully loaded and updated in the model, false otherwise.
      */
-    protected function tryFetchRemainingDataForModel(ImportRecordModel $model, array &$newRows): bool
+    protected function tryFetchRemainingDataForModel(ImportContext $context, ImportRecordModel $model, array &$newRows): bool
     {
         if ($this->delayLoadingDetails) {
             return false;
         }
-        return $this->fetchRemainingDataForModel($model, $newRows);
+        return $this->fetchRemainingDataForModel($context, $model, $newRows);
     }
 
     /**
      * Loads full API data for the given import record model if required and supported.
      * Ensures detailed data is loaded for the model based on its source type and API constraints.
      *
+     * @param ImportContext $context
      * @param ImportRecordModel $model The import record model for which detailed API data may be loaded.
      * @param ImportRecordModel[] $rows An array passed by reference to collect new rows for processing.
      * @return bool True, if the full API data was successfully loaded and updated in the model, false otherwise.
      */
-    private function fetchRemainingDataForModel(ImportRecordModel $model, array &$rows): bool
+    private function fetchRemainingDataForModel(ImportContext $context, ImportRecordModel $model, array &$rows): bool
     {
         // Import detailed data until limit is reached
         if ($this->apiAccessEnabled && !$model->getDataFullyLoaded()) {
-            $refDataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($model->getTargetTable());
+            $refDataTransformer = $this->dataTransformerFactory->getDataTransformerByContextAndTable($context, $model->getTargetTable());
             $record = $model->getImportData();
             try {
                 $languageCode = $record['_language_code'] ?? null;
                 $fullRecordData = $this->apiConnector->getApiResponse($record[CeApiConnector::ID_FIELD], [], $languageCode);
-                if ($fullRecordData) {
+                if ($fullRecordData !== []) {
                     $fullRecordData = array_merge($record, $fullRecordData);
                     $refDataTransformer->updateImportRecord($model, $fullRecordData);
                     $model->setDataFullyLoaded(true);
-                    $this->postProcessAfterModelAdded($model, $rows);
+                    $this->postProcessAfterModelAdded($context, $model, $rows);
                     return true;
                 }
                 // The record was apparently deleted in the API data

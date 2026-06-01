@@ -15,8 +15,6 @@ class ImportAlreadyRunningException extends \Exception
      * @param int $importId The identifier of the import process.
      * @param int $code The error code for the exception. Default is 429.
      * @param \Throwable|null $previous The previous throwable used for exception chaining, if any.
-     *
-     * @return void
      */
     public function __construct(int $importId, int $code = 429, ?\Throwable $previous = null)
     {

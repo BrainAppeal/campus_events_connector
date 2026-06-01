@@ -10,7 +10,6 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 abstract class AbstractFileRepository
 {
@@ -21,9 +20,9 @@ abstract class AbstractFileRepository
 
     public function __construct(
         protected readonly ResourceFactory $resourceFactory,
-        protected readonly LoggerInterface $logger)
-    {
-    }
+        protected readonly LoggerInterface $logger,
+        protected readonly ConnectionPool $connectionPool,
+    ) {}
 
     /**
      * @return \Doctrine\DBAL\Schema\Column[]
@@ -31,8 +30,7 @@ abstract class AbstractFileRepository
     final protected function getTableColumns(string $table): array
     {
         if (!isset($this->tableColumns[$table])) {
-            /** @var ConnectionPool $connectionPool */
-            $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+            $connectionPool = $this->connectionPool;
             $connection = $connectionPool->getConnectionForTable($table);
             $this->tableColumns[$table] = $connection->createSchemaManager()->listTableColumns($table);
         }
@@ -82,15 +80,14 @@ abstract class AbstractFileRepository
         }
         if (!$isDeleted) {
             // Hard deletion of the file if normal deletion failed
-            if ($file && ($storage = $file->getStorage()) && $storage->getDriverType() === 'Local') {
+            if ($file && $file->getStorage()->getDriverType() === 'Local') {
                 $publicUrl = $file->getPublicUrl();
                 $absolutePath = Environment::getPublicPath() . '/' . $publicUrl;
                 if (file_exists($absolutePath)) {
                     @unlink($absolutePath);
                 }
             }
-            /** @var ConnectionPool $connectionPool */
-            $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+            $connectionPool = $this->connectionPool;
             $fileTable = 'sys_file';
             $connection = $connectionPool->getConnectionForTable($fileTable);
             // Delete the file reference

@@ -9,7 +9,6 @@ namespace BrainAppeal\CampusEventsConnector\Import\Normalizer\Strategy;
  */
 readonly class StringNormalizerStrategy extends AbstractNormalizerStrategy
 {
-
     public function normalize(mixed $value): ?string
     {
         if ($value === null && $this->isNullable) {

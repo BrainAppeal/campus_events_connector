@@ -6,7 +6,6 @@ namespace BrainAppeal\CampusEventsConnector\Import\TargetResolution;
 
 final class ManyToManyRelationMapping
 {
-
     /**
      * @var array<string, array<int, array<string|int, ?int>>>
      */
@@ -14,9 +13,7 @@ final class ManyToManyRelationMapping
 
     public function __construct(
         protected string $table
-    )
-    {
-    }
+    ) {}
 
     public function getTable(): string
     {
@@ -38,7 +35,6 @@ final class ManyToManyRelationMapping
      *
      * @param int $targetRecordId The ID of the target record in the specified table.
      * @param array<string, int[]> $mmReferences An associative array of references where keys are field names and values are the references to be added.
-     * @return void
      */
     public function addManyToManyReference(int $targetRecordId, array $mmReferences): void
     {

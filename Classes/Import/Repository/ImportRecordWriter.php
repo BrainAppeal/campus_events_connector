@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Repository;
 
-use Doctrine\DBAL\Exception;
+use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DataTransformerFactory;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\HasLastUpdateFieldDataTransformerInterface;
-use BrainAppeal\CampusEventsConnector\Import\ImportOptionsFactory;
-use BrainAppeal\CampusEventsConnector\Import\Model\AbstractImportOptions;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
-use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationModel;
+use BrainAppeal\CampusEventsConnector\Import\Workflow\ImportContext;
+use Doctrine\DBAL\Exception;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Handles the writing of import rows into the database.
@@ -24,24 +22,22 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
 {
     public function __construct(
         protected DataTransformerFactory $dataTransformerFactory,
-        protected ImportOptionsFactory   $importOptionsFactory,
-        protected LoggerInterface        $logger
-    ) {}
-
-    protected function getImportOptions(): AbstractImportOptions
-    {
-        return $this->importOptionsFactory->get();
+        LoggerInterface $logger,
+        ConnectionPool $connectionPool
+    ) {
+        parent::__construct($logger, $connectionPool);
     }
 
     /**
      * Saves the rows to be imported in the database
      *
+     * @param ImportContext $context
      * @param array<ImportRecordModel> $importRows
      */
-    public function addRows(array $importRows): void
+    public function addRows(ImportContext $context, array $importRows): void
     {
-        $importOptions = $this->getImportOptions();
-        $importId = $importOptions->getImportId();
+        $importOptions = $context->options;
+        $importId = $context->getImportId();
         $pid = $importOptions->getPid();
         $table = AbstractImportRowRepository::TABLE_IMPORT_ROW;
         $connection = $this->getDatabaseConnection();
@@ -72,8 +68,8 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
             $connection->bulkInsert($table, $data, $fields);
         }
         // Cleans up import rows that have an unchanged data hash from the current import entry
-        if (!$importOptions->isForceUpdate()) {
-            $this->markRowsToBeSkipped($importId, array_keys($importedTables));
+        if (!$context->options->isForceUpdate()) {
+            $this->markRowsToBeSkipped($context, array_keys($importedTables));
         }
     }
 
@@ -98,16 +94,17 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
      * If new rows are provided, they are persisted based on the import entry. When no new rows are present, it updates the
      * target record IDs for the respective source types of the updated rows.
      *
+     * @param ImportContext $context
      * @param array $updatedRows An array of updated rows to be processed and saved.
      * @param array $newRows An array of new rows to be persisted.
      */
-    public function persistAdditionalImportData(array $updatedRows, array $newRows): void
+    public function persistAdditionalImportData(ImportContext $context, array $updatedRows, array $newRows): void
     {
         if (!empty($updatedRows)) {
             $this->update($updatedRows);
         }
         if (!empty($newRows)) {
-            $this->addRows($newRows);
+            $this->addRows($context, $newRows);
         }
     }
 
@@ -119,9 +116,10 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
      *
      * @return int The number of rows that are missing details.
      */
-    public function countRowsMissingDetails(): int
+    public function countRowsMissingDetails(ImportContext $context): int
     {
-        $queryBuilder = $this->createQueryBuilderForMissingDetails();
+        $importId = $context->getImportId();
+        $queryBuilder = $this->createQueryBuilderForMissingDetails($importId);
         return $queryBuilder
             ->count('*')
             ->executeQuery()->fetchOne();
@@ -131,13 +129,16 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
      * Finds and retrieves rows from the import row table that match specific conditions
      * related to the provided import entry and processing type.
      *
+     * @param ImportContext $context
      * @param int $limit Optional. The maximum number of rows to retrieve. If set to 0, no limit is applied.
      * @return ImportRecordModel[] An array of ImportRecordModel objects representing the matching rows
      *               with the required conditions.
+     * @throws Exception
      */
-    public function findRowsMissingDetails(int $limit = 0): array
+    public function findRowsMissingDetails(ImportContext $context, int $limit = 0): array
     {
-        $queryBuilder = $this->createQueryBuilderForMissingDetails();
+        $importId = $context->getImportId();
+        $queryBuilder = $this->createQueryBuilderForMissingDetails($importId);
         if ($limit > 0) {
             $queryBuilder->setMaxResults($limit);
         }
@@ -172,14 +173,15 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
      * Updates multiple import rows in batches based on their process type and status.
      * The method groups the imported rows by their processing states and updates them accordingly.
      *
-     * @param int $importId The ID of the import process.
+     * @param ImportContext $context
      * @param ImportRecordModel[] $importedRows An array of imported rows to be updated.
      */
-    public function updateProcessingStatesForImportRows(int $importId, array $importedRows): void
+    public function updateProcessingStatesForImportRows(ImportContext $context, array $importedRows): void
     {
         if (empty($importedRows)) {
             return;
         }
+        $importId = $context->getImportId();
         $finishedRows = [];
         $continueWithDataProcessingRows = [];
         $continueWithFileProcessingRows = [];
@@ -197,7 +199,7 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
         $this->markRowsAsLoaded($importId, $continueWithDataProcessingRows);
         $this->markRowsAsProcessed($importId, $continueWithFileProcessingRows);
         if (!empty($finishedRows)) {
-            $this->markRowsAsFinished($importId, $finishedRows, !$this->getImportOptions()->isDebug());
+            $this->markRowsAsFinished($importId, $finishedRows, !$context->options->isDebug());
         }
     }
 
@@ -207,16 +209,16 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
      *
      * This method retrieves grouped identifiers associated with the provided import entry
      * and updates each relevant data transformer with these identifiers.
+     * @param ImportContext $context
      */
-    public function registerExistingIdentifiers(): void
+    public function registerExistingIdentifiers(ImportContext $context): void
     {
         // Register the identifiers that already exist in the import table in the data transformers to prevent
         // adding duplicate records
-        $importOptions = $this->getImportOptions();
-        $importId = $importOptions->getImportId();
+        $importId = $context->getImportId();
         $groupedIdentifiers = $this->getGroupedSourceIdentifiersForImport($importId);
         foreach ($groupedIdentifiers as $targetTable => $sourceRecordIdentifiers) {
-            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($targetTable);
+            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByContextAndTable($context, $targetTable);
             $dataTransformer->setRegisteredIdentifiers($sourceRecordIdentifiers);
         }
     }
@@ -231,9 +233,7 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
     protected function getGroupedSourceIdentifiersForImport(int $importId): array
     {
         $table = AbstractImportRowRepository::TABLE_IMPORT_ROW;
-        /** @var ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
         $queryBuilder->select(ImportRecordModel::UNIQUE_SOURCE_IDENTIFIER_FIELD_STRING, 'source_type', 'sys_language_uid')
             ->from($table)
             ->where(
@@ -296,13 +296,11 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
      *
      * @return QueryBuilder The QueryBuilder instance configured to query rows with missing details.
      */
-    protected function createQueryBuilderForMissingDetails(): QueryBuilder
+    protected function createQueryBuilderForMissingDetails(int $importId): QueryBuilder
     {
-        $importOptions = $this->getImportOptions();
-        $importId = $importOptions->getImportId();
         $queryBuilder = $this->createQueryBuilderForImportRowTable($importId);
         $queryBuilder->andWhere(
-        // Only process records where the full data have been loaded
+            // Only process records where the full data have been loaded
             $queryBuilder->expr()->eq('data_fully_loaded', $queryBuilder->createNamedParameter(
                 0,
                 Connection::PARAM_INT
@@ -315,14 +313,16 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
      * Mark all rows as finished that were already imported in the previous import entry and have not changed since
      * This prevents imported unchanged rows over and over again
      *
-     * @param int $importId
+     * @param ImportContext $context
+     * @param string[] $importedTables
      */
-    protected function markRowsToBeSkipped(int $importId, array $importedTables): void
+    protected function markRowsToBeSkipped(ImportContext $context, array $importedTables): void
     {
+        $importId = $context->getImportId();
         $connection = $this->getDatabaseConnection();
         $dataString = json_encode(['skipped' => 1]);
         $currentTime = time();
-        foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
+        foreach ($this->dataTransformerFactory->getDataTransformersByContext($context) as $dataTransformer) {
             $targetTable = $dataTransformer->getTable();
             if (!in_array($targetTable, $importedTables, true)) {
                 continue;
@@ -367,7 +367,7 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
                 'currentTime' => Connection::PARAM_INT,
                 'dataString' => Connection::PARAM_STR,
             ];
-            if (($targetSourceField = $importConfiguration->getTargetImportSourceField()) && $targetSourceValue = $this->getImportOptions()->getTargetImportSource()) {
+            if (($targetSourceField = $importConfiguration->getTargetImportSourceField()) && $targetSourceValue = $context->options->getTargetImportSource()) {
                 $sql .= sprintf(' AND p.%s = :targetSourceValue', $connection->quoteIdentifier($targetSourceField));
                 $params['targetSourceValue'] = $targetSourceValue;
                 $types['targetSourceValue'] = Connection::PARAM_STR;
@@ -384,12 +384,13 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
     /**
      * Updates the target record IDs for all records that don't have a target record id set.
      *
-     * @param int $importId The ID of the current import process used to filter records.
+     * @param ImportContext $context
      * @param ImportTableConfigurationModel $importConfiguration
      * @throws Exception
      */
-    public function updateTargetRecordIdsForType(int $importId, ImportTableConfigurationModel $importConfiguration): void
+    public function updateTargetRecordIdsForType(ImportContext $context, ImportTableConfigurationModel $importConfiguration): void
     {
+        $importId = $context->getImportId();
         $importRowTable = AbstractImportRowRepository::TABLE_IMPORT_ROW;
         $targetTable = $importConfiguration->getTableName();
         $connection = $this->getDatabaseConnection();
@@ -419,7 +420,7 @@ readonly class ImportRecordWriter extends AbstractImportRowRepository
             'targetTable' => Connection::PARAM_STR,
             'importId' => Connection::PARAM_INT,
         ];
-        $targetSourceValue = $this->getImportOptions()->getTargetImportSource();
+        $targetSourceValue = $context->options->getTargetImportSource();
         $targetSourceField = $importConfiguration->getTargetImportSourceField();
         if ($targetSourceField && $targetSourceValue) {
             $sql .= sprintf(' AND p.%s = :targetSourceValue', $connection->quoteIdentifier($targetSourceField));

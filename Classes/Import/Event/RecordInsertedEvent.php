@@ -7,6 +7,4 @@ namespace BrainAppeal\CampusEventsConnector\Import\Event;
 /**
  * This event is triggered after a record has been inserted.
  */
-class RecordInsertedEvent extends AbstractDataUpdateEvent
-{
-}
+class RecordInsertedEvent extends AbstractDataUpdateEvent {}

@@ -10,29 +10,7 @@ services:
       - '../Classes/Domain/Model/*'
       - '../Classes/**/Exception.php'
 
-  BrainAppeal\CampusEventsConnector\Command\ImportCommand:
-    tags:
-      - name: 'console.command'
-        command: 'ce:import:events'
-        description: 'Campus Events: Import event records'
-
-  BrainAppeal\CampusEventsConnector\Import\Command\CleanupCommand:
-    tags:
-      - name: 'console.command'
-        command: 'ce:cleanup'
-        description: 'Apps: Cleanup for imported data'
-
-  BrainAppeal\CampusEventsConnector\Import\Command\ShowConfigurationCommand:
-    tags:
-      - name: 'console.command'
-        command: 'ce:import:show-configuration'
-        description: 'Show import configuration information'
-
   BrainAppeal\CampusEventsConnector\CeImport\ImportRunner:
-    public: true
-    #shared: true
-
-  BrainAppeal\CampusEventsConnector\Importer\ExtendedImporter:
     public: true
     #shared: true
 
@@ -42,41 +20,3 @@ services:
 
   BrainAppeal\CampusEventsConnector\Import\Configuration\ImportTableConfigurationProvider:
     shared: true
-
-  BrainAppeal\CampusEventsConnector\Import\EventListener\CheckConsistencyEventListener:
-    tags:
-      - name: event.listener
-        identifier: 'ce/before-start/check-consistency'
-
-  BrainAppeal\CampusEventsConnector\Import\EventListener\ClearCacheAfterImportEventListener:
-    tags:
-      - name: event.listener
-        identifier: 'ce/post-transform/clear-cache'
-
-  BrainAppeal\CampusEventsConnector\Import\EventListener\ExcludeImportTablesFromReferenceIndexEventListener:
-    tags:
-      - name: event.listener
-        identifier: 'ce/exclude-from-reference-index'
-
-  BrainAppeal\CampusEventsConnector\Import\EventListener\FinishImportEventListener:
-    tags:
-      - name: event.listener
-        identifier: 'ce/import/finish'
-
-  BrainAppeal\CampusEventsConnector\Import\EventListener\LogImportProblemsEventListener:
-    tags:
-      - name: event.listener
-        identifier: 'ce/post-transform/log-problems'
-
-  BrainAppeal\CampusEventsConnector\Import\EventListener\PostProcessFilesEventListener:
-    tags:
-      - name: event.listener
-        identifier: 'ce/post-processing/files'
-
-  BrainAppeal\CampusEventsConnector\Import\EventListener\PostProcessRecordSlugsEventListener:
-    tags:
-      - name: event.listener
-        identifier: 'ce/post-transform/record-slugs'
-
-  BrainAppeal\CampusEventsConnector\Import\Utility\SlugNormalizer:
-    public: true

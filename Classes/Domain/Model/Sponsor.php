@@ -1,20 +1,21 @@
 <?php
+
 /**
  * campus_events_connector comes with ABSOLUTELY NO WARRANTY
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
  * @link      https://www.campus-events.com/
  */
 
-
 namespace BrainAppeal\CampusEventsConnector\Domain\Model;
 
 use TYPO3\CMS\Extbase\Annotation\ORM\Lazy;
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
@@ -22,7 +23,6 @@ use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
  */
 class Sponsor extends AbstractImportedEntity
 {
-
     /**
      * name
      *
@@ -53,7 +53,7 @@ class Sponsor extends AbstractImportedEntity
 
     /**
      * Image
-     * @var ObjectStorage<\TYPO3\CMS\Extbase\Domain\Model\FileReference>
+     * @var ObjectStorage<FileReference>
      */
     #[Lazy]
     protected ?ObjectStorage $imageFile = null;
@@ -77,16 +77,15 @@ class Sponsor extends AbstractImportedEntity
      * Sets the name
      *
      * @param string $name
-     * @return void
      */
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
 
     public function getPublicLabel(): string
     {
-        return $this->publicLabel ? : $this->name;
+        return $this->publicLabel ?: $this->name;
     }
 
     public function setPublicLabel(string $publicLabel): void
@@ -131,7 +130,7 @@ class Sponsor extends AbstractImportedEntity
      */
     public function getImageFile(): ObjectStorage
     {
-        if ($this->imageFile === null) {
+        if (!$this->imageFile instanceof ObjectStorage) {
             $this->imageFile = new ObjectStorage();
         }
         return $this->imageFile;
@@ -140,7 +139,7 @@ class Sponsor extends AbstractImportedEntity
     /**
      * @param ObjectStorage $imageFile
      */
-    public function setImageFile(ObjectStorage $imageFile)
+    public function setImageFile(ObjectStorage $imageFile): void
     {
         $this->imageFile = $imageFile;
     }

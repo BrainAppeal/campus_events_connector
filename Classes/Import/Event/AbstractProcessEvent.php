@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Event;
 
-use BrainAppeal\CampusEventsConnector\Import\Model\AbstractImportOptions;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportEntry;
 use BrainAppeal\CampusEventsConnector\Import\Model\ProcessingResult;
+use BrainAppeal\CampusEventsConnector\Import\Workflow\ImportContext;
 
 /**
  * Represents an event that occurs during the processing of import rows.
@@ -15,12 +15,10 @@ use BrainAppeal\CampusEventsConnector\Import\Model\ProcessingResult;
 abstract class AbstractProcessEvent extends AbstractImportEvent
 {
     public function __construct(
-        protected ProcessingResult      $processingResult,
-        protected AbstractImportOptions $importOptions,
-        protected ImportEntry           $importEntry
-    )
-    {
-        parent::__construct($importOptions);
+        protected ImportContext $context,
+        protected ProcessingResult $processingResult
+    ) {
+        parent::__construct($context);
     }
 
     public function getProcessingResult(): ProcessingResult
@@ -30,7 +28,7 @@ abstract class AbstractProcessEvent extends AbstractImportEvent
 
     public function getImportEntry(): ImportEntry
     {
-        return $this->importEntry;
+        return $this->context->getImportEntry();
     }
 
 }

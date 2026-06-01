@@ -4,22 +4,20 @@ declare(strict_types=1);
 
 namespace BrainAppeal\CampusEventsConnector\Import\Workflow;
 
-use BrainAppeal\CampusEventsConnector\Import\Exception\RecordInvalidException;
-use Doctrine\DBAL\Exception;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\DataTransformerFactory;
 use BrainAppeal\CampusEventsConnector\Import\DataTransformer\ImportDataTransformerInterface;
 use BrainAppeal\CampusEventsConnector\Import\Event\PostProcessBatchEvent;
-use BrainAppeal\CampusEventsConnector\Import\ImportOptionsFactory;
-use BrainAppeal\CampusEventsConnector\Import\Model\AbstractImportOptions;
-use BrainAppeal\CampusEventsConnector\Import\Model\ImportEntry;
+use BrainAppeal\CampusEventsConnector\Import\Exception\ImportOptionsConfigurationException;
+use BrainAppeal\CampusEventsConnector\Import\Exception\RecordInvalidException;
+use BrainAppeal\CampusEventsConnector\Import\Exception\ReferenceNotFoundException;
 use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
 use BrainAppeal\CampusEventsConnector\Import\Model\ProcessingResult;
 use BrainAppeal\CampusEventsConnector\Import\Repository\ImportEntryManager;
 use BrainAppeal\CampusEventsConnector\Import\Repository\ImportRecordReader;
-use BrainAppeal\CampusEventsConnector\Import\TargetResolution\ImportTargetRecordMapping;
 use BrainAppeal\CampusEventsConnector\Import\TargetResolution\ReferenceResolver;
 use BrainAppeal\CampusEventsConnector\Import\Writer\ReferenceWriter;
 use BrainAppeal\CampusEventsConnector\Import\Writer\TargetRecordWriter;
+use Doctrine\DBAL\Exception;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -33,56 +31,35 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 readonly class ImportRecordWorkflow
 {
-    private ImportTargetRecordMapping $mapping;
-
     public function __construct(
-        protected ImportEntryManager       $importEntryManager,
-        protected DataTransformerFactory   $dataTransformerFactory,
-        protected ImportOptionsFactory     $importOptionsFactory,
+        protected ImportEntryManager $importEntryManager,
+        protected DataTransformerFactory $dataTransformerFactory,
         protected EventDispatcherInterface $eventDispatcher,
-        protected TargetRecordWriter       $targetRecordPersister,
-        protected LoggerInterface          $logger,
-        protected ReferenceResolver        $referenceResolver,
-        protected ReferenceWriter          $referenceWriter
-    )
-    {
-
-        $this->mapping = $referenceResolver->getMapping();
-    }
-
-    protected function getImportOptions(): AbstractImportOptions
-    {
-        return $this->importOptionsFactory->get();
-    }
-
-    /**
-     * Retrieves the errors grouped by the corresponding database tables.
-     *
-     * @return array<string, string[]> An associative array where the keys represent table names
-     */
-    public function getErrorsByTable(): array
-    {
-        return $this->targetRecordPersister->getErrorsByTable();
-    }
+        protected TargetRecordWriter $targetRecordPersister,
+        protected LoggerInterface $logger,
+        protected ReferenceResolver $referenceResolver,
+        protected ReferenceWriter $referenceWriter
+    ) {}
 
     /**
      * Transforms the collected date for the current import operation.
      * If the current import has a total limit of processed tows set, the given collected row count is used to lower
      * the limit of rows to be transformed. This prevents the import process from running too long
      *
-     * @param ImportEntry $importEntry
+     * @param ImportContext $context
      * @param ?int $maxRowsToProcess The maximum number of rows to transform. If not set, all available rows will be processed
      * @return int The total number of rows processed during this execution.
      * @throws Exception
      */
-    public function transformCollectedData(ImportEntry $importEntry, ?int $maxRowsToProcess = null): int
+    public function transformCollectedData(ImportContext $context, ?int $maxRowsToProcess = null): int
     {
+        $importEntry = $context->getImportEntry();
         $importId = $importEntry->getUid();
         $importRecordWriter = $this->importEntryManager->getImportRecordWriter();
         // 1. Set the target records for all existing records
-        foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
-            $importRecordWriter->updateTargetRecordIdsForType($importId, $dataTransformer->getImportConfiguration());
-            $this->referenceResolver->refreshTargetRecordIdMapping($importId, $dataTransformer->getImportConfiguration());
+        foreach ($this->dataTransformerFactory->getDataTransformersByContext($context) as $dataTransformer) {
+            $importRecordWriter->updateTargetRecordIdsForType($context, $dataTransformer->getImportConfiguration());
+            $this->referenceResolver->refreshTargetRecordIdMapping($context, $dataTransformer->getImportConfiguration());
         }
         $totalProcessedRowCount = 0;
         $sumRowsByLanguage = $this->importEntryManager->getImportRecordReader()->countRowsForProcessingByLanguage($importId);
@@ -103,22 +80,22 @@ readonly class ImportRecordWorkflow
             $countFilesNotProcessed = $sumRow['sum_files_not_processed'];
             // Process unmapped rows first
             if ($countUnmappedRows > 0) {
-                $totalProcessedRowCount += $this->processImportRowsInBatches($importEntry, $language, $limit, true);
+                $totalProcessedRowCount += $this->processImportRowsInBatches($context, $language, $limit, true);
                 // Set the target records for all existing records
-                foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
-                    $importRecordWriter->updateTargetRecordIdsForType($importId, $dataTransformer->getImportConfiguration());
-                    $this->referenceResolver->refreshTargetRecordIdMapping($importId, $dataTransformer->getImportConfiguration());
+                foreach ($this->dataTransformerFactory->getDataTransformersByContext($context) as $dataTransformer) {
+                    $importRecordWriter->updateTargetRecordIdsForType($context, $dataTransformer->getImportConfiguration());
+                    $this->referenceResolver->refreshTargetRecordIdMapping($context, $dataTransformer->getImportConfiguration());
                 }
             }
             // Then process mapped rows
             if ($limit > $totalProcessedRowCount && ($countMappedRows > 0 || $countFilesNotProcessed > 0)) {
-                $totalProcessedRowCount += $this->processImportRowsInBatches($importEntry, $language, $limit, false);
+                $totalProcessedRowCount += $this->processImportRowsInBatches($context, $language, $limit, false);
             }
             if ($limit <= $totalProcessedRowCount) {
                 break;
             }
         }
-        if ($this->getImportOptions()->isEnableStatistics()) {
+        if ($context->options->isEnableStatistics()) {
             $memoryAfter = memory_get_usage();
             $endTime = microtime(true);
             $message = sprintf(
@@ -130,7 +107,7 @@ readonly class ImportRecordWorkflow
             );
             $this->logger->info($message);
         }
-        $this->postProcessAfterTransformationCompleted();
+        $this->postProcessAfterTransformationCompleted($context);
         return $totalProcessedRowCount;
     }
 
@@ -141,20 +118,20 @@ readonly class ImportRecordWorkflow
      * and updates their processing state. The process continues until either the limit
      * is reached or there are no more rows left to process.
      *
-     * @param ImportEntry $importEntry
+     * @param ImportContext $context
      * @param int $language The language identifier of the rows to process.
      * @param int $limit The maximum number of rows to process.
      * @param bool $unmappedRowsOnly Indicates whether to process only unmapped rows or all rows.
      * @return int The total number of rows processed.
      * @throws Exception
      */
-    protected function processImportRowsInBatches(ImportEntry $importEntry, int $language, int $limit, bool $unmappedRowsOnly): int
+    protected function processImportRowsInBatches(ImportContext $context, int $language, int $limit, bool $unmappedRowsOnly): int
     {
         $importRowType = $unmappedRowsOnly ? ImportRecordReader::IMPORT_ROW_TYPE_UNMAPPED : ImportRecordReader::IMPORT_ROW_TYPE_MAPPED;
         $totalProcessedRowCount = 0;
         // If the limit is 0, there is nothing to process
-        $importOptions = $this->getImportOptions();
-        $importId = $importOptions->getImportId();
+        $importOptions = $context->options;
+        $importId = $context->getImportId();
         $maxRowsToProcessPerIteration = $importOptions->getMaxRowsToProcessPerIteration();
         $enableStatistics = $importOptions->isEnableStatistics();
         $importRecordReader = $this->importEntryManager->getImportRecordReader();
@@ -181,18 +158,18 @@ readonly class ImportRecordWorkflow
                 $startTime = microtime(true);
             }
             // 1. Initialize the processing result (group by source type and status)
-            $processingResult = $this->initializeProcessingResult($rows);
+            $processingResult = $this->initializeProcessingResult($context, $rows);
             // 2. Map dependencies for all existing target records. ID's of newly added rows will be added to the mapping later.
-            $this->initializeDependencyMapping($processingResult);
+            $this->initializeDependencyMapping($context, $processingResult);
             // 3. Process new rows
-            $this->processNewRows($processingResult);
+            $this->processNewRows($context, $processingResult);
             // 4. Now update the existing rows with changes
-            $this->processUpdatedRows($processingResult);
+            $this->processUpdatedRows($context, $processingResult);
             // 5. Dispatch events post-processing
-            $event = new PostProcessBatchEvent($processingResult, $importOptions, $importEntry);
+            $event = new PostProcessBatchEvent($context, $processingResult);
             $this->eventDispatcher->dispatch($event);
             // Update the processed import rows according to their current processing state
-            $importRecordWriter->updateProcessingStatesForImportRows($importId, $processingResult->getAllRows());
+            $importRecordWriter->updateProcessingStatesForImportRows($context, $processingResult->getAllRows());
             $this->importEntryManager->updateActiveEntry($event->getImportEntry());
             $recordCounts = $processingResult->getRecordCounts();
             $batchProcessedRowCount = $recordCounts['processed'];
@@ -219,25 +196,17 @@ readonly class ImportRecordWorkflow
     }
 
     /**
-     * Retrieve the mapping configuration for the import target records.
-     *
-     * @return ImportTargetRecordMapping The mapping associated with the import target records
-     */
-    public function getMapping(): ImportTargetRecordMapping
-    {
-        return $this->mapping;
-    }
-
-    /**
      * Initializes the ProcessingResult object based on the provided rows. The given rows are grouped by source type and processed status.
      *
+     * @param ImportContext $context
      * @param ImportRecordModel[] $rows An array of models containing data to be processed. Each model is expected to provide methods
      *                    for accessing source type, data processing status, target record ID, and file processing status.
      * @return ProcessingResult The populated ProcessingResult object containing grouped rows and process files list.
      */
-    protected function initializeProcessingResult(array $rows): ProcessingResult
+    protected function initializeProcessingResult(ImportContext $context, array $rows): ProcessingResult
     {
-        $processingResult = new ProcessingResult($rows, $this->mapping);
+        $mapping = $context->getTargetRecordMapping();
+        $processingResult = new ProcessingResult($rows, $mapping);
         $groupedRowsUpdate = $processingResult->getGroupedRowsUpdate();
         $processFilesList = $processingResult->getProcessFilesList();
 
@@ -266,14 +235,14 @@ readonly class ImportRecordWorkflow
      * Initializes the dependency mapping for processed data types using the provided ProcessingResult object.
      * This involves determining table dependencies and mapping them using existing data transformers.
      *
+     * @param ImportContext $context
      * @param ProcessingResult $processingResult The result object containing the list of data types that have been processed.
      *                                            Each data type is used to fetch corresponding dependencies and map them.
-     * @return void
      */
-    protected function initializeDependencyMapping(ProcessingResult $processingResult): void
+    protected function initializeDependencyMapping(ImportContext $context, ProcessingResult $processingResult): void
     {
         foreach ($processingResult->getDataTypesProcessed() as $targetTable) {
-            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($targetTable);
+            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByContextAndTable($context, $targetTable);
             $importConfiguration = $dataTransformer->getImportConfiguration();
             $dependenciesToOtherTables = $importConfiguration->getDependenciesToOtherTables();
             $internalDependencies = $importConfiguration->getInternalDependencies();
@@ -285,7 +254,7 @@ readonly class ImportRecordWorkflow
                 $dependenciesToOtherTables[$targetTable] = array_unique($dependenciesToOtherTables[$targetTable]);
             }
             if (!empty($dependenciesToOtherTables)) {
-                $this->referenceResolver->mapDependencies($dependenciesToOtherTables);
+                $this->referenceResolver->mapDependencies($context, $dependenciesToOtherTables);
             }
         }
     }
@@ -296,11 +265,12 @@ readonly class ImportRecordWorkflow
      * 1. Rows without dependencies to other import tables are transformed and processed first.
      * 2. Rows with dependencies to other import tables are processed after the dependencies have been resolved.
      *
+     * @param ImportContext $context
      * @param ProcessingResult $processingResult The ProcessingResult instance containing grouped rows and tracking of processed row counts.
      *                                           Each group of rows is organized by source type and expected to be processed accordingly.
-     * @return void
+     * @throws Exception
      */
-    protected function processNewRows(ProcessingResult $processingResult): void
+    protected function processNewRows(ImportContext $context, ProcessingResult $processingResult): void
     {
         /*
          * 2.1. Transform the collected data for new rows. In the first iteration only data types without
@@ -311,10 +281,10 @@ readonly class ImportRecordWorkflow
          */
         $groupedRowsNew = $processingResult->getModelsToBeAddedGroupedBySourceType();
         foreach ($groupedRowsNew as $targetTable => $importModels) {
-            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($targetTable);
+            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByContextAndTable($context, $targetTable);
             $importConfiguration = $dataTransformer->getImportConfiguration();
             if (empty($importConfiguration->getDependenciesToOtherTables())) {
-                $this->processNewImportModels($processingResult, $targetTable, $importModels);
+                $this->processNewImportModels($context, $processingResult, $targetTable, $importModels);
             }
         }
         /*
@@ -323,21 +293,19 @@ readonly class ImportRecordWorkflow
          * Only dependencies to the same table are not resolved yet.
          */
         foreach ($groupedRowsNew as $targetTable => $importModels) {
-            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($targetTable);
+            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByContextAndTable($context, $targetTable);
             $importConfiguration = $dataTransformer->getImportConfiguration();
             $dependenciesToOtherTables = $importConfiguration->getDependenciesToOtherTables();
             if (!empty($dependenciesToOtherTables)) {
-                $this->processNewImportModels($processingResult, $targetTable, $importModels);
+                $this->processNewImportModels($context, $processingResult, $targetTable, $importModels);
             }
         }
         // Update the target record IDs for newly added rows; this is only needed if the import rows are loaded again
-        $importOptions = $this->getImportOptions();
-        $importId = $importOptions->getImportId();
         $targetTables = array_keys($groupedRowsNew);
         $importRecordWriter = $this->importEntryManager->getImportRecordWriter();
         foreach ($targetTables as $targetTable) {
-            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($targetTable);
-            $importRecordWriter->updateTargetRecordIdsForType($importId, $dataTransformer->getImportConfiguration());
+            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByContextAndTable($context, $targetTable);
+            $importRecordWriter->updateTargetRecordIdsForType($context, $dataTransformer->getImportConfiguration());
         }
     }
 
@@ -345,26 +313,26 @@ readonly class ImportRecordWorkflow
      * Processes updated rows based on the data available in the given ProcessingResult object. This involves transforming
      * the data and persisting updated rows while keeping track of the processed row count.
      *
+     * @param ImportContext $context
      * @param ProcessingResult $processingResult The ProcessingResult object containing grouped rows organized by source type,
      *                                           which are to be processed and counted as updated.
-     * @return void
      */
-    protected function processUpdatedRows(ProcessingResult $processingResult): void
+    protected function processUpdatedRows(ImportContext $context, ProcessingResult $processingResult): void
     {
         $groupedRowsUpdate = $processingResult->getGroupedRowsUpdate();
         foreach ($groupedRowsUpdate as $targetTable => $importModels) {
-            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($targetTable);
+            $dataTransformer = $this->dataTransformerFactory->getDataTransformerByContextAndTable($context, $targetTable);
             $processingResult->incrementProcessedRowCount(count($importModels));
             $modelsWithTransformedData = [];
             foreach ($importModels as $model) {
-                if ($modelWithTransformedData = $this->runDataTransformation($dataTransformer, $model)) {
+                if ($modelWithTransformedData = $this->runDataTransformation($context, $dataTransformer, $model)) {
                     $modelsWithTransformedData[] = $modelWithTransformedData;
                 }
             }
             $writtenRecordCount = $this->targetRecordPersister->updateRecords(
+                $context,
                 $dataTransformer->getImportConfiguration(),
-                $modelsWithTransformedData,
-                $this->referenceResolver
+                $modelsWithTransformedData
             );
             $processingResult->incrementRecordCount($writtenRecordCount, false);
         }
@@ -373,18 +341,22 @@ readonly class ImportRecordWorkflow
     /**
      * Processes the given import models
      *
+     * @param ImportContext $context
+     * @param ProcessingResult $processingResult
+     * @param string $table
      * @param ImportRecordModel[] $importModels
-     * @return void
+     * @throws ReferenceNotFoundException
      */
-    protected function processNewImportModels(ProcessingResult $processingResult, string $table, array $importModels): void
+    protected function processNewImportModels(ImportContext $context, ProcessingResult $processingResult, string $table, array $importModels): void
     {
-        $dataTransformer = $this->dataTransformerFactory->getDataTransformerByTable($table);
+        $dataTransformer = $this->dataTransformerFactory->getDataTransformerByContextAndTable($context, $table);
         $processingResult->incrementProcessedRowCount(count($importModels));
         $writtenRecordCount = 0;
         // Each model is inserted immediately, so the internal references can be resolved
         foreach ($importModels as $model) {
-            if ($modelWithTransformedData = $this->runDataTransformation($dataTransformer, $model)) {
+            if ($modelWithTransformedData = $this->runDataTransformation($context, $dataTransformer, $model)) {
                 $this->targetRecordPersister->createRecord(
+                    $context,
                     $dataTransformer->getImportConfiguration(),
                     $modelWithTransformedData,
                     $this->referenceResolver
@@ -398,11 +370,13 @@ readonly class ImportRecordWorkflow
     /**
      * Executes the data transformation process for the provided model.
      *
+     * @param ImportContext $context
      * @param ImportDataTransformerInterface $dataTransformer
      * @param ImportRecordModel $model
      * @return ?ImportRecordModel Model with transformed data or null if transformation failed
+     * @throws ReferenceNotFoundException
      */
-    protected function runDataTransformation(ImportDataTransformerInterface $dataTransformer, ImportRecordModel $model): ?ImportRecordModel
+    protected function runDataTransformation(ImportContext $context, ImportDataTransformerInterface $dataTransformer, ImportRecordModel $model): ?ImportRecordModel
     {
         $table = $dataTransformer->getTable();
         $importConfiguration = $dataTransformer->getImportConfiguration();
@@ -413,7 +387,7 @@ readonly class ImportRecordWorkflow
         $transOrigPointerField = $importConfiguration->getTransOrigPointerField();
         $targetSourceField = $importConfiguration->getTargetImportSourceField();
         try {
-            $data = $rawDataConverter->convert($model, $this->referenceResolver);
+            $data = $rawDataConverter->convert($context, $model, $this->referenceResolver);
         } catch (RecordInvalidException $e) {
             $this->logger->warning(sprintf('Skipping record %s: %s because the record is invalid: %s', $model->getTargetTable(), $model->getSourceRecordIdentifier(), $e->getMessage()));
             return null;
@@ -425,10 +399,11 @@ readonly class ImportRecordWorkflow
         // The default language records are processed first, so the language parent should exist here
         if ($languageField && $transOrigPointerField && $model->getLanguageUid() > 0) {
             $identifier = $rawDataConverter->getImportIdentifier($model->getImportData());
-            $referenceId = (int)$this->mapping->getTargetReferenceId($table, $uniqueTargetIdentifierField, (string)$identifier, 0);
+            $mapping = $context->getTargetRecordMapping();
+            $referenceId = (int)$mapping->getTargetReferenceId($table, $uniqueTargetIdentifierField, (string)$identifier, 0);
             $data[$transOrigPointerField] = $referenceId;
         }
-        if ($targetSourceField && ($targetSourceValue = $this->getImportOptions()->getTargetImportSource())) {
+        if ($targetSourceField && ($targetSourceValue = $context->options->getTargetImportSource())) {
             $data[$targetSourceField] = $targetSourceValue;
         }
         $model->setTransformedData($data);
@@ -446,15 +421,17 @@ readonly class ImportRecordWorkflow
      * Executes post-processing tasks after the transformation process is completed. This method ensures that
      * many-to-one references for all tables processed by the data transformers are updated using the reference writer.
      *
-     * @return void
+     * @param ImportContext $context
+     * @throws RecordInvalidException
+     * @throws ImportOptionsConfigurationException
      */
-    protected function postProcessAfterTransformationCompleted(): void
+    protected function postProcessAfterTransformationCompleted(ImportContext $context): void
     {
-        $this->referenceResolver->tryResolvingUnresolvedReferences($this->mapping);
-        foreach ($this->dataTransformerFactory->getAll() as $dataTransformer) {
+        $this->referenceResolver->tryResolvingUnresolvedReferences($context);
+        foreach ($this->dataTransformerFactory->getDataTransformersByContext($context) as $dataTransformer) {
             $table = $dataTransformer->getTable();
             $this->referenceWriter->updateManyToOneReferences($table);
         }
-        $this->referenceWriter->updateManyToManyReferences($this->mapping);
+        $this->referenceWriter->updateManyToManyReferences($context);
     }
 }

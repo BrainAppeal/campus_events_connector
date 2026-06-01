@@ -9,7 +9,6 @@ namespace BrainAppeal\CampusEventsConnector\Import\Utility;
  */
 class DataParser
 {
-
     public function formatText(?string $value): string
     {
         return $this->formatString($value);

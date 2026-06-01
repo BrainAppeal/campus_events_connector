@@ -9,7 +9,6 @@ namespace BrainAppeal\CampusEventsConnector\Import\Normalizer\Strategy;
  */
 readonly class BoolAsIntNormalizerStrategy extends BooleanNormalizerStrategy
 {
-
     public static function supports(string $normalizerKey): bool
     {
         return $normalizerKey === 'bool_as_int';

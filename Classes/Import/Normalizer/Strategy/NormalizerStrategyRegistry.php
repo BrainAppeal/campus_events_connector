@@ -11,7 +11,6 @@ use BrainAppeal\CampusEventsConnector\Import\Configuration\ImportFieldConfigurat
  */
 readonly class NormalizerStrategyRegistry
 {
-
     /**
      * Determines and returns the fully qualified class name of the appropriate
      * strategy class based on the provided normalizer key.

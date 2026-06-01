@@ -67,11 +67,10 @@ final class ImportTargetRecordMapping
 
     public function addProcessed(
         string $targetTable,
-        int    $targetRecordId,
-        bool   $hasChanged,
-        bool   $isNewRecord = false
-    ): void
-    {
+        int $targetRecordId,
+        bool $hasChanged,
+        bool $isNewRecord = false
+    ): void {
         $this->mapProcessed[$targetTable][$targetRecordId] = $targetRecordId;
         if ($hasChanged) {
             $this->mapCreatedOrUpdated[$targetTable][$targetRecordId] = $isNewRecord;
@@ -82,10 +81,9 @@ final class ImportTargetRecordMapping
         string $table,
         string $sourceIdentifierField,
         int|string $sourceRecordId,
-        int    $targetRecordId,
-        int    $languageUid = 0
-    ): void
-    {
+        int $targetRecordId,
+        int $languageUid = 0
+    ): void {
         $this->tableIdMap[$table][$sourceIdentifierField][$languageUid][(string)$sourceRecordId] = $targetRecordId;
     }
 
@@ -95,15 +93,12 @@ final class ImportTargetRecordMapping
      * @param mixed $rawValue
      * @param ImportRecordModel $model The import record model linked to the unresolved reference.
      * @param ImportFieldConfigurationModel $mapEntry The field configuration for the unresolved reference.
-     *
-     * @return void
      */
     public function addUnresolvedReference(
         mixed $rawValue,
         ImportRecordModel $model,
         ImportFieldConfigurationModel $mapEntry,
-    ): void
-    {
+    ): void {
         $this->unresolvedReferences[] = [
             'rawValue' => $rawValue,
             'model' => $model,
@@ -122,8 +117,6 @@ final class ImportTargetRecordMapping
 
     /**
      * Clears all unresolved references.
-     *
-     * @return void
      */
     public function clearUnresolvedReferences(): void
     {
@@ -147,8 +140,6 @@ final class ImportTargetRecordMapping
      *
      * @param string $table The name of the table to be marked as initialized.
      * @param string $sourceIdentifierField The identifier field in the table to be marked as initialized.
-     *
-     * @return void
      */
     public function setTableMappingInitialized(string $table, string $sourceIdentifierField): void
     {
@@ -226,7 +217,6 @@ final class ImportTargetRecordMapping
      * @param string $targetTable The name or identifier of the target table.
      * @param int $targetRecordId The ID of the target record in the specified table.
      * @param array<string, int[]> $mmReferences An associative array of references where keys are field names and values are the references to be added.
-     * @return void
      */
     public function addManyToManyReference(string $targetTable, int $targetRecordId, array $mmReferences): void
     {

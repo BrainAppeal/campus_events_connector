@@ -9,7 +9,6 @@ namespace BrainAppeal\CampusEventsConnector\Import\Normalizer\Strategy;
  */
 readonly class FloatNormalizerStrategy extends AbstractNormalizerStrategy
 {
-
     public function normalize(mixed $value): ?float
     {
         if ($value === null && $this->isNullable) {

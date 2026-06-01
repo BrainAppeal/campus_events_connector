@@ -32,6 +32,11 @@ class ImportFieldConfigurationModel
         $this->initializeConfiguration($table, $tcaConfiguration, $columnInfo);
     }
 
+    public function getConfiguration(): array
+    {
+        return $this->configuration;
+    }
+
     /**
      * Initializes the configuration for a given table and updates the internal state
      * based on the provided configuration and column information.
@@ -39,8 +44,6 @@ class ImportFieldConfigurationModel
      * @param string $table The name of the database table being configured.
      * @param array<string, mixed> $config The configuration settings for the table column.
      * @param ?Column $columnInfo Optional additional metadata for the column, including type, length, nullable status, and other properties.
-     *
-     * @return void
      */
     private function initializeConfiguration(string $table, array $config, ?Column $columnInfo): void
     {
@@ -51,8 +54,8 @@ class ImportFieldConfigurationModel
         $importItem['filterMultiByte4'] = true;
         if ($columnInfo) {
             $dbType = Type::lookupName($columnInfo->getType());
-            if ($columnInfo->hasPlatformOption('charset')) {
-                $charset = $columnInfo->getPlatformOption('charset');
+            $charset = $columnInfo->getCharset();
+            if ($charset) {
                 $importItem['charset'] = $charset;
                 if ($charset === 'utf8mb4') {
                     $importItem['filterMultiByte4'] = false;
@@ -96,7 +99,7 @@ class ImportFieldConfigurationModel
 
     public function getFieldOrFieldList(): string|array
     {
-        return ($this->configuration['field'] ?? '');
+        return $this->configuration['field'] ?? '';
     }
 
     public function getReferenceTable(): string

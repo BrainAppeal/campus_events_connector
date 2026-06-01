@@ -9,7 +9,6 @@ namespace BrainAppeal\CampusEventsConnector\Import\Model;
  */
 abstract class AbstractImportModel
 {
-
     /**
      * @var string
      */

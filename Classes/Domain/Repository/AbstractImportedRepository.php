@@ -5,7 +5,7 @@
  * See the GNU GeneralPublic License for more details.
  * https://www.gnu.org/licenses/gpl-2.0
  *
- * Copyright (C) 2019 Brain Appeal GmbH
+ * Copyright (C) 2026 Brain Appeal GmbH
  *
  * @copyright 2019 Brain Appeal GmbH (www.brain-appeal.com)
  * @license   GPL-2 (www.gnu.org/licenses/gpl-2.0)
@@ -17,7 +17,6 @@ namespace BrainAppeal\CampusEventsConnector\Domain\Repository;
 use BrainAppeal\CampusEventsConnector\Domain\Model\AbstractImportedEntity;
 use BrainAppeal\CampusEventsConnector\Domain\Model\ImportedModelInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
@@ -37,21 +36,6 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
  */
 abstract class AbstractImportedRepository extends Repository
 {
-    /**
-     * @var string[]
-     */
-    private static array $classTableMapping = [];
-
-    public static function getTableForModelClass($modelClass): string
-    {
-        if (!isset(self::$classTableMapping[$modelClass])) {
-            $dataMapper = GeneralUtility::makeInstance(DataMapFactory::class);
-            self::$classTableMapping[$modelClass] = $dataMapper->buildDataMap($modelClass)->getTableName();
-        }
-
-        return self::$classTableMapping[$modelClass];
-    }
-
     /**
      * @param int|int[]|null $pid
      */
@@ -82,13 +66,13 @@ abstract class AbstractImportedRepository extends Repository
     {
         $this->setPidRestriction($pid);
         $query = $this->createQuery();
-        if (!empty($constraints)) {
+        if ($constraints !== []) {
             $query->matching($query->logicalAnd(...$constraints));
         }
         if ($limit > 0) {
             $query->setLimit($limit);
         }
-        if (!empty($orderBy)) {
+        if ($orderBy !== []) {
             $query->setOrderings($orderBy);
         }
         return $query->execute();
@@ -134,16 +118,6 @@ abstract class AbstractImportedRepository extends Repository
         $object->setPid($pid);
 
         return $object;
-    }
-
-    /**
-     * Returns the table name for the current object
-     *
-     * @return string
-     */
-    public function getImportTableName(): string
-    {
-        return self::getTableForModelClass($this->objectType);
     }
 
     /**

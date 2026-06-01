@@ -7,6 +7,4 @@ namespace BrainAppeal\CampusEventsConnector\Import\Exception;
 /**
  * Exception thrown when a mapping error occurs during the import process.
  */
-class MappingException extends \RuntimeException
-{
-}
+class MappingException extends \RuntimeException {}

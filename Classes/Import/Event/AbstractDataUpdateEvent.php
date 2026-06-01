@@ -11,7 +11,6 @@ use BrainAppeal\CampusEventsConnector\Import\Model\ImportRecordModel;
  */
 class AbstractDataUpdateEvent extends AbstractRecordEvent
 {
-
     /**
      * The import record model contains the raw data from the source and the transformed data.
      *
