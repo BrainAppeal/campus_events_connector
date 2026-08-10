@@ -181,17 +181,18 @@ abstract class AbstractDataCollection
      * @param ImportDataTransformerInterface $refDataTransformer Transformer handling specific import data operations.
      * @param bool $dataFullyLoaded Indicates whether the data is already fully loaded.
      * @param ImportRecordModel[] $rows
+     * @return ImportRecordModel|null The created import record model or null if the record has been skipped
      */
     protected function addImportRecordModel(
         array                          $record,
         ImportDataTransformerInterface $refDataTransformer,
         bool                           $dataFullyLoaded,
         array                          &$rows
-    ): void
+    ): ?ImportRecordModel
     {
         $model = $refDataTransformer->initializeImportRecord($record);
         if ($model === null) {
-            return;
+            return null;
         }
         $model->setPriority($refDataTransformer->getPriority($model->getImportData()));
         $model->setCrdate($this->processingStart);
@@ -203,5 +204,6 @@ abstract class AbstractDataCollection
         } else {
             $this->tryFetchRemainingDataForModel($model, $rows);
         }
+        return $model;
     }
 }

@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## 5.2.9 (2026-08-10)
+
+### Fixed:
+- fix missing event sessions if more than 500 event rows are collected
+
 ## 5.2.8 (2026-04-10)
 
 ### Fixed:
