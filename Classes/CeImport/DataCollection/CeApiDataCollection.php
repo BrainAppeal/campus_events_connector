@@ -155,14 +155,13 @@ class CeApiDataCollection extends AbstractDataCollection
     {
         /** @var ImportRecordModel[] $rows */
         $rows = [];
+        // The source ids must be collected while the rows are created, because the rows array is written to the
+        // database and reset as soon as it contains too many entries (@see postProcessAfterModelAdded)
+        $eventSourceIdList = [];
         // Save the event rows first. If no event was changed, we can stop the import process here.
         $eventDataTransformer = $this->dataTransformerFactory->getDataTransformerByContextAndTable($context, TCAUtility::TABLE_EVENTS);
         /** @var EventDataTransformer $eventDataTransformer */
-        $this->fetchAndAddRowsForDataTransformer($context, $eventDataTransformer, $rows);
-        $eventSourceIdList = [];
-        foreach ($rows as $model) {
-            $eventSourceIdList[] = $model->getSourceRecordUid();
-        }
+        $this->fetchAndAddRowsForDataTransformer($context, $eventDataTransformer, $rows, $eventSourceIdList);
         $this->importRecordWriter->addRows($context, $rows);
         return $eventSourceIdList;
     }
@@ -174,8 +173,9 @@ class CeApiDataCollection extends AbstractDataCollection
      * @param ImportContext $context
      * @param DefaultDataTransformer $dataTransformer The data transformer used to process and transform API records.
      * @param array &$rows The array to be updated with import record models created from the API data.
+     * @param array|null &$sourceRecordUidList Optional array that is filled with the source record uids of all added records.
      */
-    protected function fetchAndAddRowsForDataTransformer(ImportContext $context, DefaultDataTransformer $dataTransformer, array &$rows): void
+    protected function fetchAndAddRowsForDataTransformer(ImportContext $context, DefaultDataTransformer $dataTransformer, array &$rows, ?array &$sourceRecordUidList = null): void
     {
         $dataFullyLoaded = $dataTransformer->isApiListItemContainsAllData();
         foreach ($this->languageMap as $languageCode => $languageUid) {
@@ -183,7 +183,12 @@ class CeApiDataCollection extends AbstractDataCollection
             foreach ($listItems as $record) {
                 $record['_language_id'] = $languageUid;
                 $record['_language_code'] = $languageCode;
-                $this->addImportRecordModel($context, $record, $dataTransformer, $dataFullyLoaded, $rows);
+                $model = $this->addImportRecordModel($context, $record, $dataTransformer, $dataFullyLoaded, $rows);
+                if ($model !== null && $sourceRecordUidList !== null) {
+                    // Use the uid as array key to prevent duplicate entries for translated records
+                    $sourceRecordUid = $model->getSourceRecordUid();
+                    $sourceRecordUidList[$sourceRecordUid] = $sourceRecordUid;
+                }
             }
         }
     }
